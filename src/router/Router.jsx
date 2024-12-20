@@ -24,5 +24,5 @@ const router = createBrowserRouter([
 ]);
 
 export default function Router() {
-    return <RouterProvider router={router} basename={process.env.PUBLIC_URL}/>
+    return <RouterProvider router={router}/>
 }
