@@ -8,7 +8,11 @@ export default {
     fontFamily: {
       pre: ['Pretendard'],
     },
-    extend: {},
+    extend: {
+      colors: {
+        customTextGray: '#CACACA', // gray톤의 text 색상
+      },
+    },
   },
   plugins: [],
 }
