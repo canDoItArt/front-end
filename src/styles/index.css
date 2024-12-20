@@ -9,7 +9,7 @@
 
   /* 글꼴 설정 */
   --font-family: 'Pretendard', sans-serif;
-  --font-weight: 500; /* Pretendard-Medium */
+  --font-weight: 400; /* Pretendard-Medium */
 }
 
 html, body {
@@ -22,7 +22,7 @@ html, body {
   height: 100%;
   max-width: var(--max-width); /* 모바일 기준 최대 너비 */
   margin: 0 auto; /* 중앙 정렬 */
-  background-color: #ffffff; /* 배경색 */
+  background-color: #fafafa; /* 배경색 */
   color: #1E1E1E; /* 기본 텍스트 색상 */
 }
 
