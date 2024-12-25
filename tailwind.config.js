@@ -11,6 +11,8 @@ export default {
     extend: {
       colors: {
         customTextGray: '#CACACA', // gray톤의 text 색상
+        customMain: '#8C52FF' //메인 색상
+
       },
     },
   },
