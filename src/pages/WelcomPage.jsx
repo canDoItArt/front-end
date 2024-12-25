@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 export default function WelcomePage() {
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-white p-12">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-white px-6">
             {/* 로고 영역 */}
             <img
                 src="/logo_2.png"
