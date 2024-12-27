@@ -28,7 +28,7 @@ export default function WelcomePage() {
                         <div className="flex flex-col items-center justify-center h-full">
                             <h3 className="text-xl font-bold text-gray-700">서비스 소개 1</h3>
                             <p className="text-gray-600 mt-2">
-                                우리의 서비스를 통해 더 나은 목표 달성이 가능합니다.
+                                더 나은 목표 달성이 가능합니다.
                             </p>
                         </div>
                     </SwiperSlide>

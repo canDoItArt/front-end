@@ -15,7 +15,7 @@ export default function Header({ title }) { // title을 props로 받음
         <BsChevronLeft />
       </button>
       {/* 제목 */}
-      <h1 className="flex-grow text-center font-bold text-gray-800">
+      <h1 className="flex-grow text-center font-bold text-customTextBlack">
         {title}
       </h1>
     </div>
