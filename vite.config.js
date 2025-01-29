@@ -1,8 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: "", // GitHub Pages의 프로젝트 경로
+  base: '/front-end/', // GitHub Pages의 서브 경로와 일치하도록 설정
 });
