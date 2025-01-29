@@ -10,19 +10,23 @@ import SubGoalPage from "../pages/SubGoalPage";
 import MyPage from "../pages/MyPage";
 import AccountEditPage from "../pages/AccountEditPage";
 
-const router = createBrowserRouter([
-    {path: '/', element: <WelcomPage/>},
-    {path: '/login', element: <LoginPage/>},
-    {path: '/signup', element: <SignUpPage/>},
-    {path: '/home', element: <HomePage/>},
-    {path: '/myartlist', element: <MyArtListPage/>},
-    {path: '/myart', element: <MyArtPage/>},
-    {path: '/createmyart', element: <CreateMyArtPage/>},
-    {path: '/subgoal', element: <SubGoalPage/>},
-    {path: '/mypage', element: <MyPage/>},
-    {path: '/accountedit', element: <AccountEditPage/>},
-]);
+const router = createBrowserRouter(
+    [
+        { path: '/', element: <WelcomPage /> },
+        { path: '/login', element: <LoginPage /> },
+        { path: '/signup', element: <SignUpPage /> },
+        { path: '/home', element: <HomePage /> },
+        { path: '/myartlist', element: <MyArtListPage /> },
+        { path: '/myart', element: <MyArtPage /> },
+        { path: '/createmyart', element: <CreateMyArtPage /> },
+        { path: '/subgoal', element: <SubGoalPage /> },
+        { path: '/mypage', element: <MyPage /> },
+        { path: '/accountedit', element: <AccountEditPage /> },
+    ],
+    { basename: '/front-end' } // 추가된 부분
+);
+
 
 export default function Router() {
-    return <RouterProvider router={router}/>
+    return <RouterProvider router={router} />
 }

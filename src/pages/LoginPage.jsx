@@ -11,6 +11,9 @@ export default function LoginPage() {
         e.preventDefault();
         console.log("로그인 시도", { email, password });
         // 로그인 처리 로직 추가
+
+        // 로그인 성공 후 홈 페이지로 이동
+        navigate('/home');
     };
 
     return (
@@ -46,7 +49,7 @@ export default function LoginPage() {
                 {/* 로그인 버튼 */}
                 <button
                     type="submit"
-                    className="w-full bg-customMain my-8 text-white py-3 rounded-md shadow-lg text-sm font-bold"
+                    className="w-full bg-customMain mb-8 text-white py-3 rounded-md shadow-lg text-sm font-bold"
                 >
                     로그인
                 </button>
@@ -54,9 +57,9 @@ export default function LoginPage() {
 
             {/* 하단 링크 */}
             <div className="flex justify-center gap-6 text-sm text-customTextGray">
-                <Link to='/login'>아이디 찾기</Link>
+                <Link to='/home'>아이디 찾기</Link>
                 |
-                <Link to='/login'>비밀번호 찾기</Link>
+                <Link to='/home'>비밀번호 찾기</Link>
             </div>
         </div>
     );
