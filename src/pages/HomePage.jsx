@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import LogoHeader from "../components/LogoHeader";
-import PagenationBar from "../components/PagenationBar";
+import GoalSelectionDropdown from "../components/GoalSelectionDropdown";
 import CompletionRate from "../components/CompletionRate";
 import TowerSection from "../components/TowerSection";
 import CheckList from "../components/CheckList";
@@ -9,18 +9,10 @@ import MottoCard from "../components/MottoCard";
 import mainPageMockData from "../mocks/mainPage";
 
 export default function HomePage() {
-    const [currentPage, setCurrentPage] = useState(0);
-
-    const handlePrevious = () => {
-        setCurrentPage((prev) => (prev > 0 ? prev - 1 : mainPageMockData.length - 1));
-    };
-
-    const handleNext = () => {
-        setCurrentPage((prev) => (prev < mainPageMockData.length - 1 ? prev + 1 : 0));
-    };
-
-    const currentData = mainPageMockData[currentPage];
-
+    const [currentGoalId, setCurrentGoalId] = useState(mainPageMockData[0].mainGoal.id);
+    
+    const currentData = mainPageMockData.find(goal => goal.mainGoal.id === currentGoalId);
+    
     return (
         <div className="flex flex-col items-center justify-start min-h-screen bg-white px-6">
             {/* LogoHeader 컴포넌트 */}
@@ -31,11 +23,11 @@ export default function HomePage() {
                 {/* MottoCard 컴포넌트 */}
                 <MottoCard motto={currentData.comment} />
 
-                {/* 페이지네이션 바 */}
-                <PagenationBar
-                    title={currentData.mainGoal.name}
-                    onPrevious={handlePrevious}
-                    onNext={handleNext}
+                {/* 목표 선택 드롭다운 */}
+                <GoalSelectionDropdown 
+                    currentGoal={currentData.mainGoal} 
+                    onSelectGoal={(goal) => setCurrentGoalId(goal.id)} 
+                    goals={mainPageMockData.map(data => data.mainGoal)} 
                 />
 
                 {/* 달성률 섹션 */}
