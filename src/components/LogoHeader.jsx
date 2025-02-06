@@ -1,7 +1,7 @@
 import { BsBell } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
-export default function LogoHeader() { // title을 props로 받음
+export default function LogoHeader() {                 
 
     return (
         <div className="fixed top-0 max-w-[480px] w-full z-10 flex items-center justify-between bg-white px-6 py-4">
