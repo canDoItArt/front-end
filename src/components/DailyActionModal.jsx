@@ -18,7 +18,7 @@ export default function DailyActionModal({ isOpen, onClose, goal }) {
             className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20"
             onClick={handleClose}
         >
-            <div className="w-3/4 max-h-3/4 bg-white p-6 rounded-2xl shadow-lg flex flex-col">
+            <div className="w-3/4 max-h-3/4 bg-white p-6 rounded-2xl shadow-lg flex flex-col max-w-md">
                 <h2 className="text-base font-bold mb-4 text-center">{goal.name}</h2>
 
                 {/* 스크롤 가능한 영역 (내용이 많을 때만 스크롤) */}
