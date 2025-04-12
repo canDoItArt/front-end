@@ -11,7 +11,7 @@ export default function Input({ id, label, type, value, onChange, placeholder, r
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
-                className="mt-4 w-full border-b border-gray-100 focus:outline-none focus:border-customMain 
+                className="mt-4 p-2 w-full border-b border-gray-100 focus:outline-none focus:border-customMain 
                 text-gray-900 placeholder-customTextGray text-sm transition-colors duration-300 ease-in-out"
             />
         </div>

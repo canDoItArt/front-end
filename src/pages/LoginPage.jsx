@@ -17,7 +17,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-start min-h-screen bg-white px-6">
+        <div className="flex flex-col items-center justify-start min-h-screen bg-white px-6 pt-20">
             {/* Header 컴포넌트 */}
             <Header title="로그인" />
 

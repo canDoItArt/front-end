@@ -20,7 +20,7 @@ export default function MainGoalList({ name, state }) {
     <button
       onClick={handleClick}
       type="button"
-      className="flex justify-between items-center p-6 bg-white rounded-lg shadow-[0_4px_6px_rgba(0,0,0,0.05),0_-4px_6px_rgba(0,0,0,0.05)] w-full"
+      className="flex justify-between items-center p-6 bg-white rounded-lg shadow-customShadow w-full"
     >
       <span className="font-semibold text-sm">{name}</span>
       <div>{stateIcons[state]}</div>

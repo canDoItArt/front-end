@@ -9,6 +9,7 @@ import CreateMyArtPage from "../pages/CreateMyArtPage";
 import SubGoalPage from "../pages/SubGoalPage";
 import MyPage from "../pages/MyPage";
 import AccountEditPage from "../pages/AccountEditPage";
+import ImportClonePage from "../pages/ImportClonePage";
 
 const router = createBrowserRouter(
     [
@@ -22,6 +23,7 @@ const router = createBrowserRouter(
         { path: '/subgoal', element: <SubGoalPage /> },
         { path: '/mypage', element: <MyPage /> },
         { path: '/accountedit', element: <AccountEditPage /> },
+        { path: '/importclone', element: <ImportClonePage /> },
     ],
     { basename: '/front-end' } // 추가된 부분
 );
