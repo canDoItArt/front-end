@@ -27,7 +27,11 @@ export default {
         customNavbar: "#F8F8F8", //navbar 배경색상
         customNavbarText: "#CCCCCC", //navbar 텍스트 색상
         customNavbarStroke: "#F3F3F3", //navbar 선색상
-        customEmptyTile: "#EEEEEE" //빈 타일 색상
+        customEmptyTile: "#EEEEEE", //빈 타일 색상
+        gray: {
+          70: '#F9F9F9', // gray-70
+          125: '#ECEDEF',
+        },
       },
       fontSize: {
         'xxs': '0.625rem', // 약 10px
@@ -35,6 +39,10 @@ export default {
       borderWidth: {
         '0.1': '0.1px', // border-width를 0.5px로 설정
       },
+      boxShadow: {
+        customShadow: ["0 4px 6px rgba(0,0,0,0.05)", "0 -4px 6px rgba(0,0,0,0.05)"],
+        customMainShadow: ["0 4px 6px rgba(140, 82, 255, 0.1)", "0 -4px 6px rgba(140, 82, 255, 0.1)"],
+      },      
     },
   },
   plugins: [],

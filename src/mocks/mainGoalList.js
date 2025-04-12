@@ -2,7 +2,7 @@ const mainGoalListMockData = [
     {
         comment: "앞만 보고 가자, 내 인생에 뒤란 없다.",
         mainGoals: [
-            { "id": 1, "name": "세계 여행 완주", "state": "inactive" },
+            { "id": 1, "name": "8구단 드래프트 1순위", "state": "inactive" },
             { "id": 2, "name": "책 100권 읽기", "state": "active" },
             { "id": 3, "name": "마라톤 완주", "state": "rep" },
             { "id": 4, "name": "매일 아침 6시 기상", "state": "active" },

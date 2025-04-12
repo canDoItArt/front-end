@@ -25,7 +25,7 @@ export default function SignUpPage() {
 
     return (
         <div
-            className="flex flex-col items-center justify-between min-h-screen bg-white px-6 relative"
+            className="flex flex-col items-center justify-between min-h-screen bg-white px-6 relative pt-20"
             onSubmit={handleSignup}
         >
             <Header title="회원가입" />

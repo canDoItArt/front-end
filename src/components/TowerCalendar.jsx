@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Tower from "./Tower";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 
-export default function ActivityCalendar({ strict }) {
+export default function TowerCalendar({ strict }) {
   const [currentDate, setCurrentDate] = useState(new Date()); // 현재 날짜 상태를 관리
   const [viewMode, setViewMode] = useState("week"); // 'week' 또는 'month' 뷰 모드를 관리
   const [dateColorMap, setDateColorMap] = useState({}); // 날짜별 컬러 리스트 상태
@@ -89,9 +89,8 @@ export default function ActivityCalendar({ strict }) {
             <div key={`empty-${cellIndex}`} className="w-12 h-12"></div>
           );
         } else {
-          const formattedDate = `${year}-${
-            month + 1
-          }-${String(day).padStart(2, "0")}`; // YYYY-MM-DD 형식
+          const formattedDate = `${year}-${month + 1
+            }-${String(day).padStart(2, "0")}`; // YYYY-MM-DD 형식
           const dayColors = dateColorMap[formattedDate] || [];
 
           days.push(
