@@ -12,8 +12,12 @@ export default function ImportClonePage() {
     const [currentData] = useState(mainGoalListMockData[0]);
     const [activeId, setActiveId] = useState(null);
 
-    const goBack = () => {
-        navigate(-1);
+    const handleImport = () => {
+        if (type === "maingoal") {
+            navigate("/myart");
+        } else {
+            navigate(-1); // 이전 페이지로 이동
+        }
     };
 
     return (
@@ -38,7 +42,7 @@ export default function ImportClonePage() {
                 <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 max-w-[480px] w-full px-6 z-20">
                     <button
                         className="w-full bg-customMain text-white py-3 rounded-md shadow-lg text-sm font-bold"
-                        onClick={goBack}
+                        onClick={handleImport}
                     >
                         가져오기
                     </button>
