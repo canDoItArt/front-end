@@ -1,27 +1,32 @@
 import { BsFillCaretRightFill, BsFillCaretDownFill } from "react-icons/bs";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CloneDailyActionList from "./CloneDailyActionList";
 import { motion } from "framer-motion";
 import subGoalMockData from "../mocks/subGoal";
 
 export default function CloneSubGoalList({ name, id, type, activeId, setActiveId }) {
+    const [resetKey, setResetKey] = useState(0);
+
     const isOpen =
         type === "maingoal"
             ? activeId.includes(id)
             : activeId === id;
 
+    useEffect(() => {
+        // 열림 상태가 바뀔 때마다 resetKey를 증가시켜 CloneDailyActionList 리셋 유도
+        setResetKey((prev) => prev + 1);
+    }, [isOpen]);
+
     const handleClick = (e) => {
         if (e.target.closest(".dailyaction-list")) return;
 
         if (type === "maingoal") {
-            // 여러 개 열 수 있게 배열 처리
             if (activeId.includes(id)) {
                 setActiveId(activeId.filter((item) => item !== id));
             } else {
                 setActiveId([...activeId, id]);
             }
         } else {
-            // 하나만 열 수 있게 단일 값 처리
             setActiveId(isOpen ? null : id);
         }
     };
@@ -49,7 +54,7 @@ export default function CloneSubGoalList({ name, id, type, activeId, setActiveId
                 <div>
                     {subGoalMockData[0].dailyActions.map((goal) => (
                         <CloneDailyActionList
-                            key={goal.id}
+                            key={`${resetKey}-${goal.id}`} // <- resetKey를 key에 포함하여 상태 초기화
                             id={goal.id}
                             title={goal.title}
                             content={goal.content}
