@@ -1,0 +1,158 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import hexToColorClass from "../constants/colorMappings";
+import GoalTile from "./GoalTile";
+import BottomModalLayout from "./BottomModalLayout";
+import Input from "./Input";
+import { BsFillPlusCircleFill, BsDashCircleFill } from "react-icons/bs";
+
+export default function DailyActionTiles({ title, dailyActions, color }) {
+    const navigate = useNavigate();
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [titleInput, setTitle] = useState("");
+    const [contentInput, setContent] = useState("");
+    const [routine, setRoutine] = useState(1);
+
+    const addTileClick = () => {
+        setShowAddModal(true);
+    };
+
+    const closeAddModal = () => {
+        setShowAddModal(false);
+    };
+
+    const cloneButtonClick = () => {
+        setShowAddModal(false);
+        setTimeout(() => {
+            navigate('/importclone', { state: { type: 'dailyaction' } });
+        }, 300);
+    };
+
+    const idLayout = [
+        ["1", "2", "3"],
+        ["8", "t", "4"],
+        ["7", "6", "5"]
+    ];
+
+    return (
+        <div className="flex justify-center">
+            <div className="w-4/5 h-auto grid grid-cols-3 gap-3 justify-items-center items-center my-5">
+                {idLayout.flat().map((id, index) => {
+                    if (id === "t") {
+                        return <GoalTile key={`title-${index}`} text={title} color={hexToColorClass[color]} />;
+                    }
+
+                    const action = dailyActions.find((action) => action.s === id);
+                    if (action) {
+                        return (
+                            <button
+                                key={`goal-${action.id}`}
+                                className="w-full"
+                            >
+                                <GoalTile
+                                    text={action.title}
+                                    color={hexToColorClass[color]}
+                                    type="dailyaction"
+                                />
+                            </button>
+                        );
+                    }
+
+                    return (
+                        <button
+                            key={`add-${index}`}
+                            className="w-full"
+                            onClick={addTileClick}
+                        >
+                            <GoalTile type="add" />
+                        </button>
+                    );
+                })}
+            </div>
+
+            <BottomModalLayout isOpen={showAddModal} onClose={closeAddModal}>
+                <div className="p-6 text-center">
+                    {/* 제목 수정 */}
+                    <div className="flex justify-between">
+                        <h2 className="text-base font-bold mb-4 text-center">Daily Action 생성</h2>
+                        <button
+                            className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
+                            onClick={cloneButtonClick}
+                        >
+                            가져오기
+                        </button>
+                    </div>
+
+                    {/* 제목 입력 */}
+                    <div className="text-left">
+                        <Input
+                            id="title"
+                            type="text"
+                            label={"Daily Action 제목"}
+                            value={titleInput}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="Daily Action 제목을 입력하세요"
+                            required={true}
+                        />
+                    </div>
+
+                    {/* 데일리 액션 내용 입력 */}
+                    <div className="text-left">
+                        <Input
+                            id="content"
+                            type="text"
+                            label={"Daily Action을 입력해주세요"}
+                            value={contentInput}
+                            onChange={(e) => setContent(e.target.value)}
+                            placeholder="Daily Action 내용을 입력하세요"
+                            required={true}
+                        />
+                    </div>
+
+                    {/* 루틴 수정 */}
+                    <div className="flex justify-between mt-6 text-left">
+                        <label className="block text-sm font-medium text-customTextBlack">
+                            일주일 목표 진행 횟수<span className="text-red-500">*</span>
+                        </label>
+                        <div className="flex justify-between items-center gap-4">
+                            {/* 마이너스 버튼 */}
+                            <button
+                                type="button"
+                                onClick={() => setRoutine(prev => Math.max(prev - 1, 1))}
+                            >
+                                <BsDashCircleFill className="text-customMain text-2xl" />
+                            </button>
+
+                            {/* 현재 routine 값 표시 */}
+                            <span className="text-base font-medium">{routine}</span>
+
+                            {/* 플러스 버튼 */}
+                            <button
+                                type="button"
+                                onClick={() => setRoutine(prev => Math.min(prev + 1, 7))}
+                            >
+                                <BsFillPlusCircleFill className="text-customMain text-2xl" />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* 버튼 그룹 */}
+                    <div className="mt-6 flex justify-center space-x-4">
+                        <button
+                            className="p-2 text-xs font-normal w-24 bg-gray-100 text-gray-400 rounded-md"
+                            onClick={closeAddModal}
+                        >
+                            취소
+                        </button>
+                        <button
+                            className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
+                            onClick={closeAddModal}
+                        >
+                            저장
+                        </button>
+                    </div>
+                </div>
+            </BottomModalLayout>
+        </div>
+    );
+}

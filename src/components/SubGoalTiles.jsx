@@ -4,8 +4,6 @@ import hexToColorClass from "../constants/colorMappings";
 import GoalTile from "./GoalTile";
 import BottomModalLayout from "./BottomModalLayout";
 import Input from "./Input";
-import ImportCloneModal from "./ImportCloneModal";
-
 
 export default function SubGoalTiles({ title, subGoals }) {
     const navigate = useNavigate();
@@ -28,10 +26,6 @@ export default function SubGoalTiles({ title, subGoals }) {
         setTimeout(() => {
             navigate('/importclone', { state: { type: 'subgoal' } });
         }, 300);
-    };
-
-    const closeCloneModal = () => {
-        setShowCloneModal(false);
     };
 
     const idLayout = [

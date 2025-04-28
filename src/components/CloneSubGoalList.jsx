@@ -6,6 +6,7 @@ import subGoalMockData from "../mocks/subGoal";
 
 export default function CloneSubGoalList({ name, id, type, activeId, setActiveId }) {
     const [resetKey, setResetKey] = useState(0);
+    const [selectedId, setSelectedId] = useState(null);
 
     const isOpen =
         type === "maingoal"
@@ -28,6 +29,13 @@ export default function CloneSubGoalList({ name, id, type, activeId, setActiveId
             }
         } else {
             setActiveId(isOpen ? null : id);
+        }
+    };
+
+    const handleDailyActionClick = (clickedId) => {
+        if (type === "dailyaction") {
+            // dailyaction이면 하나만 체크되게
+            setSelectedId((prevId) => (prevId === clickedId ? null : clickedId));
         }
     };
 
@@ -54,12 +62,14 @@ export default function CloneSubGoalList({ name, id, type, activeId, setActiveId
                 <div>
                     {subGoalMockData[0].dailyActions.map((goal) => (
                         <CloneDailyActionList
-                            key={`${resetKey}-${goal.id}`} // <- resetKey를 key에 포함하여 상태 초기화
+                            key={`${resetKey}-${goal.id}`}
                             id={goal.id}
                             title={goal.title}
                             content={goal.content}
                             routine={goal.routine}
                             type={type}
+                            checked={type === "dailyaction" ? selectedId === goal.id : type === "subgoal"}
+                            onClick={handleDailyActionClick}
                         />
                     ))}
                 </div>
