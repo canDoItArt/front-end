@@ -37,11 +37,27 @@ export default function GoalTile({ text, color, type }) {
             </div>
         );
 
+    }
+    else if (type === "dailyaction") {
+        // 데일리 액션
+        return (
+            <div
+                className={`w-full aspect-[1/1] ${color} bg-opacity-30 rounded-xl flex items-center justify-center text-black font-semibold text-xs p-2 
+                shadow-customShadow`}
+            >
+                <span
+                    className="line-clamp-3 text-center overflow-hidden text-ellipsis whitespace-normal leading-tight break-words"
+                >
+                    {text}
+                </span>
+            </div>
+        );
+
     } else {
         // 일반 타입
         return (
             <div
-                className={`w-full aspect-[1/1] ${color} rounded-xl flex items-center justify-center text-white font-medium text-xs p-2 
+                className={`w-full aspect-[1/1] ${color} rounded-xl flex items-center justify-center text-white font-semibold text-xs p-2 
                 shadow-customShadow`}
             >
                 <span

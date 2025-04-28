@@ -1,12 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CheckIcon from "./CheckIcon";
 
-export default function CloneDailyActionList({ title, content, routine, type, id }) {
-    const [checked, setChecked] = useState(true);
+export default function CloneDailyActionList({ title, content, routine, type, id, checked: parentChecked, onClick }) {
+    const [selfChecked, setSelfChecked] = useState(false);
+
+    useEffect(() => {
+        if (type === "subgoal") {
+            setSelfChecked(true); // reset when component mounts
+        }
+    }, [id]);
 
     const handleClick = () => {
-        setChecked((prev) => !prev);
+        if (type === "dailyaction") {
+            if (onClick) {
+                onClick(id);
+            }
+        } else if (type === "subgoal") {
+            setSelfChecked(prev => !prev);
+        }
     };
+
+    const isChecked = type === "dailyaction" ? parentChecked : selfChecked;
 
     return (
         <div
@@ -22,7 +36,7 @@ export default function CloneDailyActionList({ title, content, routine, type, id
                 </div>
                 <span className="font-semibold text-xs text-gray-500">{content}</span>
             </div>
-            <CheckIcon checked={checked} />
+            <CheckIcon checked={isChecked} />
         </div>
     );
 }

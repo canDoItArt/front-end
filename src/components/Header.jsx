@@ -4,8 +4,10 @@ import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import BottomModalLayout from "./BottomModalLayout";
 import OptionList from "./OptionList";
-import MainGoalDeleteSubmodal from "./MainGoalDeleteSubmodal";
+import DeleteSubmodal from "./DeleteSubmodal";
 import MainGoalEditSubmodal from "./MainGoalEditSubmodal";
+import CompleteSubmodal from "./CompleteSubmodal";
+import SubGoalRenameSubmodal from "./SubGoalRenameSubmodal";
 
 
 export default function Header({ title, page, state }) {
@@ -16,9 +18,9 @@ export default function Header({ title, page, state }) {
   let goBack = () => {
     if (page === "MyArtPage") {
       navigate("/myartlist");
-  } else {
+    } else {
       navigate(-1); // 이전 페이지로 이동
-  }
+    }
   };
 
   let toggleModal = () => {
@@ -53,7 +55,7 @@ export default function Header({ title, page, state }) {
       </button>
 
       {/* 제목 */}
-      <h2 className="text-center text-sm font-bold text-customTextBlack">{title}</h2>
+      <h2 className="text-center text-base font-bold text-customTextBlack">{title}</h2>
 
       {/* 메뉴 버튼 */}
       <button onClick={toggleModal}>
@@ -81,48 +83,33 @@ export default function Header({ title, page, state }) {
 
       {/* MainGoal 삭제 서브모달 */}
       {subModalOpen === "mainGoalDelete" && (
-        <MainGoalDeleteSubmodal closeSubModal={closeSubModal} />
+        <DeleteSubmodal type="mainGoal" closeSubModal={closeSubModal} >
+          Main Goal 삭제 시 <br />
+          모든 Sub Goal의 내용이 삭제됩니다.
+        </DeleteSubmodal>
       )}
 
       {/* SubGoal 달성완료 서브모달 */}
       {subModalOpen === "subGoalComplete" && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-white p-4 rounded-lg shadow-lg z-30 w-72">
-          <h2 className="text-lg font-bold mb-4">Sub Goal 달성 완료</h2>
-          <p>이 목표를 달성 완료로 설정하시겠습니까?</p>
-          <button className="mt-4 p-2 bg-green-500 text-white rounded-lg w-full" onClick={closeSubModal}>
-            확인
-          </button>
-          <button className="mt-2 p-2 bg-gray-200 rounded-lg w-full" onClick={closeSubModal}>
-            취소
-          </button>
-        </div>
+        <CompleteSubmodal type="SubGoal" closeSubModal={closeSubModal} >
+          해당 Sub Goal을 <br />
+          달성완료 처리 하시겠습니까?
+        </CompleteSubmodal>
       )}
 
       {/* SubGoal 이름수정 서브모달 */}
       {subModalOpen === "subGoalRename" && (
-        <div className="fixed inset-0 flex justify-center items-center bg-gray-900 bg-opacity-50 z-30" onClick={closeSubModal}>
-          <div className="bg-white p-6 rounded-lg shadow-lg w-80" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-bold mb-4">Sub Goal 이름 수정</h2>
-            <input type="text" className="w-full p-2 border rounded-lg" placeholder="새로운 이름 입력" />
-            <button className="mt-4 p-2 bg-blue-500 text-white rounded-lg w-full" onClick={closeSubModal}>
-              저장
-            </button>
-          </div>
-        </div>
+        <BottomModalLayout isOpen={subModalOpen === "subGoalRename"} onClose={closeSubModal}>
+          <SubGoalRenameSubmodal closeSubModal={closeSubModal} state={state} />
+        </BottomModalLayout>
       )}
 
       {/* SubGoal 삭제 서브모달 */}
       {subModalOpen === "subGoalDelete" && (
-        <div className="fixed bottom-0 left-0 w-full bg-white p-6 rounded-t-2xl shadow-lg z-30">
-          <h2 className="text-lg font-bold mb-4">Sub Goal 삭제</h2>
-          <p>정말 삭제하시겠습니까?</p>
-          <button className="mt-4 p-2 bg-red-500 text-white rounded-lg w-full" onClick={closeSubModal}>
-            삭제하기
-          </button>
-          <button className="mt-2 p-2 bg-gray-200 rounded-lg w-full" onClick={closeSubModal}>
-            취소
-          </button>
-        </div>
+        <DeleteSubmodal type="subGoal" closeSubModal={closeSubModal} >
+          Sub Goal 삭제 시 <br />
+          모든 Daily Action이 삭제됩니다.
+        </DeleteSubmodal>
       )}
     </div>
   );
