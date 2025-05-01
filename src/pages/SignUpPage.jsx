@@ -43,15 +43,16 @@ export default function SignUpPage() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="이메일을 입력해주세요"
                                 required={true} // 필수 항목
-                            />
+                            >
+                                <div
+                                    onClick={() => handleDuplicateCheck("이메일")}
+                                    className="flex items-center justify-center whitespace-nowrap bg-white border border-customMain text-customMain py-2 px-4 text-xs rounded-md font-bold cursor-pointer"
+                                >
+                                    중복확인
+                                </div>
+
+                            </Input>
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => handleDuplicateCheck("이메일")}
-                            className="bg-white border border-customMain text-customMain py-2 px-4 text-xs rounded-md font-bold"
-                        >
-                            중복확인
-                        </button>
                     </div>
 
                     {/* 비밀번호 입력 */}
@@ -87,15 +88,15 @@ export default function SignUpPage() {
                                 onChange={(e) => setNickname(e.target.value)}
                                 placeholder="사용하실 닉네임을 입력해주세요"
                                 required={true} // 필수 항목
-                            />
+                            >
+                                <div
+                                    onClick={() => handleDuplicateCheck("닉네임")}
+                                    className="flex items-center justify-center whitespace-nowrap bg-white border border-customMain text-customMain py-2 px-4 text-xs rounded-md font-bold cursor-pointer"
+                                >
+                                    중복확인
+                                </div>
+                            </Input>
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => handleDuplicateCheck("닉네임")}
-                            className="bg-white border border-customMain text-customMain py-2 px-4 text-xs rounded-md font-bold"
-                        >
-                            중복확인
-                        </button>
                     </div>
                 </div>
 
@@ -104,8 +105,8 @@ export default function SignUpPage() {
                     type="submit"
                     disabled={!isFormValid}
                     className={`w-full my-8 py-3 rounded-md shadow-lg text-sm font-bold ${isFormValid
-                            ? "bg-customMain text-white"
-                            : "bg-gray-200 text-customTextGray cursor-not-allowed"
+                        ? "bg-customMain text-white"
+                        : "bg-gray-200 text-customTextGray cursor-not-allowed"
                         }`}
                 >
                     회원가입
