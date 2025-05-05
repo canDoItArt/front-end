@@ -106,7 +106,7 @@ export default function SettingsList() {
                                 closeModal();
                             }}
                         >
-                            비밀번호 변경
+                            저장
                         </button>
                     </div>
                 </ModalLayout>
