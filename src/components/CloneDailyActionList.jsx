@@ -1,20 +1,21 @@
 import { useState, useEffect } from "react";
 import CheckIcon from "./CheckIcon";
 
-export default function CloneDailyActionList({ title, content, routine, type, id, checked: parentChecked, onClick }) {
+export default function CloneDailyActionList({
+    title, content, routine, type, id,
+    checked: parentChecked, onClick, firstItem
+}) {
     const [selfChecked, setSelfChecked] = useState(false);
 
     useEffect(() => {
         if (type === "subgoal") {
-            setSelfChecked(true); // reset when component mounts
+            setSelfChecked(true);
         }
     }, [id]);
 
     const handleClick = () => {
         if (type === "dailyaction") {
-            if (onClick) {
-                onClick(id);
-            }
+            onClick?.(id);
         } else if (type === "subgoal") {
             setSelfChecked(prev => !prev);
         }
@@ -25,7 +26,9 @@ export default function CloneDailyActionList({ title, content, routine, type, id
     return (
         <div
             onClick={handleClick}
-            className="flex justify-between items-center mx-2 py-4 px-7 border-t-2 border-white cursor-pointer"
+            className={`flex justify-between items-center mx-2 py-4 px-7 border-white cursor-pointer ${
+                firstItem ? "border-t-2 border-customMain" : "border-t"
+            }`}
         >
             <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
