@@ -14,16 +14,22 @@ export default function DailyActionModal({ isOpen, onClose, goal }) {
 
             {/* 스크롤 가능한 영역 (내용이 많을 때만 스크롤) */}
             <div className="flex-1 overflow-y-auto max-h-[60vh]">
-                {goalData?.daily_actions.map((action) => (
-                    <DailyActionCheck
-                        key={action.daily_action_id}
-                        daily_action_id={action.daily_action_id}
-                        daily_action_title={action.daily_action_title}
-                        daily_action_content={action.daily_action_content}
-                        checked_dates={action.checked_dates}
-                        sub_goal_color={goalData.sub_goal_color}
-                    />
-                ))}
+                {goalData?.daily_actions && goalData.daily_actions.length > 0 ? (
+                    goalData.daily_actions.map((action) => (
+                        <DailyActionCheck
+                            key={action.daily_action_id}
+                            daily_action_id={action.daily_action_id}
+                            daily_action_title={action.daily_action_title}
+                            daily_action_content={action.daily_action_content}
+                            checked_dates={action.checked_dates}
+                            sub_goal_color={goalData.sub_goal_color}
+                        />
+                    ))
+                ) : (
+                    <div className="text-base text-center text-gray-600 py-6">
+                        데일리 액션이 존재하지 않습니다<br/>
+                    </div>
+                )}
             </div>
 
             {/* 저장 버튼 */}
