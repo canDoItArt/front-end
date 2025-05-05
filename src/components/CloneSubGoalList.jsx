@@ -60,7 +60,7 @@ export default function CloneSubGoalList({ name, id, type, activeId, setActiveId
                 className="overflow-hidden dailyaction-list w-full"
             >
                 <div>
-                    {subGoalMockData[0].dailyActions.map((goal) => (
+                    {subGoalMockData[0].dailyActions.map((goal, index) => (
                         <CloneDailyActionList
                             key={`${resetKey}-${goal.id}`}
                             id={goal.id}
@@ -70,8 +70,10 @@ export default function CloneSubGoalList({ name, id, type, activeId, setActiveId
                             type={type}
                             checked={type === "dailyaction" ? selectedId === goal.id : type === "subgoal"}
                             onClick={handleDailyActionClick}
+                            firstItem={index === 0} // 첫 번째 아이템인지 여부 전달
                         />
                     ))}
+
                 </div>
             </motion.div>
         </div>
