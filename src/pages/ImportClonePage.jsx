@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Header from "../components/Header";
-import mainGoalListMockData from "../mocks/mainGoalList";
+import cloneListMockData from "../mocks/cloneList";
 import CloneMainGoalList from "../components/CloneMainGoalList";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -9,7 +9,7 @@ export default function ImportClonePage() {
     const location = useLocation();
     const { type } = location.state || {}; // type을 여기서 꺼냄
 
-    const [currentData] = useState(mainGoalListMockData[0]);
+    const [currentData] = useState(cloneListMockData[0]);
     const [activeId, setActiveId] = useState(null);
 
     const handleImport = () => {
@@ -32,6 +32,7 @@ export default function ImportClonePage() {
                                 id={goal.id}
                                 type={type}
                                 name={goal.name}
+                                subgoal={goal.subGoals}
                                 activeId={activeId}
                                 setActiveId={setActiveId}
                             />
