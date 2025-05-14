@@ -39,7 +39,7 @@ export default function MyArtListPage() {
                             />
                         </div>
 
-                        <div className="mt-3 p-3 overflow-y-auto max-h-[calc(100vh-100px)]">
+                        <div className="mt-3 p-3 overflow-y-auto max-h-[calc(100vh-320px)]">
                             <ul className="space-y-3">
                                 {filteredGoals.map((goal) => (
                                     <li key={goal.id}>
