@@ -33,7 +33,7 @@ export default function CompletionRate({ lastWeek, thisWeek }) {
                     <p className="text-xs font-semibold text-customTextBlack mb-2">지난주</p>
                     <div className="relative w-32 h-32">
                         <Doughnut data={data(lastWeek)} options={options} />
-                        <p className="absolute inset-0 flex items-center justify-center text-xl font-nunito font-bold text-customTextPercent">
+                        <p className="absolute inset-0 flex items-center justify-center text-xl font-bold text-customTextPercent">
                             {lastWeek}%
                         </p>
                     </div>
@@ -47,7 +47,7 @@ export default function CompletionRate({ lastWeek, thisWeek }) {
                     <p className="text-xs font-semibold text-customTextBlack mb-2">이번주</p>
                     <div className="relative w-32 h-32">
                         <Doughnut data={data(thisWeek)} options={options} />
-                        <p className="absolute inset-0 flex items-center justify-center text-xl font-nunito font-bold text-customTextPercent">
+                        <p className="absolute inset-0 flex items-center justify-center text-xl font-bold text-customTextPercent">
                             {thisWeek}%
                         </p>
                     </div>
