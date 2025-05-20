@@ -1,24 +1,32 @@
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Input from "../components/Input";
 import hexToColorClass from "../constants/colorMappings";
 
 export default function CreateMyArtPage() {
     const navigate = useNavigate();
-    const goBack = () => navigate(-1);
+    const location = useLocation();
+    const { importedGoal } = location.state || {};
 
+    const [mainGoal, setMainGoal] = useState("");
     const [subGoalInput, setSubGoalInput] = useState("");
     const [subGoals, setSubGoals] = useState([]);
 
+    const colorClasses = Object.values(hexToColorClass);
+
+    useEffect(() => {
+        if (importedGoal) {
+            setMainGoal(importedGoal.name || "");
+            const importedSubGoals = importedGoal.subGoals?.map(sub => sub.name) || [];
+            setSubGoals(importedSubGoals);
+        }
+    }, [importedGoal]);
+
     const handleAddSubGoal = () => {
-        if (subGoalInput.trim() === "" || subGoals.length >= 8) return; // ✅ 최대 8개 제한
+        if (subGoalInput.trim() === "" || subGoals.length >= 8) return;
         setSubGoals([...subGoals, subGoalInput.trim()]);
         setSubGoalInput("");
-    };
-
-    const cloneButtonClick = () => {
-        navigate('/importclone', { state: { type: 'maingoal' } });
     };
 
     const handleDeleteSubGoal = (index) => {
@@ -26,11 +34,18 @@ export default function CreateMyArtPage() {
         setSubGoals(newGoals);
     };
 
-    const colorClasses = Object.values(hexToColorClass);
+    const cloneButtonClick = () => {
+        navigate('/importclone', { state: { type: 'maingoal' } });
+    };
+
+    const createButtonClick = () => {
+        // 실제 저장 로직이 있다면 여기에 작성
+        navigate("/myartlist");
+    };
 
     return (
         <div className="flex flex-col items-center justify-start min-h-screen bg-white px-6 pt-20">
-            <Header title="마이라트 생성하기" />
+            <Header title="마이라트 생성하기" page="CreateMyArtPage"/>
 
             <div className="mb-6 w-full">
                 <div className="flex justify-end mb-2">
@@ -43,13 +58,17 @@ export default function CreateMyArtPage() {
                 </div>
 
                 <div className="text-left">
+                    {/* ✅ Main Goal 입력 필드 */}
                     <Input
                         type="text"
                         label={"Main Goal 입력"}
                         placeholder="Main Goal을 입력해주세요"
+                        value={mainGoal}
+                        onChange={(e) => setMainGoal(e.target.value)}
                         required={true}
                     />
 
+                    {/* ✅ Sub Goal 추가 필드 */}
                     <Input
                         type="text"
                         label={"Sub Goal 추가"}
@@ -67,12 +86,12 @@ export default function CreateMyArtPage() {
                         </button>
                     </Input>
 
+                    {/* ✅ Sub Goal 리스트 */}
                     <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-460px)]">
                         {subGoals.map((goal, index) => (
                             <div
                                 key={index}
-                                className={`flex justify-between items-center bg-opacity-15 px-4 py-3 rounded-md ${colorClasses[index % colorClasses.length]
-                                    }`}
+                                className={`flex justify-between items-center bg-opacity-15 px-4 py-3 rounded-md ${colorClasses[index % colorClasses.length]}`}
                             >
                                 <span className="text-sm text-gray-800">{goal}</span>
                                 <button
@@ -85,7 +104,7 @@ export default function CreateMyArtPage() {
                         ))}
                     </div>
 
-                    {/* ✅ Sub Goal 최대 8개 메시지 (선택사항) */}
+                    {/* ✅ 최대 개수 경고 */}
                     {subGoals.length >= 8 && (
                         <p className="text-xs text-red-400 mt-2">
                             Sub Goal은 최대 8개까지 추가할 수 있어요.
@@ -93,10 +112,11 @@ export default function CreateMyArtPage() {
                     )}
                 </div>
 
+                {/* ✅ 완료 버튼 */}
                 <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 max-w-[480px] w-full px-6 z-20">
                     <button
                         className="w-full bg-customMain text-white py-3 rounded-md shadow-lg text-sm font-bold"
-                        onClick={goBack}
+                        onClick={createButtonClick}
                     >
                         마이라트 생성하기
                     </button>

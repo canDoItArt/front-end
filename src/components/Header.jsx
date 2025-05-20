@@ -16,7 +16,7 @@ export default function Header({ title, page, state }) {
   const [subModalOpen, setSubModalOpen] = useState(null);
 
   let goBack = () => {
-    if (page === "MyArtPage") {
+    if (page === "MyArtPage" || "CreateMyArtPage") {
       navigate("/myartlist");
     } else {
       navigate(-1); // 이전 페이지로 이동

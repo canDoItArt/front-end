@@ -13,10 +13,17 @@ export default function ImportClonePage() {
     const [activeId, setActiveId] = useState(null);
 
     const handleImport = () => {
+        const selectedGoal = currentData.mainGoals.find(goal => goal.id === activeId);
+        if (!selectedGoal) return;
+
         if (type === "maingoal") {
-            navigate("/myart");
+            navigate("/createmyart", { state: { importedGoal: selectedGoal } });
+        } else if (type === "subgoal") {
+            navigate("/myart", { state: { importedGoal: selectedGoal } });
+        } else if (type === "dailyaction") {
+            navigate("/subgoal", { state: { importedGoal: selectedGoal } });
         } else {
-            navigate(-1); // 이전 페이지로 이동
+            navigate(-1); // 혹시 type이 없거나 잘못된 경우 안전하게 이전 페이지로
         }
     };
 
@@ -42,11 +49,14 @@ export default function ImportClonePage() {
 
                 <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 max-w-[480px] w-full px-6 z-20">
                     <button
-                        className="w-full bg-customMain text-white py-3 rounded-md shadow-lg text-sm font-bold"
+                        className={`w-full py-3 rounded-md shadow-customShadow text-sm font-bold 
+                            ${activeId ? 'bg-customMain text-white' : 'bg-gray-200 text-customTextGray cursor-not-allowed'}`}
                         onClick={handleImport}
+                        disabled={!activeId}
                     >
                         가져오기
                     </button>
+
                 </div>
             </div>
         </div>

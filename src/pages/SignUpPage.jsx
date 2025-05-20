@@ -104,7 +104,7 @@ export default function SignUpPage() {
                 <button
                     type="submit"
                     disabled={!isFormValid}
-                    className={`w-full my-8 py-3 rounded-md shadow-lg text-sm font-bold ${isFormValid
+                    className={`w-full my-8 py-3 rounded-md shadow-customShadow text-sm font-bold ${isFormValid
                         ? "bg-customMain text-white"
                         : "bg-gray-200 text-customTextGray cursor-not-allowed"
                         }`}
