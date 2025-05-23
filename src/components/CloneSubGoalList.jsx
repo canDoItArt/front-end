@@ -4,7 +4,7 @@ import CloneDailyActionList from "./CloneDailyActionList";
 import { useState, useEffect } from "react";
 
 export default function CloneSubGoalList({
-    name, id, type, dailyaction, activeId, setActiveId
+    name, id, type, dailyaction, activeId, setActiveId, onDailyActionSelect
 }) {
     const [selectedId, setSelectedId] = useState(null);
     const isOpen = activeId === id;
@@ -22,6 +22,8 @@ export default function CloneSubGoalList({
 
     const handleDailyActionClick = (clickedId) => {
         setSelectedId((prevId) => (prevId === clickedId ? null : clickedId));
+        const selected = dailyaction.find(action => action.id === clickedId);
+        onDailyActionSelect?.(selected);
     };
 
     return (

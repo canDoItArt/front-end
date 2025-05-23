@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 
 // props에 onSubGoalSelect 추가
-export default function CloneMainGoalList({ name, id, type, subgoal, activeId, setActiveId, onSubGoalSelect }) {
+export default function CloneMainGoalList({ name, id, type, subgoal, activeId, setActiveId, onSubGoalSelect, onDailyActionSelect }) {
     const [activeSubId, setActiveSubId] = useState(null);
 
     const isOpen = activeId === id;
@@ -43,6 +43,7 @@ export default function CloneMainGoalList({ name, id, type, subgoal, activeId, s
                             dailyaction={goal.dailyActions}
                             activeId={activeSubId}
                             setActiveId={setActiveSubId}
+                            onDailyActionSelect={onDailyActionSelect}
                         />
                     </div>
                 ))}
