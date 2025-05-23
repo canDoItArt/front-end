@@ -65,11 +65,12 @@ export default function EditProfilePage() {
                             )}
                         </div>
                         <div
-                            className="absolute bottom-0 right-0 bg-white p-1 rounded-full shadow z-10"
+                            className="absolute bottom-0 right-0 translate-x-[-6px] bg-white p-1 rounded-full shadow z-10"
                             onClick={handleProfileClick}
                         >
-                            <FaCamera className="text-gray-600 text-lg" />
+                            <FaCamera className="text-gray-600 text-sm" />
                         </div>
+
                         <input
                             type="file"
                             accept="image/*"
