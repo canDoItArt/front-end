@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import hexToColorClass from "../constants/colorMappings";
 import GoalTile from "./GoalTile";
@@ -6,14 +6,29 @@ import BottomModalLayout from "./BottomModalLayout";
 import Input from "./Input";
 import { BsFillPlusCircleFill, BsDashCircleFill } from "react-icons/bs";
 
-export default function DailyActionTiles({ title, dailyActions, color }) {
+export default function DailyActionTiles({ title, dailyActions, color, importedGoal }) {
     const navigate = useNavigate();
     const [showAddModal, setShowAddModal] = useState(false);
+
+    // 입력 상태
     const [titleInput, setTitle] = useState("");
     const [contentInput, setContent] = useState("");
     const [routine, setRoutine] = useState(1);
 
+    // importedGoal이 존재하면 초기값으로 설정
+    useEffect(() => {
+        if (importedGoal) {
+            setTitle(importedGoal.daily_action_title || "");
+            setContent(importedGoal.daily_action_content || "");
+            setRoutine(importedGoal.routine || 1);
+            setShowAddModal(true); // 자동으로 모달도 열리게
+        }
+    }, [importedGoal]);
+
     const addTileClick = () => {
+        setTitle(""); // 직접 추가할 땐 초기화
+        setContent("");
+        setRoutine(1);
         setShowAddModal(true);
     };
 
@@ -45,25 +60,14 @@ export default function DailyActionTiles({ title, dailyActions, color }) {
                     const action = dailyActions.find((action) => action.s === id);
                     if (action) {
                         return (
-                            <button
-                                key={`goal-${action.id}`}
-                                className="w-full"
-                            >
-                                <GoalTile
-                                    text={action.title}
-                                    color={hexToColorClass[color]}
-                                    type="dailyaction"
-                                />
+                            <button key={`goal-${action.id}`} className="w-full">
+                                <GoalTile text={action.title} color={hexToColorClass[color]} type="dailyaction" />
                             </button>
                         );
                     }
 
                     return (
-                        <button
-                            key={`add-${index}`}
-                            className="w-full"
-                            onClick={addTileClick}
-                        >
+                        <button key={`add-${index}`} className="w-full" onClick={addTileClick}>
                             <GoalTile type="add" />
                         </button>
                     );

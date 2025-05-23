@@ -11,7 +11,9 @@ export default function ImportClonePage() {
 
     const [currentData] = useState(cloneListMockData[0]);
     const [activeId, setActiveId] = useState(null);
-    const [selectedSubGoal, setSelectedSubGoal] = useState(null); // 새 state
+    const [selectedSubGoal, setSelectedSubGoal] = useState(null);
+    const [selectedDailyAction, setSelectedDailyAction] = useState(null);
+
 
     const handleImport = () => {
         const selectedGoal = currentData.mainGoals.find(goal => goal.id === activeId);
@@ -23,7 +25,8 @@ export default function ImportClonePage() {
             if (!selectedSubGoal) return; // 서브 골이 선택되지 않은 경우
             navigate("/myart", { state: { importedGoal: selectedSubGoal } });
         } else if (type === "dailyaction") {
-            navigate("/subgoal", { state: { importedGoal: selectedGoal } }); // 필요 시 더 세분화
+            if (!selectedDailyAction) return;
+            navigate("/subgoal", { state: { importedGoal: selectedDailyAction } });
         } else {
             navigate(-1);
         }
@@ -44,7 +47,8 @@ export default function ImportClonePage() {
                                 subgoal={goal.subGoals}
                                 activeId={activeId}
                                 setActiveId={setActiveId}
-                                onSubGoalSelect={setSelectedSubGoal} // 전달
+                                onSubGoalSelect={setSelectedSubGoal} // 선택된 서브골
+                                onDailyActionSelect={setSelectedDailyAction} // 선택된 데일리액션
                             />
                         ))}
                     </div>

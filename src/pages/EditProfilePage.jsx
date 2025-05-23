@@ -6,7 +6,7 @@ import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
 import { FaCamera } from "react-icons/fa"; // 카메라 아이콘
 
-export default function EditProfile() {
+export default function EditProfilePage() {
     const navigate = useNavigate();
     const [currentData] = useState(myPageMockData[0]); // 첫 번째 데이터 사용
     const [previewImage, setPreviewImage] = useState(currentData.profile_imge || null);
