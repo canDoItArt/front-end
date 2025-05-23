@@ -3,7 +3,8 @@ import CloneSubGoalList from "./CloneSubGoalList";
 import { motion } from "framer-motion";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 
-export default function CloneMainGoalList({ name, id, type, subgoal, activeId, setActiveId }) {
+// props에 onSubGoalSelect 추가
+export default function CloneMainGoalList({ name, id, type, subgoal, activeId, setActiveId, onSubGoalSelect }) {
     const [activeSubId, setActiveSubId] = useState(null);
 
     const isOpen = activeId === id;
@@ -11,12 +12,18 @@ export default function CloneMainGoalList({ name, id, type, subgoal, activeId, s
     useEffect(() => {
         if (!isOpen) {
             setActiveSubId(null);
+            onSubGoalSelect(null); // 열려 있지 않으면 선택 해제
         }
-    }, [activeId, isOpen]);
+    }, [activeId, isOpen, onSubGoalSelect]);
 
     const handleClick = (e) => {
         if (e.target.closest(".subgoal-list")) return;
         setActiveId(isOpen ? null : id);
+    };
+
+    const handleSubGoalClick = (subGoalId) => {
+        setActiveSubId(subGoalId);
+        onSubGoalSelect(subgoal.find(g => g.id === subGoalId));
     };
 
     const subGoalListContent = (
@@ -28,15 +35,16 @@ export default function CloneMainGoalList({ name, id, type, subgoal, activeId, s
         >
             <div>
                 {subgoal.map((goal) => (
-                    <CloneSubGoalList
-                        key={goal.id}
-                        id={goal.id}
-                        name={goal.name}
-                        type={type}
-                        dailyaction={goal.dailyActions}
-                        activeId={activeSubId}
-                        setActiveId={setActiveSubId}
-                    />
+                    <div key={goal.id} onClick={() => handleSubGoalClick(goal.id)}>
+                        <CloneSubGoalList
+                            id={goal.id}
+                            name={goal.name}
+                            type={type}
+                            dailyaction={goal.dailyActions}
+                            activeId={activeSubId}
+                            setActiveId={setActiveSubId}
+                        />
+                    </div>
                 ))}
             </div>
         </motion.div>
@@ -58,11 +66,8 @@ export default function CloneMainGoalList({ name, id, type, subgoal, activeId, s
                     )}
                 </div>
 
-                {/* type이 "maingoal"인 경우 내부에 렌더링 */}
                 {type === "maingoal" && subGoalListContent}
             </div>
-
-            {/* type이 "maingoal"이 아닌 경우 외부에 렌더링 */}
             {type !== "maingoal" && subGoalListContent}
         </div>
     );

@@ -1,13 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import hexToColorClass from "../constants/colorMappings";
 import GoalTile from "./GoalTile";
 import BottomModalLayout from "./BottomModalLayout";
 import Input from "./Input";
 
-export default function SubGoalTiles({ title, subGoals }) {
+export default function SubGoalTiles({ title, subGoals, importedGoal }) {
     const navigate = useNavigate();
     const [showAddModal, setShowAddModal] = useState(false);
+    const [inputValue, setInputValue] = useState("");
+
+    useEffect(() => {
+        if (importedGoal) {
+            setInputValue(importedGoal.name); // 가져온 이름을 input 초기값으로 설정
+            setShowAddModal(true); // 자동으로 모달 열기
+        }
+    }, [importedGoal]);
+
+    // 입력값 변경 핸들러
+    const handleInputChange = (e) => {
+        setInputValue(e.target.value);
+    };
 
     const subGoalTileClick = () => {
         navigate('/subgoal');
@@ -17,8 +30,10 @@ export default function SubGoalTiles({ title, subGoals }) {
         setShowAddModal(true);
     };
 
+    // 모달 닫기 + 입력값 초기화
     const closeAddModal = () => {
         setShowAddModal(false);
+        setInputValue(""); // 입력값 초기화
     };
 
     const cloneButtonClick = () => {
@@ -90,6 +105,8 @@ export default function SubGoalTiles({ title, subGoals }) {
                             label={"Sub Goal 제목"}
                             placeholder="생성할 Sub Goal명을 입력해주세요"
                             required={true}
+                            value={inputValue}
+                            onChange={handleInputChange}
                         />
                     </div>
 

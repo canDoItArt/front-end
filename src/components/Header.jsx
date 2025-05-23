@@ -16,12 +16,15 @@ export default function Header({ title, page, state }) {
   const [subModalOpen, setSubModalOpen] = useState(null);
 
   let goBack = () => {
-    if (page === "MyArtPage" || "CreateMyArtPage") {
+    if (page === "MyArtPage" || page === "CreateMyArtPage") {
       navigate("/myartlist");
+    } else if (page === "SubGoalPage") {
+      navigate("/myart");
     } else {
       navigate(-1); // 이전 페이지로 이동
     }
   };
+
 
   let toggleModal = () => {
     setIsModalOpen(!isModalOpen);
