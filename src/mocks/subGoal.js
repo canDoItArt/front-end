@@ -2,6 +2,7 @@ const subGoalMockData = [
     {
         subGoalName: "제구",
         color: "#EB4335",
+        achievement: false,
         dailyActions: [
             { id: 1, s:"1", title: "몸관리", content: "아침스트레칭 및 가벼운 운동(1시간)", routine: "3", achievement: false },
             { id: 2, s:"2", title: "영양제 먹기", content: "매일 아침 7시에 섭취", routine: "5", achievement: true },

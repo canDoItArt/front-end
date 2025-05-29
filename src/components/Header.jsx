@@ -10,7 +10,7 @@ import CompleteSubmodal from "./CompleteSubmodal";
 import SubGoalRenameSubmodal from "./SubGoalRenameSubmodal";
 
 
-export default function Header({ title, page, state }) {
+export default function Header({ title, page, state, achievement }) {
   let navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [subModalOpen, setSubModalOpen] = useState(null);
@@ -45,10 +45,15 @@ export default function Header({ title, page, state }) {
   ];
 
   const subGoalOptions = [
-    { label: "Sub Goal 달성 완료", type: "subGoalComplete", isDanger: false },
+    {
+      label: achievement ? "Sub Goal 달성 취소" : "Sub Goal 달성 완료",
+      type: achievement ? "subGoalCompleteCancel" : "subGoalComplete",
+      isDanger: false,
+    },
     { label: "Sub Goal 이름 수정", type: "subGoalRename", isDanger: false },
     { label: "Sub Goal 삭제", type: "subGoalDelete", isDanger: true },
   ];
+
 
   return (
     <div className="fixed top-0 max-w-[480px] w-full z-10 flex items-center justify-between bg-white px-6 py-6 ">
@@ -94,9 +99,17 @@ export default function Header({ title, page, state }) {
 
       {/* SubGoal 달성완료 서브모달 */}
       {subModalOpen === "subGoalComplete" && (
-        <CompleteSubmodal type="SubGoal" closeSubModal={closeSubModal} >
+        <CompleteSubmodal type="SubGoal" title="달성완료" closeSubModal={closeSubModal} >
           해당 Sub Goal을 <br />
           달성완료 처리 하시겠습니까?
+        </CompleteSubmodal>
+      )}
+
+      {/* SubGoal 달성취소 서브모달 */}
+      {subModalOpen === "subGoalCompleteCancel" && (
+        <CompleteSubmodal type="SubGoal" title="달성취소" closeSubModal={closeSubModal} >
+          해당 Sub Goal을 <br />
+          달성취소 처리 하시겠습니까?
         </CompleteSubmodal>
       )}
 

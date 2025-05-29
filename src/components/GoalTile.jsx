@@ -1,6 +1,7 @@
 import { BsPlus } from "react-icons/bs";
+import { MdVerified } from "react-icons/md";
 
-export default function GoalTile({ text, color, type }) {
+export default function GoalTile({ text, color, type, goal }) {
     if (type === "title") {
         // title 타입
         return (
@@ -53,7 +54,29 @@ export default function GoalTile({ text, color, type }) {
             </div>
         );
 
-    } else {
+    }
+    else if (type === "achievement") {
+        // 달성 타입
+        return (
+            <div
+                className={`relative w-full aspect-[1/1] ${color} ${goal === "dailyAction" ? "bg-opacity-30 text-black" : "text-white"
+                    } rounded-xl flex items-center justify-center font-semibold text-xs p-2 
+            shadow-customShadow overflow-hidden`}
+            >
+                {/* 반투명 트로피 아이콘 (배경 효과) */}
+                <MdVerified className={`${goal === "dailyAction" ? "text-customRed" : "text-white"
+                    } opacity-20 absolute text-[80px] z-0`} />
+
+                {/* 텍스트 */}
+                <span
+                    className="z-10 line-clamp-3 text-center overflow-hidden text-ellipsis whitespace-normal leading-tight break-words"
+                >
+                    {text}
+                </span>
+            </div>
+        );
+    }
+    else {
         // 일반 타입
         return (
             <div

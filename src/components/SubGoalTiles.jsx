@@ -59,6 +59,22 @@ export default function SubGoalTiles({ title, subGoals, importedGoal }) {
 
                     const goal = subGoals.find((goal) => goal.color === id);
                     if (goal) {
+                        if (goal.achievement === true) {
+                            return (
+                                <button
+                                    key={`goal-${goal.id}`}
+                                    className="w-full"
+                                    onClick={subGoalTileClick}
+                                >
+                                    <GoalTile
+                                        text={goal.name}
+                                        color={hexToColorClass[goal.color]}
+                                        type="achievement"
+                                        goal="subGoal"
+                                    />
+                                </button>
+                            );
+                        };
                         return (
                             <button
                                 key={`goal-${goal.id}`}

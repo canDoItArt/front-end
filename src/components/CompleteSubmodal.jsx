@@ -1,9 +1,9 @@
 import ModalLayout from "./ModalLayout";
 
-export default function CompleteSubmodal({ type, children, closeSubModal }) {
+export default function CompleteSubmodal({ type, children, closeSubModal, title }) {
     return (
         <ModalLayout onClose={closeSubModal}>
-            <h2 className="text-base font-bold mb-5 text-center">{type} 달성완료 </h2>
+            <h2 className="text-base font-bold mb-5 text-center">{type} {title} </h2>
             <p className="text-gray-500 text-sm text-center leading-relaxed">
                 {children}
             </p>
