@@ -11,6 +11,7 @@ const myArtMockData = [
                 id: 1,
                 name: "제구",
                 color: "#EB4335", // Red
+                achievement: true,
                 strict: [
                     { checkedDate: "2025-02-04" },
                     { checkedDate: "2025-02-07" },
@@ -21,6 +22,7 @@ const myArtMockData = [
                 id: 2,
                 name: "구위",
                 color: "#F09752", // Orange
+                achievement: false,
                 strict: [
                     { checkedDate: "2025-02-03" },
                     { checkedDate: "2025-02-04" },
@@ -30,6 +32,7 @@ const myArtMockData = [
                 id: 3,
                 name: "체력",
                 color: "#F7D04D", // Yellow
+                achievement: false,
                 strict: [
                     { checkedDate: "2025-02-01" },
                     { checkedDate: "2025-02-05" },
@@ -39,6 +42,7 @@ const myArtMockData = [
                 id: 4,
                 name: "유연성",
                 color: "#B1D854", // Green
+                achievement: false,
                 strict: [
                     { checkedDate: "2025-02-02" },
                     { checkedDate: "2025-02-06" },
@@ -48,6 +52,7 @@ const myArtMockData = [
                 id: 5,
                 name: "멘탈",
                 color: "#70CCB1", // Mint
+                achievement: false,
                 strict: [
                     { checkedDate: "2025-02-03" },
                     { checkedDate: "2025-02-07" },
@@ -57,6 +62,7 @@ const myArtMockData = [
                 id: 6,
                 name: "전술 이해",
                 color: "#4091EE", // Blue
+                achievement: true,
                 strict: [
                     { checkedDate: "2025-02-04" },
                     { checkedDate: "2025-02-08" },

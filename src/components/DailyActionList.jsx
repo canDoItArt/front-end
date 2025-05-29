@@ -6,8 +6,9 @@ import OptionList from "./OptionList";
 import DeleteSubmodal from "./DeleteSubmodal";
 import CompleteSubmodal from "./CompleteSubmodal";
 import DailyActionEditSubmodal from "./DailyActionEditSubmodal";
+import { MdVerified } from "react-icons/md";
 
-export default function DailyActionList({ title, routine, content, state }) {
+export default function DailyActionList({ title, routine, content, state, achievement }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [subModalOpen, setSubModalOpen] = useState(null);
 
@@ -25,7 +26,11 @@ export default function DailyActionList({ title, routine, content, state }) {
     };
 
     const dailyActionOptions = [
-        { label: "Daily Action 달성 완료", type: "dailyActionComplete", isDanger: false },
+        {
+            label: achievement ? "Daily Action 달성 취소" : "Daily Action 달성 완료",
+            type: achievement ? "dailyActionCompleteCancel" : "dailyActionComplete",
+            isDanger: false,
+        },
         { label: "Daily Action 수정", type: "dailyActionEdit", isDanger: false },
         { label: "Daily Action 삭제", type: "dailyActionDelete", isDanger: true },
     ];
@@ -33,7 +38,10 @@ export default function DailyActionList({ title, routine, content, state }) {
     return (
         <div className="flex flex-col gap-2 justify-between mx-2 my-3 py-4 px-5 rounded-lg shadow-customShadow">
             <div className="flex justify-between items-center">
-                <span className="font-bold text-sm py-1 text-gray-800">{title}</span>
+                <div className="flex items-center gap-1">
+                    <span className="font-bold text-sm py-1 text-gray-800">{title}</span>
+                    {achievement && <MdVerified className="text-yellow-500 text-lg" />}
+                </div>
                 <div className="flex gap-1">
                     <div className="bg-customMain text-xs font-semibold py-1 px-2 rounded-md text-white">
                         {routine}회
@@ -56,9 +64,17 @@ export default function DailyActionList({ title, routine, content, state }) {
 
             {/* DailyAction 달성완료 서브모달 */}
             {subModalOpen === "dailyActionComplete" && (
-                <CompleteSubmodal type="DailyAction" closeSubModal={closeSubModal} >
+                <CompleteSubmodal type="DailyAction" title="달성완료" closeSubModal={closeSubModal} >
                     해당 Daily Action을 <br />
                     달성완료 처리 하시겠습니까?
+                </CompleteSubmodal>
+            )}
+
+            {/* DailyAction 달성취소 서브모달 */}
+            {subModalOpen === "dailyActionCompleteCancel" && (
+                <CompleteSubmodal type="DailyAction" title="달성취소" closeSubModal={closeSubModal} >
+                    해당 Daily Action을 <br />
+                    달성취소 처리 하시겠습니까?
                 </CompleteSubmodal>
             )}
 

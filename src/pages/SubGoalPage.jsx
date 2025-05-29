@@ -13,7 +13,7 @@ export default function SubGoalPage() {
     return (
         <div className="flex flex-col items-center justify-start min-h-screen bg-white px-6">
 
-            <Header title={currentData.subGoalName} page="SubGoalPage" state={currentData.dailyActions.state} />
+            <Header title={currentData.subGoalName} page="SubGoalPage" achievement={currentData.achievement} />
 
             {/* 메인 콘텐츠 영역 */}
             <div className="mt-20 mb-6 w-full">
@@ -25,6 +25,7 @@ export default function SubGoalPage() {
                             title={action.title}
                             content={action.content}
                             routine={action.routine}
+                            achievement={action.achievement}
                         />
                     ))}
                 </div>

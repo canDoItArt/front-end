@@ -59,6 +59,21 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
 
                     const action = dailyActions.find((action) => action.s === id);
                     if (action) {
+                        if (action.achievement === true) {
+                            return (
+                                <button
+                                    key={`goal-${action.id}`}
+                                    className="w-full"
+                                >
+                                    <GoalTile
+                                        text={action.title}
+                                        color={hexToColorClass[color]}
+                                        type="achievement"
+                                        goal="dailyAction"
+                                    />
+                                </button>
+                            );
+                        };
                         return (
                             <button key={`goal-${action.id}`} className="w-full">
                                 <GoalTile text={action.title} color={hexToColorClass[color]} type="dailyaction" />
