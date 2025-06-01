@@ -138,8 +138,12 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
                             <button
                                 type="button"
                                 onClick={() => setRoutine(prev => Math.max(prev - 1, 1))}
+                                disabled={routine === 1}
                             >
-                                <BsDashCircleFill className="text-customMain text-2xl" />
+                                <BsDashCircleFill
+                                    className={`text-2xl ${routine === 1 ? "text-gray-300" : "text-customMain"
+                                        }`}
+                                />
                             </button>
 
                             {/* 현재 routine 값 표시 */}
@@ -149,12 +153,15 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
                             <button
                                 type="button"
                                 onClick={() => setRoutine(prev => Math.min(prev + 1, 7))}
+                                disabled={routine === 7}
                             >
-                                <BsFillPlusCircleFill className="text-customMain text-2xl" />
+                                <BsFillPlusCircleFill
+                                    className={`text-2xl ${routine === 7 ? "text-gray-300" : "text-customMain"
+                                        }`}
+                                />
                             </button>
                         </div>
                     </div>
-
                     {/* 버튼 그룹 */}
                     <div className="mt-6 flex justify-center space-x-4">
                         <button
