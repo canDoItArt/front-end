@@ -123,8 +123,16 @@ export default function EditProfilePage() {
             {/* 저장하기 버튼 */}
             <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 max-w-[480px] w-full px-6 z-20">
                 <button
-                    className="w-full bg-customMain text-white py-3 rounded-md shadow-lg text-sm font-bold"
-                    onClick={() => navigate(-1)}
+                    className={`w-full bg-customMain py-3 rounded-md shadow-customShadow text-sm font-bold
+                        ${nickname.trim() === ""
+                            ? "bg-gray-200 text-customTextGray cursor-not-allowed"
+                            : "bg-customMain text-white"}`}
+                    onClick={() => {
+                        if (nickname.trim() !== "") {
+                            navigate(-1);
+                        }
+                    }}
+                    disabled={nickname.trim() === ""}
                 >
                     저장하기
                 </button>

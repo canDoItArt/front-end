@@ -9,6 +9,7 @@ export default function SubGoalTiles({ title, subGoals, importedGoal }) {
     const navigate = useNavigate();
     const [showAddModal, setShowAddModal] = useState(false);
     const [inputValue, setInputValue] = useState("");
+    const [titleError, setTitleError] = useState(""); // 에러 상태 추가
 
     useEffect(() => {
         if (importedGoal) {
@@ -16,6 +17,17 @@ export default function SubGoalTiles({ title, subGoals, importedGoal }) {
             setShowAddModal(true); // 자동으로 모달 열기
         }
     }, [importedGoal]);
+
+    const handleSave = () => {
+        if (inputValue.trim() === "") {
+            setTitleError("Sub Goal 제목 값은 필수 값입니다.");
+            return;
+        }
+
+        setTitleError(""); // 에러 초기화
+        // 저장 로직 실행 가능
+        closeAddModal(); // 저장 성공 시 모달 닫기
+    };
 
     // 입력값 변경 핸들러
     const handleInputChange = (e) => {
@@ -34,6 +46,7 @@ export default function SubGoalTiles({ title, subGoals, importedGoal }) {
     const closeAddModal = () => {
         setShowAddModal(false);
         setInputValue(""); // 입력값 초기화
+        setTitleError(""); // 에러 초기화
     };
 
     const cloneButtonClick = () => {
@@ -123,6 +136,7 @@ export default function SubGoalTiles({ title, subGoals, importedGoal }) {
                             required={true}
                             value={inputValue}
                             onChange={handleInputChange}
+                            error={titleError}
                         />
                     </div>
 
@@ -136,7 +150,7 @@ export default function SubGoalTiles({ title, subGoals, importedGoal }) {
                         </button>
                         <button
                             className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
-                            onClick={closeAddModal}
+                            onClick={handleSave}
                         >
                             생성
                         </button>

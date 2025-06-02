@@ -6,6 +6,51 @@ import Input from "./Input";
 export default function SettingsList() {
     const navigate = useNavigate();
     const [modalType, setModalType] = useState(null); // 'password', 'logout', 'delete' 등
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
+    const [currentPasswordError, setCurrentPasswordError] = useState("");
+    const [newPasswordError, setNewPasswordError] = useState("");
+    const [confirmPasswordError, setConfirmPasswordError] = useState("");
+
+    const handlePasswordSave = () => {
+        let isValid = true;
+
+        // 현재 비밀번호 유효성 검사
+        if (!currentPassword.trim()) {
+            setCurrentPasswordError("현재 비밀번호를 입력해주세요.");
+            isValid = false;
+        } else {
+            setCurrentPasswordError("");
+        }
+
+        // 새 비밀번호 유효성 검사
+        if (!newPassword.trim()) {
+            setNewPasswordError("새 비밀번호를 입력해주세요.");
+            isValid = false;
+        } else {
+            setNewPasswordError("");
+        }
+
+        // 새 비밀번호 확인 유효성 검사
+        if (!confirmPassword.trim()) {
+            setConfirmPasswordError("새 비밀번호를 한번 더 입력해주세요.");
+            isValid = false;
+        } else if (newPassword !== confirmPassword) {
+            setConfirmPasswordError("비밀번호가 일치하지 않습니다.");
+            isValid = false;
+        } else {
+            setConfirmPasswordError("");
+        }
+
+        if (!isValid) return;
+
+        // 비밀번호 저장 처리 로직 (API 등)
+        console.log("비밀번호 변경 완료");
+
+        closeModal();
+    };
 
     const options = [
         "회원 정보 수정",
@@ -35,6 +80,9 @@ export default function SettingsList() {
 
     const closeModal = () => {
         setModalType(null);
+        setCurrentPasswordError("");
+        setNewPasswordError("");
+        setConfirmPasswordError("");
     };
 
     const passwordCheck = () => {
@@ -67,7 +115,10 @@ export default function SettingsList() {
                         label="현재 비밀번호 확인"
                         type="password"
                         placeholder="현재 비밀번호를 입력해주세요"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
                         required={false}
+                        error={currentPasswordError}
                     >
                         <button
                             className="flex items-center justify-center whitespace-nowrap bg-white border border-customMain text-customMain py-2 px-4 text-xs rounded-md font-bold cursor-pointer"
@@ -82,7 +133,10 @@ export default function SettingsList() {
                         label="새 비밀번호"
                         type="password"
                         placeholder="새 비밀번호를 입력해주세요"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
                         required={false}
+                        error={newPasswordError}
                     />
 
                     <Input
@@ -90,7 +144,10 @@ export default function SettingsList() {
                         label="새 비밀번호 확인"
                         type="password"
                         placeholder="새 비밀번호를 한번 더 입력해주세요"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                         required={false}
+                        error={confirmPasswordError}
                     />
 
                     <div className="mt-6 flex justify-center space-x-4">
@@ -102,9 +159,7 @@ export default function SettingsList() {
                         </button>
                         <button
                             className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
-                            onClick={() => {
-                                closeModal();
-                            }}
+                            onClick={handlePasswordSave}
                         >
                             저장
                         </button>
