@@ -8,6 +8,31 @@ export default function DailyActionEditSubmodal({ closeSubModal, state }) {
     const [title, setTitle] = useState(currentData.daily_action_title);
     const [content, setContent] = useState(currentData.daily_action_content);
     const [routine, setRoutine] = useState(currentData.routine);
+    const [titleError, setTitleError] = useState("");
+    const [contentError, setContentError] = useState("");
+
+    const handleSave = () => {
+        let hasError = false;
+
+        if (title.trim() === "") {
+            setTitleError("제목 값은 필수 값입니다.");
+            hasError = true;
+        } else {
+            setTitleError("");
+        }
+
+        if (content.trim() === "") {
+            setContentError("내용 값은 필수 값입니다.");
+            hasError = true;
+        } else {
+            setContentError("");
+        }
+
+        if (hasError) return;
+
+        // 저장 로직 추가 가능
+        closeAddModal();
+    };
 
     return (
         <div className="px-6 pb-6 text-center">
@@ -21,6 +46,7 @@ export default function DailyActionEditSubmodal({ closeSubModal, state }) {
                     onChange={(e) => setTitle(e.target.value)} // 입력 변경 반영
                     placeholder="Daily Action 제목을 입력하세요"
                     required={true}
+                    error={titleError}
                 />
             </div>
 
@@ -34,6 +60,7 @@ export default function DailyActionEditSubmodal({ closeSubModal, state }) {
                     onChange={(e) => setContent(e.target.value)} // 입력 변경 반영
                     placeholder="Daily Action 내용을 입력하세요"
                     required={true}
+                    error={contentError}
                 />
             </div>
 
@@ -84,7 +111,7 @@ export default function DailyActionEditSubmodal({ closeSubModal, state }) {
                 </button>
                 <button
                     className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
-                    onClick={closeSubModal}
+                    onClick={handleSave}
                 >
                     저장
                 </button>

@@ -45,7 +45,7 @@ export default function CreateMyArtPage() {
 
     return (
         <div className="flex flex-col items-center justify-start min-h-screen bg-white px-6 pt-20">
-            <Header title="마이라트 생성하기" page="CreateMyArtPage"/>
+            <Header title="마이라트 생성하기" page="CreateMyArtPage" />
 
             <div className="mb-6 w-full">
                 <div className="flex justify-end mb-2">
@@ -115,8 +115,16 @@ export default function CreateMyArtPage() {
                 {/* ✅ 완료 버튼 */}
                 <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 max-w-[480px] w-full px-6 z-20">
                     <button
-                        className="w-full bg-customMain text-white py-3 rounded-md shadow-lg text-sm font-bold"
-                        onClick={createButtonClick}
+                        className={`w-full bg-customMain py-3 rounded-md shadow-customShadow text-sm font-bold
+                            ${mainGoal.trim() === ""
+                                ? "bg-gray-200 text-customTextGray cursor-not-allowed"
+                                : "bg-customMain text-white"}`}
+                        onClick={() => {
+                            if (mainGoal.trim() !== "") {
+                                createButtonClick();
+                            }
+                        }}
+                        disabled={mainGoal.trim() === ""}
                     >
                         마이라트 생성하기
                     </button>

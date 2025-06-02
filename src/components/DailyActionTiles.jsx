@@ -9,6 +9,9 @@ import { BsFillPlusCircleFill, BsDashCircleFill } from "react-icons/bs";
 export default function DailyActionTiles({ title, dailyActions, color, importedGoal }) {
     const navigate = useNavigate();
     const [showAddModal, setShowAddModal] = useState(false);
+    const [titleError, setTitleError] = useState("");
+    const [contentError, setContentError] = useState("");
+
 
     // 입력 상태
     const [titleInput, setTitle] = useState("");
@@ -25,6 +28,30 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
         }
     }, [importedGoal]);
 
+    const handleSave = () => {
+        let hasError = false;
+
+        if (titleInput.trim() === "") {
+            setTitleError("제목 값은 필수 값입니다.");
+            hasError = true;
+        } else {
+            setTitleError("");
+        }
+
+        if (contentInput.trim() === "") {
+            setContentError("내용 값은 필수 값입니다.");
+            hasError = true;
+        } else {
+            setContentError("");
+        }
+
+        if (hasError) return;
+
+        // 저장 로직 추가 가능
+        closeAddModal();
+    };
+
+
     const addTileClick = () => {
         setTitle(""); // 직접 추가할 땐 초기화
         setContent("");
@@ -34,6 +61,7 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
 
     const closeAddModal = () => {
         setShowAddModal(false);
+        setTitleError(""); // 에러 초기화
     };
 
     const cloneButtonClick = () => {
@@ -112,6 +140,7 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="Daily Action 제목을 입력하세요"
                             required={true}
+                            error={titleError}
                         />
                     </div>
 
@@ -125,6 +154,7 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="Daily Action 내용을 입력하세요"
                             required={true}
+                            error={contentError}
                         />
                     </div>
 
@@ -172,7 +202,7 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
                         </button>
                         <button
                             className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
-                            onClick={closeAddModal}
+                            onClick={handleSave}
                         >
                             저장
                         </button>
