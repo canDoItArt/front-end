@@ -65,11 +65,11 @@ export default function GoalTile({ text, color, type, goal }) {
             >
                 {/* 반투명 트로피 아이콘 (배경 효과) */}
                 <MdVerified className={`${goal === "dailyAction" ? "text-customRed" : "text-white"
-                    } opacity-20 absolute text-[80px] z-0`} />
+                    } opacity-20 absolute text-[80px]`} />
 
                 {/* 텍스트 */}
                 <span
-                    className="z-10 line-clamp-3 text-center overflow-hidden text-ellipsis whitespace-normal leading-tight break-words"
+                    className="line-clamp-3 text-center overflow-hidden text-ellipsis whitespace-normal leading-tight break-words"
                 >
                     {text}
                 </span>
