@@ -75,19 +75,26 @@ export default function MyArtListPage() {
                     <div className="flex flex-col items-center">
                         {/* 빈 타일 + 생성 버튼 */}
                         <div className="w-5/6 h-auto grid grid-cols-3 gap-3 justify-items-center items-center p-2 my-3">
-                            {[...Array(8)].map((_, idx) => (
-                                idx === 4 ? (
-                                    <button key={idx} className="w-full" onClick={() => navigate('/createmyart')}>
-                                        <div className="w-full aspect-[1/1] bg-customMain rounded-xl flex items-center justify-center text-white font-medium text-sm p-2 shadow-md">
-                                            <span className="line-clamp-3 text-center overflow-hidden whitespace-normal">
-                                                마이라트 <br /> 생성
-                                            </span>
-                                        </div>
-                                    </button>
-                                ) : (
-                                    <GoalTile key={idx} type="empty" />
-                                )
-                            ))}
+                            <GoalTile type="empty" />
+                            <GoalTile type="empty" />
+                            <GoalTile type="empty" />
+                            <GoalTile type="empty" />
+                            <button className="w-full" onClick={() => navigate('/createmyart')}>
+                                <div
+                                    className={`w-full aspect-[1/1] bg-customMain rounded-xl flex items-center justify-center text-white font-semibold text-sm p-2 
+                                    shadow-[0_4px_6px_rgba(0,0,0,0.05),0_-4px_6px_rgba(0,0,0,0.05)]`}
+                                >
+                                    <span
+                                        className="line-clamp-3 text-center overflow-hidden text-ellipsis whitespace-normal leading-tight break-words"
+                                    >
+                                        마이라트 <br /> 생성
+                                    </span>
+                                </div>
+                            </button>
+                            <GoalTile type="empty" />
+                            <GoalTile type="empty" />
+                            <GoalTile type="empty" />
+                            <GoalTile type="empty" />
                         </div>
                         <div className="text-center mt-6">
                             <p className="text-customTextBlack font-semibold text-xs mb-1">현재 진행중인 마이라트가 없어요</p>
