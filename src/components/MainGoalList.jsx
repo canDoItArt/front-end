@@ -6,32 +6,39 @@ import ModalLayout from "./ModalLayout";
 export default function MainGoalList({ name, state, onSetRep }) {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRemovingRep, setIsRemovingRep] = useState(false);
 
   const handleClick = () => {
-    if (state !== "inactive") {
-      navigate("/myart");
-    }
+    navigate("/myart");
   };
 
   const handleIconClick = (e) => {
     e.stopPropagation();
     if (state === "active") {
+      setIsRemovingRep(false);
+      setIsModalOpen(true);
+    } else if (state === "rep") {
+      setIsRemovingRep(true);
       setIsModalOpen(true);
     }
   };
 
-  const confirmRep = () => {
-    onSetRep(); // 상위에 요청
+  const confirmAction = () => {
+    onSetRep(isRemovingRep); // true → 해제 요청, false → 설정 요청
     setIsModalOpen(false);
   };
 
   const stateIcons = {
     active: (
-      <button onClick={handleIconClick}>
-        <Star className="w-5 h-5 text-gray-500 stroke-2" />
-      </button>
+      <div onClick={handleIconClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && handleIconClick(e)}>
+        <Star className="w-5 h-5 text-gray-500 stroke-2 cursor-pointer" />
+      </div>
     ),
-    rep: <Star className="w-5 h-5 text-yellow-500 fill-yellow-500 stroke-2" />,
+    rep: (
+      <div onClick={handleIconClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && handleIconClick(e)}>
+        <Star className="w-5 h-5 text-yellow-500 fill-yellow-500 stroke-2 cursor-pointer" />
+      </div>
+    ),
     inactive: <Ban className="w-5 h-5 text-red-500" />,
     attainment: <Trophy className="w-5 h-5 text-yellow-500" />,
   };
@@ -49,9 +56,13 @@ export default function MainGoalList({ name, state, onSetRep }) {
 
       {isModalOpen && (
         <ModalLayout onClose={() => setIsModalOpen(false)}>
-          <h2 className="text-base font-bold mb-5 text-center">대표 마이라트 설정</h2>
+          <h2 className="text-base font-bold mb-5 text-center">
+            대표 마이라트 {isRemovingRep ? "해제" : "설정"}
+          </h2>
           <p className="text-gray-500 text-sm text-center leading-relaxed">
-            해당 메인골을 대표 마이라트로 설정하시겠습니까?
+            {isRemovingRep
+              ? "해당 대표 마이라트를 해제하시겠습니까?"
+              : "해당 메인골을 대표 마이라트로 설정하시겠습니까?"}
           </p>
 
           <div className="mt-6 flex justify-center space-x-4">
@@ -63,7 +74,7 @@ export default function MainGoalList({ name, state, onSetRep }) {
             </button>
             <button
               className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
-              onClick={confirmRep}
+              onClick={confirmAction}
             >
               저장
             </button>
