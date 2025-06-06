@@ -15,15 +15,23 @@ export default function MyArtListPage() {
     const navigate = useNavigate();
 
     // 대표 마이라트 설정 함수
-    const handleSetRep = (goalId) => {
+    const handleSetRep = (goalIdOrNull) => {
         setMainGoals(prevGoals =>
             prevGoals.map(goal => {
-                if (goal.id === goalId) return { ...goal, state: "rep" };
-                if (goal.state === "rep") return { ...goal, state: "active" };
+                // 해제 요청인 경우
+                if (goalIdOrNull === null) {
+                    if (goal.state === "rep") return { ...goal, state: "active" };
+                    return goal;
+                }
+
+                // 대표 마이라트 설정
+                if (goal.id === goalIdOrNull) return { ...goal, state: "rep" };
+                if (goal.state === "rep") return { ...goal, state: "active" }; // 기존 rep는 해제
                 return goal;
             })
         );
     };
+
 
     // 필터링
     const filteredGoals = selectedState === "all"
@@ -53,9 +61,10 @@ export default function MyArtListPage() {
                                 {filteredGoals.map((goal) => (
                                     <li key={goal.id}>
                                         <MainGoalList
+                                            key={goal.id}
                                             name={goal.name}
                                             state={goal.state}
-                                            onSetRep={() => handleSetRep(goal.id)}
+                                            onSetRep={(isRemove) => handleSetRep(isRemove ? null : goal.id)}
                                         />
                                     </li>
                                 ))}
