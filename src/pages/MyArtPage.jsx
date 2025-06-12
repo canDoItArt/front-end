@@ -22,7 +22,7 @@ export default function MyArtPage() {
 
                 <SubGoalTiles title={currentData.mainGoals.name} subGoals={currentData.subGoals} importedGoal={importedGoal}/>
 
-                <SubGoalCalendar subGoals={currentData.subGoals} />
+                {/* <SubGoalCalendar subGoals={currentData.subGoals} /> */}
             </div>
             
         </div>
