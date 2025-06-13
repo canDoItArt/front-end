@@ -4,11 +4,10 @@ import { AnimatePresence } from "framer-motion";
 import BottomModalLayout from "./BottomModalLayout";
 import OptionList from "./OptionList";
 import DeleteSubmodal from "./DeleteSubmodal";
-import CompleteSubmodal from "./CompleteSubmodal";
 import DailyActionEditSubmodal from "./DailyActionEditSubmodal";
 import { MdVerified } from "react-icons/md";
 
-export default function DailyActionList({ title, routine, content, state, achievement }) {
+export default function DailyActionList({ title, routine, content, achievement }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [subModalOpen, setSubModalOpen] = useState(null);
 
@@ -26,11 +25,6 @@ export default function DailyActionList({ title, routine, content, state, achiev
     };
 
     const dailyActionOptions = [
-        {
-            label: achievement ? "Daily Action 달성 취소" : "Daily Action 달성 완료",
-            type: achievement ? "dailyActionCompleteCancel" : "dailyActionComplete",
-            isDanger: false,
-        },
         { label: "Daily Action 수정", type: "dailyActionEdit", isDanger: false },
         { label: "Daily Action 삭제", type: "dailyActionDelete", isDanger: true },
     ];
@@ -62,26 +56,10 @@ export default function DailyActionList({ title, routine, content, state, achiev
                 )}
             </AnimatePresence>
 
-            {/* DailyAction 달성완료 서브모달 */}
-            {subModalOpen === "dailyActionComplete" && (
-                <CompleteSubmodal type="DailyAction" title="달성완료" closeSubModal={closeSubModal} >
-                    해당 Daily Action을 <br />
-                    달성완료 처리 하시겠습니까?
-                </CompleteSubmodal>
-            )}
-
-            {/* DailyAction 달성취소 서브모달 */}
-            {subModalOpen === "dailyActionCompleteCancel" && (
-                <CompleteSubmodal type="DailyAction" title="달성취소" closeSubModal={closeSubModal} >
-                    해당 Daily Action을 <br />
-                    달성취소 처리 하시겠습니까?
-                </CompleteSubmodal>
-            )}
-
             {/* DailyAction 수정 서브모달 */}
             {subModalOpen === "dailyActionEdit" && (
                 <BottomModalLayout isOpen={subModalOpen === "dailyActionEdit"} onClose={closeSubModal}>
-                    <DailyActionEditSubmodal closeSubModal={closeSubModal} state={state} />
+                    <DailyActionEditSubmodal closeSubModal={closeSubModal} achievement={achievement} />
                 </BottomModalLayout>
             )}
 
