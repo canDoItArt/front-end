@@ -2,10 +2,11 @@ import subGoalMockData from "../mocks/subGoal";
 import React, { useState } from "react";
 import Input from "./Input";
 
-export default function SubGoalRenameSubmodal({ closeSubModal, state }) {
+export default function SubGoalRenameSubmodal({ closeSubModal }) {
     const [currentData] = useState(subGoalMockData[0]); // 첫 번째 데이터 사용
     const [title, setTitle] = useState(currentData.subGoalName);
     const [titleError, setTitleError] = useState(""); // 에러 상태 추가
+    const [achieved, setAchieved] = useState(currentData.is_achieved); // ✅ 달성여부 상태
 
     const handleSave = () => {
         if (title.trim() === "") {
@@ -18,20 +19,52 @@ export default function SubGoalRenameSubmodal({ closeSubModal, state }) {
         closeSubModal(); // 저장 성공 시 모달 닫기
     };
 
+    const toggleAchieved = () => {
+        setAchieved((prev) => !prev);
+    };
+
     return (
-        <div className="px-6 pb-6 text-center">
+        <div className="p-6 text-center">
+            <h2 className="text-base font-bold mb-7">Sub Goal 수정</h2>
+
             {/* 이름 수정 */}
             <div className="text-left">
                 <Input
                     id="title"
                     type="text"
-                    label={"SubGoal 이름수정"}
+                    label={"SubGoal 이름"}
                     value={title} // 상태 값 반영
                     onChange={(e) => setTitle(e.target.value)} // 입력 변경 반영
                     placeholder="SubGoal의 이름을 입력하세요"
                     required={true}
                     error={titleError}
                 />
+            </div>
+
+            {/* 슬라이드 스위치 */}
+            <div className="flex items-center justify-between mb-10">
+                <label className="block text-sm font-medium text-customTextBlack">
+                    달성여부
+                </label>
+
+                {/* 슬라이드 스위치 */}
+                <div className="flex items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={toggleAchieved}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${achieved ? "bg-customMain" : "bg-gray-300"
+                            }`}
+                    >
+                        <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${achieved ? "translate-x-6" : "translate-x-1"
+                                }`}
+                        />
+                    </button>
+                    <p className="text-center mt-1 w-10 text-sm text-gray-600">
+                        {achieved ? "달성" : "미달성"}
+                    </p>
+                </div>
+
             </div>
 
             {/* 버튼 그룹 */}

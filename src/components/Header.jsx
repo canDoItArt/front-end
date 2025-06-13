@@ -6,7 +6,6 @@ import BottomModalLayout from "./BottomModalLayout";
 import OptionList from "./OptionList";
 import DeleteSubmodal from "./DeleteSubmodal";
 import MainGoalEditSubmodal from "./MainGoalEditSubmodal";
-import CompleteSubmodal from "./CompleteSubmodal";
 import SubGoalRenameSubmodal from "./SubGoalRenameSubmodal";
 
 
@@ -45,12 +44,7 @@ export default function Header({ title, page, state, achievement }) {
   ];
 
   const subGoalOptions = [
-    {
-      label: achievement ? "Sub Goal 달성 취소" : "Sub Goal 달성 완료",
-      type: achievement ? "subGoalCompleteCancel" : "subGoalComplete",
-      isDanger: false,
-    },
-    { label: "Sub Goal 이름 수정", type: "subGoalRename", isDanger: false },
+    { label: "Sub Goal 수정", type: "subGoalRename", isDanger: false },
     { label: "Sub Goal 삭제", type: "subGoalDelete", isDanger: true },
   ];
 
@@ -97,23 +91,7 @@ export default function Header({ title, page, state, achievement }) {
         </DeleteSubmodal>
       )}
 
-      {/* SubGoal 달성완료 서브모달 */}
-      {subModalOpen === "subGoalComplete" && (
-        <CompleteSubmodal type="SubGoal" title="달성완료" closeSubModal={closeSubModal} >
-          해당 Sub Goal을 <br />
-          달성완료 처리 하시겠습니까?
-        </CompleteSubmodal>
-      )}
-
-      {/* SubGoal 달성취소 서브모달 */}
-      {subModalOpen === "subGoalCompleteCancel" && (
-        <CompleteSubmodal type="SubGoal" title="달성취소" closeSubModal={closeSubModal} >
-          해당 Sub Goal을 <br />
-          달성취소 처리 하시겠습니까?
-        </CompleteSubmodal>
-      )}
-
-      {/* SubGoal 이름수정 서브모달 */}
+      {/* SubGoal 수정 서브모달 */}
       {subModalOpen === "subGoalRename" && (
         <BottomModalLayout isOpen={subModalOpen === "subGoalRename"} onClose={closeSubModal}>
           <SubGoalRenameSubmodal closeSubModal={closeSubModal} state={state} />
