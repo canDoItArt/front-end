@@ -6,17 +6,17 @@ import myArtMockData from "../mocks/myArt";
 
 export default function MainGoalEditSubmodal({ closeSubModal, state }) {
     const [currentData] = useState(myArtMockData[0]); // 첫 번째 데이터 사용
-    const [title, setTitle] = useState(currentData.mainGoals.name);
+    const [title, setTitle] = useState(currentData.main_goal_name);
     const [selectedStatus, setSelectedStatus] = useState(null);
     const [titleError, setTitleError] = useState(""); // 에러 상태 추가
 
     useEffect(() => {
-        if (state === "active" || state === "rep") {
-            setSelectedStatus("active");
-        } else if (state === "attainment") {
-            setSelectedStatus("attainment");
-        } else if (state === "inactive") {
-            setSelectedStatus("inactive");
+        if (state === "ACTIVITY") {
+            setSelectedStatus("ACTIVITY");
+        } else if (state === "ATTAINMENT") {
+            setSelectedStatus("ATTAINMENT");
+        } else if (state === "PAUSE") {
+            setSelectedStatus("PAUSE");
         }
     }, [state]);
 
@@ -55,20 +55,20 @@ export default function MainGoalEditSubmodal({ closeSubModal, state }) {
                     <StatusButton
                         icon={<Star className="w-5 h-5 text-yellow-500 fill-yellow-500 stroke-2" />}
                         label="활성화"
-                        onClick={() => setSelectedStatus("active")}
-                        className={selectedStatus === "active" ? "border-0.1 border-customMain" : "border border-transparent"}
+                        onClick={() => setSelectedStatus("ACTIVITY")}
+                        className={selectedStatus === "ACTIVITY" ? "border-0.1 border-customMain" : "border border-transparent"}
                     />
                     <StatusButton
                         icon={<Trophy className="w-5 h-5 text-yellow-500" />}
                         label="달성"
-                        onClick={() => setSelectedStatus("attainment")}
-                        className={selectedStatus === "attainment" ? "border-0.1 border-customMain" : "border border-transparent"}
+                        onClick={() => setSelectedStatus("ATTAINMENT")}
+                        className={selectedStatus === "ATTAINMENT" ? "border-0.1 border-customMain" : "border border-transparent"}
                     />
                     <StatusButton
                         icon={<Ban className="w-5 h-5 text-red-500" />}
                         label="사용중지"
-                        onClick={() => setSelectedStatus("inactive")}
-                        className={selectedStatus === "inactive" ? "border-0.1 border-customMain" : "border border-transparent"}
+                        onClick={() => setSelectedStatus("PAUSE")}
+                        className={selectedStatus === "PAUSE" ? "border-0.1 border-customMain" : "border border-transparent"}
                     />
                 </div>
             </div>
