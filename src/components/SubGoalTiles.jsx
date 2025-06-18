@@ -72,7 +72,7 @@ export default function SubGoalTiles({ title, subGoals, importedGoal }) {
 
                     const goal = subGoals.find((goal) => goal.color === id);
                     if (goal) {
-                        if (goal.achievement === true) {
+                        if (goal.is_attained === true) {
                             return (
                                 <button
                                     key={`goal-${goal.id}`}

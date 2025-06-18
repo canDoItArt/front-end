@@ -1,165 +1,146 @@
-import React, { useState, useEffect } from "react";
+import { useMemo } from "react";
+import { format, parseISO, isValid, addDays, subDays } from "date-fns";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
+import { MdVerified } from "react-icons/md";
 import hexToColorClass from "../constants/colorMappings";
 
-export default function SubGoalCalendar({ subGoals }) {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [currentDate, setCurrentDate] = useState(new Date());
-    const [viewMode, setViewMode] = useState("week"); // 'week' 또는 'month' 모드
-    const [dateColorMap, setDateColorMap] = useState({});
+export default function SubGoalCalendar({
+  subGoals = [],
+  start_date,
+  end_date,
+  week_of_month,
+  currentWeekStart,
+  onChangeWeekStart,
+}) {
+  // 기존 useMemo → 확장
+  const formattedRange = useMemo(() => {
+    try {
+      if (!start_date || !end_date) return { range: "날짜 정보 없음", year: "", month: "" };
 
-    useEffect(() => {
-        if (subGoals && subGoals.length > 0) {
-            const selectedSubGoal = subGoals[currentIndex];
-            const mappedColors = selectedSubGoal.strict.reduce((acc, { checkedDate }) => {
-                acc[checkedDate] = hexToColorClass[selectedSubGoal.color] || "bg-gray-200";
-                return acc;
-            }, {});
-            setDateColorMap(mappedColors);
-        }
-    }, [currentIndex, subGoals]);
+      const startParsed = parseISO(start_date);
+      const endParsed = parseISO(end_date);
 
-    const handlePrevGoal = () => {
-        setCurrentIndex((prevIndex) => (prevIndex === 0 ? subGoals.length - 1 : prevIndex - 1));
-    };
+      if (!isValid(startParsed) || !isValid(endParsed)) {
+        return { range: "날짜 형식 오류", year: "", month: "" };
+      }
 
-    const handleNextGoal = () => {
-        setCurrentIndex((prevIndex) => (prevIndex === subGoals.length - 1 ? 0 : prevIndex + 1));
-    };
+      const start = format(startParsed, "yy.MM.dd");
+      const end = format(endParsed, "yy.MM.dd");
+      const year = format(startParsed, "yyyy");
+      const month = format(startParsed, "M"); // 1~12로 표시
 
-    const handlePrevDate = () => {
-        const newDate = new Date(currentDate);
-        if (viewMode === "week") {
-            newDate.setDate(currentDate.getDate() - 7);
-        } else {
-            newDate.setMonth(currentDate.getMonth() - 1);
-        }
-        setCurrentDate(newDate);
-    };
+      return {
+        range: `(${start}~${end})`,
+        year,
+        month,
+      };
+    } catch {
+      return { range: "날짜 파싱 실패", year: "", month: "" };
+    }
+  }, [start_date, end_date, week_of_month]);
 
-    const handleNextDate = () => {
-        const newDate = new Date(currentDate);
-        if (viewMode === "week") {
-            newDate.setDate(currentDate.getDate() + 7);
-        } else {
-            newDate.setMonth(currentDate.getMonth() + 1);
-        }
-        setCurrentDate(newDate);
-    };
+  // 구조 분해
+  const { range: formattedDateRange, year: parsedYear, month: parsedMonth } = formattedRange;
 
-    const getStartOfWeek = (date) => {
-        const day = date.getDay();
-        const diff = day === 0 ? -6 : 1 - day;
-        return new Date(date.getFullYear(), date.getMonth(), date.getDate() + diff);
-    };
+  // 날짜 이동 핸들러
+  const handlePrevDate = () => {
+    const current = parseISO(currentWeekStart);
+    if (!isValid(current)) return;
+    const prev = subDays(current, 7);
+    const formatted = format(prev, "yyyy-MM-dd");
+    onChangeWeekStart(formatted);
+  };
 
-    const getDaysInMonth = (year, month) => {
-        return new Date(year, month + 1, 0).getDate();
-    };
+  const handleNextDate = () => {
+    const current = parseISO(currentWeekStart);
+    if (!isValid(current)) return;
+    const next = addDays(current, 7);
+    const formatted = format(next, "yyyy-MM-dd");
+    onChangeWeekStart(formatted);
+  };
 
-    const renderWeek = () => {
-        const startOfWeek = getStartOfWeek(currentDate);
-        return (
-            <div className="flex justify-between">
-                {Array.from({ length: 7 }, (_, i) => {
-                    const day = new Date(startOfWeek);
-                    day.setDate(startOfWeek.getDate() + i);
-                    const formattedDate = day.toISOString().split("T")[0];
+  // 달성되지 않은 목표만 모아서 진행률 순으로 정렬
+  const pendingGoals = subGoals
+    .filter((g) => !g.is_attained)
+    .sort((a, b) => b.progress_rate - a.progress_rate);
 
-                    return (
-                        <div key={i} className="flex flex-col items-center w-12">
-                            <span className="text-sm font-medium">
-                                {["월", "화", "수", "목", "금", "토", "일"][i]}
-                            </span>
-                            <div
-                                className={`w-7 h-7 my-1 flex items-center justify-center rounded-md ${dateColorMap[formattedDate] || "bg-gray-200"}`}
-                            />
-                            <span className="text-sm mt-1">{day.getDate()}</span>
-                        </div>
-                    );
-                })}
-            </div>
-        );
-    };
+  // 달성된 목표만 따로
+  const achievedGoals = subGoals.filter((g) => g.is_attained);
 
-    const renderMonth = () => {
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
-        const daysInMonth = getDaysInMonth(year, month);
-        const firstDayOfMonth = new Date(year, month, 1).getDay();
-        const adjustedFirstDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
-        const totalCells = daysInMonth + adjustedFirstDay;
-        const totalRows = Math.ceil(totalCells / 7);
-
-        return (
-            <div>
-                <div className="flex justify-between">
-                    {["월", "화", "수", "목", "금", "토", "일"].map((weekday, i) => (
-                        <div key={i} className="w-12 text-center font-medium text-sm">{weekday}</div>
-                    ))}
-                </div>
-                {Array.from({ length: totalRows }, (_, week) => (
-                    <div key={week} className="flex justify-between">
-                        {Array.from({ length: 7 }, (_, i) => {
-                            const cellIndex = week * 7 + i;
-                            const dayNumber = cellIndex - adjustedFirstDay + 1;
-
-                            if (cellIndex < adjustedFirstDay || dayNumber > daysInMonth) {
-                                return <div key={i} className="w-12 h-12"></div>;
-                            }
-
-                            const formattedDate = `${year}-${(month + 1).toString().padStart(2, "0")}-${dayNumber.toString().padStart(2, "0")}`;
-                            return (
-                                <div key={dayNumber} className="flex flex-col items-center w-12">
-                                    <div
-                                        className={`w-7 h-7 my-1 flex items-center justify-center rounded-md ${dateColorMap[formattedDate] || "bg-gray-200"}`}
-                                    />
-                                    <span className="text-sm mt-1">{dayNumber}</span>
-                                </div>
-                            );
-                        })}
-                    </div>
-                ))}
-            </div>
-        );
-    };
-
-    return (
-        <div className="mt-6 w-full bg-white p-6 rounded-lg shadow-[0_4px_6px_rgba(0,0,0,0.05),0_-4px_6px_rgba(0,0,0,0.05)]">
-            {/* 목표 변경 네비게이션 */}
-            <div className="flex items-center justify-between mb-4 mx-3">
-                <button onClick={handlePrevGoal}>
-                    <BsChevronLeft className="text-black text-lg" />
-                </button>
-                <h2 className="text-sm font-semibold text-black">{subGoals[currentIndex].name}</h2>
-                <button onClick={handleNextGoal}>
-                    <BsChevronRight className="text-black text-lg" />
-                </button>
-            </div>
-
-            {/* 날짜 네비게이션 */}
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-medium">
-                    {currentDate.getFullYear()}년 {currentDate.getMonth() + 1}월
-                </h2>
-                <div className="flex items-center space-x-3">
-                    <button onClick={handlePrevDate} className="text-lg font-bold">
-                        <BsChevronLeft />
-                    </button>
-                    <button onClick={handleNextDate} className="text-lg font-bold">
-                        <BsChevronRight />
-                    </button>
-                    <button
-                        onClick={() => setViewMode(viewMode === "week" ? "month" : "week")}
-                        className="bg-gray-100 text-customTextBlack text-sm font-semibold px-4 py-1 rounded-xl"
-                    >
-                        {viewMode === "week" ? "주" : "월"}
-                    </button>
-                </div>
-            </div>
-
-            {/* 캘린더 렌더링 */}
-            {viewMode === "week" ? renderWeek() : renderMonth()}
+  return (
+    <div className="w-full mt-6 bg-white p-6 rounded-lg shadow-customShadow">
+      {/* 날짜 네비게이션 */}
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex gap-1 items-center">
+          <h2 className="text-base font-semibold">
+            {parsedYear}년 {parsedMonth}월 {week_of_month}주차
+          </h2>
+          <h2 className="text-sm font-medium text-gray-400">{formattedDateRange}</h2>
         </div>
-    );
+        <div className="flex items-center space-x-3">
+          <button onClick={handlePrevDate} className="text-lg font-bold">
+            <BsChevronLeft />
+          </button>
+          <button onClick={handleNextDate} className="text-lg font-bold">
+            <BsChevronRight />
+          </button>
+        </div>
+      </div>
+
+      {/* 진행 중인 서브골 */}
+      <ul className="space-y-4">
+        {pendingGoals.map((goal, index) => (
+          <li
+            key={goal.id}
+            className="bg-gray-50 px-4 py-3 rounded-md shadow-sm"
+          >
+            <div className="flex justify-between items-center mb-1">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-blue-600">#{index + 1}</span>
+                <span className="font-medium flex items-center gap-1">
+                  {goal.name}
+                </span>
+              </div>
+              <span className="text-sm font-medium text-gray-600">
+                {goal.progress_rate}%
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 h-3 rounded-full overflow-hidden">
+              <div
+                className={`h-3 rounded-full transition-all duration-300 ${hexToColorClass[goal.color] || "bg-gray-400"
+                  }`}
+                style={{
+                  width: `${goal.progress_rate}%`,
+                }}
+              />
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      {/* 달성된 서브골 */}
+      {achievedGoals.length > 0 && (
+        <div className="mt-8">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-700 pb-2 border-b border-gray-200 mb-4">
+            <MdVerified className="text-green-500 text-xl" />
+            달성된 서브골
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {achievedGoals.map((goal) => (
+              <span
+                key={goal.id}
+                className={`inline-flex items-center gap-1 text-sm font-medium px-3 py-1 rounded-full transition ${hexToColorClass[goal.color]} bg-opacity-20`}
+                style={{
+                  color: goal.color,
+                }}
+              >
+                <MdVerified />
+                {goal.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
