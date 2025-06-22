@@ -37,6 +37,21 @@ export default function CheckList({ title, subGoals }) {
 
                         const goal = subGoals.find((goal) => goal.color === id);
                         if (goal) {
+                            if (goal.is_attained === true) {
+                                return (
+                                    <button
+                                        key={`goal-${goal.id}`}
+                                        className="w-full"
+                                    >
+                                        <GoalTile
+                                            text={goal.name}
+                                            color={hexToColorClass[goal.color]}
+                                            type="achievement"
+                                            goal="subGoal"
+                                        />
+                                    </button>
+                                );
+                            };
                             return (
                                 <button
                                     key={`goal-${goal.id}`}
