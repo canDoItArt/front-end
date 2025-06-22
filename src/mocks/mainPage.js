@@ -31,11 +31,11 @@ const mainPageMockData = [
             },
         ],
         subGoals: [
-            { id: 1, name: "구위", color: "#EB4335" },
-            { id: 2, name: "제구", color: "#F7D04D" },
-            { id: 3, name: "몸 만들기", color: "#B1D854" },
-            { id: 4, name: "운", color: "#4091EE" },
-            { id: 5, name: "인성", color: "#8B80DD" },
+            { id: 1, name: "구위", color: "#EB4335", is_attained: true },
+            { id: 2, name: "제구", color: "#F7D04D", is_attained: false },
+            { id: 3, name: "몸 만들기", color: "#B1D854", is_attained: false },
+            { id: 4, name: "운", color: "#4091EE", is_attained: true },
+            { id: 5, name: "인성", color: "#8B80DD", is_attained: false },
         ],
     },
     {
@@ -62,9 +62,9 @@ const mainPageMockData = [
             },
         ],
         subGoals: [
-            { id: 1, name: "체력 연습", color: "#EB4335" },
-            { id: 2, name: "정확성", color: "#B1D854" },
-            { id: 3, name: "민첩성", color: "#4091EE" },
+            { id: 1, name: "체력 연습", color: "#EB4335", is_attained: false },
+            { id: 2, name: "정확성", color: "#B1D854", is_attained: false },
+            { id: 3, name: "민첩성", color: "#4091EE", is_attained: false },
         ],
     },
     {
@@ -91,9 +91,9 @@ const mainPageMockData = [
             },
         ],
         subGoals: [
-            { id: 1, name: "작전 연습", color: "#F7D04D" },
-            { id: 2, name: "집중력", color: "#70CCB1" },
-            { id: 3, name: "기술 연습", color: "#4091EE" },
+            { id: 1, name: "작전 연습", color: "#F7D04D", is_attained: true },
+            { id: 2, name: "집중력", color: "#70CCB1", is_attained: false },
+            { id: 3, name: "기술 연습", color: "#4091EE", is_attained: false },
         ],
     },
 ];
