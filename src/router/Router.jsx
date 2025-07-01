@@ -25,7 +25,6 @@ const router = createBrowserRouter(
         { path: '/importclone', element: <ImportClonePage /> },
         { path: '/editprofile', element: <EditProfilePage /> },
     ],
-    { basename: '/front-end' } // 추가된 부분
 );
 
 

@@ -9,7 +9,7 @@ export default function WelcomePage() {
         <div className="flex flex-col items-center justify-center min-h-screen bg-white px-6">
             {/* 로고 영역 */}
             <img
-                src="/front-end/logo_2.png"
+                src="/logo_2.png"
                 alt="Welcome Logo"
                 className="w-32 h-auto mb-8"
             />
