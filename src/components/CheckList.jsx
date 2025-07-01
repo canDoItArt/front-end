@@ -2,10 +2,12 @@ import { useState } from "react";
 import hexToColorClass from "../constants/colorMappings";
 import GoalTile from "./GoalTile";
 import DailyActionModal from "./DailyActionModal"; // 모달 컴포넌트 이름 수정
+import { useNavigate } from "react-router-dom";
 
 export default function CheckList({ title, subGoals }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedGoal, setSelectedGoal] = useState(null); // 모달에 표시할 목표 정보 저장
+    const navigate = useNavigate();
 
     const idLayout = [
         ["#EB4335", "#F09752", "#F7D04D"], // Red, Orange, Yellow
@@ -74,6 +76,16 @@ export default function CheckList({ title, subGoals }) {
 
             {/* DailyActionModal 컴포넌트 */}
             <DailyActionModal isOpen={isModalOpen} onClose={closeModal} goal={selectedGoal} />
+
+            <div className="px-6 mt-1 flex justify-end">
+                <button
+                    className="border border-customMain text-customMain py-3 px-3 rounded-xl shadow-lg text-xs font-semibold"
+                    onClick={() => navigate('/myart')}
+                >
+                    메인골 상세페이지 바로가기
+                </button>
+            </div>
+
         </div>
     );
 }
