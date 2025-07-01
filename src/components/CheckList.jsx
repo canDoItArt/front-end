@@ -42,6 +42,7 @@ export default function CheckList({ title, subGoals }) {
                                     <button
                                         key={`goal-${goal.id}`}
                                         className="w-full"
+                                        onClick={() => openModal(goal)} // 클릭 시 모달 열기
                                     >
                                         <GoalTile
                                             text={goal.name}
