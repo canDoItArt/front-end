@@ -27,8 +27,8 @@ export default function Navbar({ initialActiveNav = 1 }) {
             <img
               src={
                 activeNav === 1
-                  ? "/front-end/home_1.png"
-                  : "/front-end/home_2.png"
+                  ? "/home_1.png"
+                  : "/home_2.png"
               }
               alt="home"
               className="w-10 h-auto items-center"
@@ -53,8 +53,8 @@ export default function Navbar({ initialActiveNav = 1 }) {
             <img
               src={
                 activeNav === 2
-                  ? "/front-end/myart_1.png"
-                  : "/front-end/myart_2.png"
+                  ? "/myart_1.png"
+                  : "/myart_2.png"
               }
               alt="myartlist"
               className="w-10 h-auto items-center"
@@ -79,8 +79,8 @@ export default function Navbar({ initialActiveNav = 1 }) {
             <img
               src={
                 activeNav === 3
-                  ? "/front-end/mypage_1.png"
-                  : "/front-end/mypage_2.png"
+                  ? "/mypage_1.png"
+                  : "/mypage_2.png"
               }
               alt="mypage"
               className="w-10 h-auto items-center"

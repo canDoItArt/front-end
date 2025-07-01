@@ -8,7 +8,7 @@ export default function LogoHeader() {
             {/* 로고 영역 */}
             <Link to='/home'>
                 <img
-                    src="/front-end/logo_3.png"
+                    src="/logo_3.png"
                     alt="Welcome Logo"
                     className="w-28 h-auto"
                 />

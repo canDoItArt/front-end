@@ -34,7 +34,7 @@ export default function HomePage() {
 
                         {/* 로고 영역 */}
                         <img
-                            src="/front-end/logo_5.png"
+                            src="/logo_5.png"
                             alt="Welcome Logo"
                             className="w-32 h-auto mb-8"
                         />
