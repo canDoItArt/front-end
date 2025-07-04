@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.4",
+    "axios": "^1.10.0",
     "chart.js": "^4.4.7",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.4.3",
