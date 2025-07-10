@@ -9,6 +9,7 @@ export default function Input({
     children,
     readOnly = false,
     error = "", // error prop 추가
+    successMessage = "", // ✅ 성공 메시지 추가
 }) {
     return (
         <div className="mb-10 mt-4">
@@ -33,6 +34,11 @@ export default function Input({
 
             {/* 에러 메시지 표시 */}
             {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+
+            {/* ✅ 성공 메시지 표시 */}
+            {successMessage && (
+                <p className="text-xs text-green-500 mt-2">{successMessage}</p>
+            )}
         </div>
     );
 }
