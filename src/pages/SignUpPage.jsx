@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Input from "../components/Input";
 import api from "../api/axiosInstance"; // API 인스턴스 임포트
 import DuplicateCheckModal from "../components/DuplicateCheckModal";
+import SignUpModal from "../components/SignUpModal";
+import SignUpSuccessModal from "../components/SignUpSuccessModal";
 
 export default function SignUpPage() {
     const [email, setEmail] = useState("");
@@ -15,6 +18,11 @@ export default function SignUpPage() {
 
     const [emailChecked, setEmailChecked] = useState(false);
     const [nicknameChecked, setNicknameChecked] = useState(false);
+
+    const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false); // 회원가입 확인 모달
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
+    const navigate = useNavigate();
 
 
     const handleDuplicateCheck = async (field) => {
@@ -53,14 +61,42 @@ export default function SignUpPage() {
         }
     };
 
-    const handleSignup = (e) => {
+    // ✅ 회원가입 요청
+    const handleSignupSubmit = (e) => {
         e.preventDefault();
+
         if (password !== passwordCheck) {
             alert("비밀번호가 일치하지 않습니다. 다시 확인해주세요.");
             return;
         }
-        console.log("회원가입 시도", { email, password, nickname });
+
+        setIsSignUpModalOpen(true);
     };
+
+    // 모달에서 [확인] 누르면 회원가입 요청
+    const handleConfirmSignup = async () => {
+        try {
+            const response = await api.post("/api/members/join", {
+                email,
+                password,
+                nickname,
+            });
+
+            console.log("회원가입 성공", response.data);
+            setIsSignUpModalOpen(false);
+            setIsSuccessModalOpen(true); // ✅ 최종 성공 모달 띄우기
+
+        } catch (error) {
+            console.error("회원가입 실패", error);
+            alert(
+                error.response?.data?.message
+                    ? `회원가입 실패: ${error.response.data.message}`
+                    : "회원가입 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+            );
+            setIsSignUpModalOpen(false);
+        }
+    };
+
 
     // 모든 조건을 만족할 때만 회원가입 버튼 활성화
     const isFormValid =
@@ -71,7 +107,7 @@ export default function SignUpPage() {
     return (
         <div
             className="flex flex-col items-center justify-between min-h-screen bg-white px-6 relative pt-20"
-            onSubmit={handleSignup}
+            onSubmit={handleSignupSubmit}
         >
             <Header title="회원가입" />
 
@@ -150,7 +186,7 @@ export default function SignUpPage() {
                             >
                                 <div
                                     onClick={() => {
-                                        if (emailChecked) return; // ✅ 중복확인 완료 시 클릭 차단
+                                        if (nicknameChecked) return; // ✅ 중복확인 완료 시 클릭 차단
                                         handleDuplicateCheck("닉네임");
                                     }}
                                     className={`flex items-center justify-center whitespace-nowrap py-2 px-4 text-xs rounded-md font-bold cursor-pointer
@@ -183,6 +219,22 @@ export default function SignUpPage() {
                 <DuplicateCheckModal
                     message={modalMessage}
                     onClose={() => setIsModalOpen(false)}
+                />
+            )}
+
+            {/* 회원가입 최종 확인 모달 */}
+            {isSignUpModalOpen && (
+                <SignUpModal
+                    message={"회원가입을 진행하시겠습니까?"}
+                    onClose={() => setIsSignUpModalOpen(false)}
+                    onConfirm={handleConfirmSignup}
+                />
+            )}
+
+            {/* 최종 회원가입 성공 모달 */}
+            {isSuccessModalOpen && (
+                <SignUpSuccessModal
+                    onClose={() => setIsSuccessModalOpen(false)} // 혹시나 닫기만 원할 경우
                 />
             )}
         </div>

@@ -76,7 +76,7 @@ export default function MainGoalEditSubmodal({ closeSubModal, state }) {
             {/* 버튼 그룹 */}
             <div className="mt-6 flex justify-center space-x-4">
                 <button
-                    className="p-2 text-xs font-normal w-24 bg-gray-100 text-gray-400 rounded-md"
+                    className="p-3 text-xs font-normal w-24 bg-gray-100 text-gray-400 rounded-md"
                     onClick={closeSubModal}
                 >
                     취소
