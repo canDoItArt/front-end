@@ -150,7 +150,7 @@ export default function SignUpPage() {
                             >
                                 <div
                                     onClick={() => {
-                                        if (emailChecked) return; // ✅ 중복확인 완료 시 클릭 차단
+                                        if (nicknameChecked) return; // ✅ 중복확인 완료 시 클릭 차단
                                         handleDuplicateCheck("닉네임");
                                     }}
                                     className={`flex items-center justify-center whitespace-nowrap py-2 px-4 text-xs rounded-md font-bold cursor-pointer
