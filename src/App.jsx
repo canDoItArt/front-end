@@ -1,32 +1,27 @@
-// App.jsx
 import { useEffect } from "react";
-import Router from "./router/Router";
-import { isAccessTokenValid } from "./utils/auth";
+import { useAuth } from "./contexts/AuthContext";
 import { showModal } from "./utils/sessionModalController";
+import Router from "./router/Router";
 import SessionExpiredModal from "./components/SessionExpiredModal";
 import { SessionModalProvider } from "./contexts/SessionModalContext";
 
 export default function App() {
+  const { isAuthenticated, checkAuth, logout } = useAuth();
+
   useEffect(() => {
     const interval = setInterval(() => {
-      const token = localStorage.getItem("accessToken");
+      if (!isAuthenticated) return;
 
-      if (!token) {
-        // ❌ 토큰이 없으면 (로그인 안 된 상태) 모달 띄우지 않음
-        return;
+      const stillValid = checkAuth();
+      if (!stillValid) {
+        console.log("🕒 accessToken이 만료되었습니다");
+        logout();
+        showModal(); // 모달로 사용자에게 알림
       }
-
-      const isValid = isAccessTokenValid();
-      if (!isValid) {
-        console.log("🕒 accessToken이 만료되었거나 유효하지 않습니다");
-        localStorage.removeItem("accessToken");
-        showModal();
-      }
-    }, 10000); // 10초마다 확인
+    }, 10000); // 10초마다 검사
 
     return () => clearInterval(interval);
-  }, []);
-
+  }, [isAuthenticated, checkAuth, logout]);
 
   return (
     <SessionModalProvider>

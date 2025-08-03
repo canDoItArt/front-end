@@ -1,7 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 
-export function isAccessTokenValid() {
-  const token = localStorage.getItem("accessToken");
+export function isAccessTokenValid(token = localStorage.getItem("accessToken")) {
   if (!token) return false;
 
   try {
