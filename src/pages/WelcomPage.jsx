@@ -3,8 +3,19 @@ import 'swiper/css'; // 기본 CSS 스타일
 import 'swiper/css/pagination'; // Pagination 스타일
 import { Pagination } from 'swiper/modules';
 import { Link } from 'react-router-dom';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { isAccessTokenValid } from "../utils/auth";
 
 export default function WelcomePage() {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isAccessTokenValid()) {
+            navigate("/home");
+        }
+    }, [navigate]);
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-white px-6">
             {/* 로고 영역 */}

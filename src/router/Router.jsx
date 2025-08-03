@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import PrivateRoute from "../components/PrivateRoute";
 import WelcomPage from "../pages/WelcomPage";
 import LoginPage from "../pages/LoginPage";
 import SignUpPage from "../pages/SignUpPage";
@@ -13,17 +14,76 @@ import EditProfilePage from "../pages/EditProfilePage";
 
 const router = createBrowserRouter(
     [
-        { path: '/', element: <WelcomPage /> },
-        { path: '/login', element: <LoginPage /> },
-        { path: '/signup', element: <SignUpPage /> },
-        { path: '/home', element: <HomePage /> },
-        { path: '/myartlist', element: <MyArtListPage /> },
-        { path: '/myart', element: <MyArtPage /> },
-        { path: '/createmyart', element: <CreateMyArtPage /> },
-        { path: '/subgoal', element: <SubGoalPage /> },
-        { path: '/mypage', element: <MyPage /> },
-        { path: '/importclone', element: <ImportClonePage /> },
-        { path: '/editprofile', element: <EditProfilePage /> },
+        // ✅ 공개 라우트
+        { path: "/", element: <WelcomPage /> },
+        { path: "/login", element: <LoginPage /> },
+        { path: "/signup", element: <SignUpPage /> },
+
+        // ✅ 보호된 라우트
+        {
+            path: "/home",
+            element: (
+                <PrivateRoute>
+                    <HomePage />
+                </PrivateRoute>
+            ),
+        },
+        {
+            path: "/myartlist",
+            element: (
+                <PrivateRoute>
+                    <MyArtListPage />
+                </PrivateRoute>
+            ),
+        },
+        {
+            path: "/myart",
+            element: (
+                <PrivateRoute>
+                    <MyArtPage />
+                </PrivateRoute>
+            ),
+        },
+        {
+            path: "/createmyart",
+            element: (
+                <PrivateRoute>
+                    <CreateMyArtPage />
+                </PrivateRoute>
+            ),
+        },
+        {
+            path: "/subgoal",
+            element: (
+                <PrivateRoute>
+                    <SubGoalPage />
+                </PrivateRoute>
+            ),
+        },
+        {
+            path: "/mypage",
+            element: (
+                <PrivateRoute>
+                    <MyPage />
+                </PrivateRoute>
+            ),
+        },
+        {
+            path: "/importclone",
+            element: (
+                <PrivateRoute>
+                    <ImportClonePage />
+                </PrivateRoute>
+            ),
+        },
+        {
+            path: "/editprofile",
+            element: (
+                <PrivateRoute>
+                    <EditProfilePage />
+                </PrivateRoute>
+            ),
+        },
     ],
 );
 
