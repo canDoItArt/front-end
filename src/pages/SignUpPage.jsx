@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Input from "../components/Input";
@@ -6,6 +6,7 @@ import api from "../api/axiosInstance"; // API 인스턴스 임포트
 import DuplicateCheckModal from "../components/DuplicateCheckModal";
 import SignUpModal from "../components/SignUpModal";
 import SignUpSuccessModal from "../components/SignUpSuccessModal";
+import { isAccessTokenValid } from "../utils/auth";
 
 export default function SignUpPage() {
     const [email, setEmail] = useState("");
@@ -23,6 +24,12 @@ export default function SignUpPage() {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isAccessTokenValid()) {
+            navigate("/home");
+        }
+    }, [navigate]);
 
 
     const handleDuplicateCheck = async (field) => {

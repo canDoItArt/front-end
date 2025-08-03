@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
 import ModalLayout from "../components/ModalLayout";
+import api from "../api/axiosInstance"
+import { isAccessTokenValid } from "../utils/auth";
+import LoginErrorModal from "../components/LoginErrorModal";
 
 export default function LoginPage() {
     const navigate = useNavigate();
@@ -10,11 +13,44 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
 
     const [showFindPasswordModal, setShowFindPasswordModal] = useState(false);
+    const [isLoginErrorModalOpen, setIsLoginErrorModalOpen] = useState(false); // 로그인 에러 모달
 
-    const handleLogin = (e) => {
+    // ✅ 토큰 검사 후 유효하면 자동 이동
+    useEffect(() => {
+        if (isAccessTokenValid()) {
+            navigate("/home");
+        }
+    }, [navigate]);
+
+    const handleLogin = async (e) => {
         e.preventDefault();
-        console.log("로그인 시도", { email, password });
-        navigate("/home");
+
+        try {
+            const response = await api.post("/api/auth/login", {
+                id: email,
+                password: password,
+            });
+
+            // 1. 헤더에서 accessToken 추출 및 저장
+            const accessTokenWithBearer = response.headers["authorization"]; // 또는 소문자 'authorization'
+            if (!accessTokenWithBearer) {
+                throw new Error("AccessToken이 응답 헤더에 없습니다.");
+            }
+
+            const accessToken = accessTokenWithBearer.replace("Bearer ", "");
+            localStorage.setItem("accessToken", accessToken);
+
+            // 2. 사용자 정보 저장 (필요한 경우)
+            //localStorage.setItem("nickname", response.data.data.nickname);
+
+            // 3. 페이지 이동
+            navigate("/home");
+
+        } catch (error) {
+            console.error("로그인 실패:", error);
+            setIsLoginErrorModalOpen(true);
+            //alert("이메일 또는 비밀번호가 올바르지 않습니다.");
+        }
     };
 
     return (
@@ -81,6 +117,13 @@ export default function LoginPage() {
                         </button>
                     </div>
                 </ModalLayout>
+            )}
+
+            {/* 로그인 오류 모달 */}
+            {isLoginErrorModalOpen && (
+                <LoginErrorModal
+                    onClose={() => setIsLoginErrorModalOpen(false)} // 혹시나 닫기만 원할 경우
+                />
             )}
         </div>
     );
