@@ -1,13 +1,25 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import LogoHeader from "../components/LogoHeader";
 import Navbar from "../components/Navbar";
 import myPageMockData from "../mocks/myPage";
 import MottoCard from "../components/MottoCard";
 import SettingsList from "../components/SettingsList";
 import { BsPersonFill } from "react-icons/bs";
+import api from "../api/axiosInstance";
 
 export default function MyPage() {
     const [currentData] = useState(myPageMockData[0]); // 첫 번째 데이터 사용
+
+    useEffect(() => {
+    // 보호된 API (로그인해야 접근 가능한 엔드포인트) 호출
+    api.get("/api/members")
+      .then((res) => {
+        console.log("✅ API 성공:", res.data);
+      })
+      .catch((err) => {
+        console.error("❌ API 에러:", err.response?.status, err.response?.data);
+      });
+  }, []);
 
     return (
         <div className="flex flex-col items-center justify-start min-h-screen bg-white px-6">

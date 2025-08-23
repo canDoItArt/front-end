@@ -1,7 +1,10 @@
 import { Navigate } from "react-router-dom";
-import { isAccessTokenValid } from "../utils/auth";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function PrivateRoute({ children }) {
-  const isLoggedIn = isAccessTokenValid();
-  return isLoggedIn ? children : <Navigate to="/" replace />;
+  const { user, loading } = useAuth();
+
+  if (loading) return <div>로딩중...</div>;
+
+  return user ? children : <Navigate to="/login" replace />;
 }

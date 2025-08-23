@@ -1,16 +1,30 @@
 // api/axiosInstance.js
 import axios from "axios";
-import { showModal } from "../utils/sessionModalController";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
 
-api.interceptors.request.use((config) => {
+
+// 토큰 갱신 중복 요청 방지용
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
+// 요청 인터셉터 → Access Token 붙이기
+api.interceptors.request.use(config => {
   const token = localStorage.getItem("accessToken");
   if (token) {
     config.headers["Authorization"] = `Bearer ${token}`;
@@ -18,19 +32,57 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// 응답 인터셉터 → 401일 때 Refresh 시도
+// 응답 에러 처리
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const status = error.response?.status;
-    console.log("❗응답 상태코드:", status);
+  res => res,
+  async err => {
+    const originalRequest = err.config;
 
-    if (status === 401) {
-      // ✅ 세션 만료: 토큰 삭제하고 모달 표시
-      localStorage.removeItem("accessToken");
-      showModal(); // 로그인 페이지로 유도
+    // 401 처리
+    if (err.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(token => {
+            originalRequest.headers["Authorization"] = "Bearer " + token;
+            return api(originalRequest);
+          })
+          .catch(error => Promise.reject(error));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const refreshToken = localStorage.getItem("refreshToken");
+        const response = await api.post("/api/auth/reissue", null, {
+          headers: { Refresh: refreshToken },
+        });
+
+        const newAccessToken = response.headers["authorization"]?.split(" ")[1];
+        const newRefreshToken = response.headers["refresh"];
+
+        if (newAccessToken) localStorage.setItem("accessToken", newAccessToken);
+        if (newRefreshToken) localStorage.setItem("refreshToken", newRefreshToken);
+
+        api.defaults.headers.common["Authorization"] = "Bearer " + newAccessToken;
+        processQueue(null, newAccessToken);
+
+        return api(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
 
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );
 
