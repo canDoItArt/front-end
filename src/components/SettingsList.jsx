@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ModalLayout from "../components/ModalLayout";
 import Input from "./Input";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function SettingsList() {
     const navigate = useNavigate();
+    const { logout } = useAuth();
     const [modalType, setModalType] = useState(null); // 'password', 'logout', 'delete' 등
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -184,10 +186,10 @@ export default function SettingsList() {
                         </button>
                         <button
                             className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
-                            onClick={() => {
+                            onClick={async () => {
                                 console.log("로그아웃 실행");
+                                await  logout();
                                 closeModal();
-                                navigate('/');
                             }}
                         >
                             로그아웃
