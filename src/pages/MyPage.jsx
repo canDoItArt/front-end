@@ -1,36 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import LogoHeader from "../components/LogoHeader";
 import Navbar from "../components/Navbar";
-//import myPageMockData from "../mocks/myPage";
 import MottoCard from "../components/MottoCard";
 import SettingsList from "../components/SettingsList";
 import { BsPersonFill } from "react-icons/bs";
-import api from "../api/axiosInstance";
+import { useAuth } from "../contexts/AuthContext";  // ✅ AuthContext 가져오기
 
 export default function MyPage() {
-    //const [currentData] = useState(myPageMockData[0]); // 첫 번째 데이터 사용
-
-    const [userData, setUserData] = useState(null); // 사용자 정보 상태
-    const [loading, setLoading] = useState(true); // 로딩 상태
+    const { user, loading } = useAuth(); // ✅ Context에서 불러오기
     const [error, setError] = useState(null); // 에러 상태
 
-    useEffect(() => {
-        api
-            .get("/api/members")
-            .then((res) => {
-                console.log("✅ API 성공:", res.data);
-                // 응답 구조에 맞춰 data 파싱
-                setUserData(res.data.data);
-            })
-            .catch((err) => {
-                console.error("❌ API 에러:", err.response?.status, err.response?.data);
-                setError("마이페이지 정보를 불러오지 못했습니다.");
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    }, []);
-
+    // 1️⃣ 먼저 로딩 상태 확인
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -39,6 +19,16 @@ export default function MyPage() {
         );
     }
 
+    // 2️⃣ 로딩 끝났는데 로그인 안 됨
+    if (!user) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <p>로그인이 필요합니다.</p>
+            </div>
+        );
+    }
+
+    // 3️⃣ 에러 처리
     if (error) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -59,9 +49,9 @@ export default function MyPage() {
                 <div className="my-6 w-full flex flex-col items-center">
                     <div className="flex flex-col items-center">
                         {/* 프로필 이미지 또는 기본 아이콘 */}
-                        {userData?.profileImage && userData.profileImage !== "null" && userData.profileImage.trim() !== "" ? (
+                        {user?.profileImage && user.profileImage !== "null" && user.profileImage.trim() !== "" ? (
                             <img
-                                src={userData.profileImage}
+                                src={user.profileImage}
                                 alt="profile"
                                 className="w-28 h-28 rounded-full object-cover mb-4"
                             />
@@ -71,12 +61,12 @@ export default function MyPage() {
                             </div>
                         )}
 
-                        <p className="text-base font-semibold">{userData?.nickname}</p>
-                        <p className="text-sm text-gray-400">{userData?.email}</p>
+                        <p className="text-base font-semibold">{user?.nickname}</p>
+                        <p className="text-sm text-gray-400">{user?.email}</p>
                     </div>
                 </div>
                 {/* MottoCard 컴포넌트 */}
-                <MottoCard motto={userData?.comment} />
+                <MottoCard motto={user?.comment} />
 
                 {/* 설정 리스트 */}
                 <div className="w-full">
