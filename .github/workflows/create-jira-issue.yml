@@ -38,7 +38,7 @@ jobs:
         uses: atlassian/gajira-create@v3
         with:
           project: HD
-          issuetype: Task
-          summary: "[Feature] ${{ github.event.issue.title }}"
+          issuetype: 작업
+          summary: "[HD] ${{ github.event.issue.title }}"
           description: "${{ steps.md2jira.outputs.output-text }}"
 
