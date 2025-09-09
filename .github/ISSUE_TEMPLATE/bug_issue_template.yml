@@ -9,7 +9,8 @@ body:
     attributes:
       label: 📌 버그 설명
       description: 발생한 문제를 간단하고 명확하게 설명해주세요.
-      placeholder: "예: 로그인 버튼을 눌러도 아무 반응이 없습니다."
+      placeholder: |
+        예: 로그인 버튼을 눌러도 아무 반응이 없습니다.
     validations:
       required: true
 
@@ -18,7 +19,11 @@ body:
     attributes:
       label: 🔁 재현 방법
       description: 버그가 발생하는 과정을 단계별로 작성해주세요.
-      placeholder: "1. 로그인 페이지로 이동\n2. 이메일과 비밀번호 입력\n3. 로그인 버튼 클릭\n4. 아무런 반응 없음"
+      placeholder: |
+        1. 로그인 페이지로 이동
+        2. 이메일과 비밀번호 입력
+        3. 로그인 버튼 클릭
+        4. 아무런 반응 없음
     validations:
       required: true
 
@@ -27,7 +32,8 @@ body:
     attributes:
       label: ✅ 기대한 동작
       description: 정상 동작이라면 어떻게 되었어야 하는지 작성해주세요.
-      placeholder: "예: 로그인 후 마이페이지로 이동해야 합니다."
+      placeholder: |
+        예: 로그인 후 마이페이지로 이동해야 합니다.
     validations:
       required: true
 
@@ -36,7 +42,12 @@ body:
     attributes:
       label: 🖥️ 환경 정보 및 경로
       description: 어떤 환경에서 문제가 발생했는지 작성해주세요.
-      placeholder: "예:\n- 경로: https://handa-plan.vercel.app/\n- 브라우저: Chrome 115\n- OS: macOS Ventura 13.4\n- 기기: 데스크탑"
+      placeholder: |
+        예:
+        - 경로: https://handa-plan.vercel.app/
+        - 브라우저: Chrome 115
+        - OS: macOS Ventura 13.4
+        - 기기: 데스크탑
     validations:
       required: false
 
@@ -52,7 +63,7 @@ body:
     id: parentKey
     attributes:
       label: 🔗 Jira Parent Key
-      description: 연결할 Jira 부모 이슈 키를 입력해주세요. (예: DIAR-101)
-      placeholder: "예: DIAR-101"
+      description: 연결할 Jira 부모 이슈 키를 입력해주세요. (HD-101)
+      placeholder: "HD-101"
     validations:
       required: true
