@@ -23,6 +23,11 @@ export default function SettingsList() {
     const [isPasswordChangeModalOpen, setIsPasswordChangeModalOpen] = useState(false); // 현재 비밀번호 확인 모달 오픈 상태
     const [passwordChangeModalMessage, setPasswordChangeModalMessage] = useState("");  // 현재 비밀번호 확인 모달에 띄울 메시지
 
+    // ✅ 계정삭제용 state 추가
+    const [deletePassword, setDeletePassword] = useState("");
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [deleteModalMessage, setDeleteModalMessage] = useState("");
+
     // 현재 비밀번호 체크여부
     const [passwordChecked, setPasswordChecked] = useState(false);
 
@@ -140,6 +145,37 @@ export default function SettingsList() {
             console.error(error);
             setIsPasswordCheckModalOpen(true);
             setPasswordCheckModalMessage("비밀번호가 일치하지 않습니다.");
+        }
+    };
+
+    // 계정삭제 API
+    const handleDeleteAccount = async () => {
+        if (!deletePassword.trim()) {
+            setIsDeleteModalOpen(true);
+            setDeleteModalMessage("비밀번호를 입력해주세요.");
+            return;
+        }
+
+        try {
+            const response = await api.delete("/api/members", {
+                data: {
+                    type: "withdraw",
+                    password: deletePassword,
+                },
+            });
+
+            if (response.data.code === "200") {
+                // 성공: 로그아웃 + 초기화
+                setIsDeleteModalOpen(true);
+                setDeleteModalMessage("회원 탈퇴가 완료되었습니다.");
+            } else {
+                setIsDeleteModalOpen(true);
+                setDeleteModalMessage(response.data.message || "회원 탈퇴 실패");
+            }
+        } catch (error) {
+            console.error(error);
+            setIsDeleteModalOpen(true);
+            setDeleteModalMessage("회원 탈퇴 중 오류가 발생했습니다.");
         }
     };
 
@@ -266,10 +302,12 @@ export default function SettingsList() {
                     </p>
 
                     <Input
-                        id="password"
+                        id="delete-password"
                         label="현재 비밀번호 확인"
                         type="password"
                         placeholder="현재 비밀번호를 입력해주세요"
+                        value={deletePassword}
+                        onChange={(e) => setDeletePassword(e.target.value)}
                         required={false}
                     />
 
@@ -282,10 +320,7 @@ export default function SettingsList() {
                         </button>
                         <button
                             className="p-3 w-24 text-xs font-normal bg-red-500 text-white rounded-md"
-                            onClick={() => {
-                                closeModal();
-                                navigate('/');
-                            }}
+                            onClick={handleDeleteAccount}
                         >
                             삭제
                         </button>
@@ -331,6 +366,30 @@ export default function SettingsList() {
                             className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
                             onClick={() => {
                                 setIsPasswordChangeModalOpen(false);
+                            }}
+                        >
+                            확인
+                        </button>
+                    </div>
+                </ModalLayout>
+            )}
+
+            {/* 계정 삭제 결과 모달 */}
+            {isDeleteModalOpen && (
+                <ModalLayout>
+                    <h2 className="text-base font-bold mb-5 text-center">계정 삭제</h2>
+                    <p className="text-gray-500 text-sm text-center leading-relaxed">
+                        {deleteModalMessage}
+                    </p>
+
+                    <div className="mt-6 flex items-center justify-center space-x-4">
+                        <button
+                            className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
+                            onClick={async () => {
+                                setIsDeleteModalOpen(false);
+                                if (deleteModalMessage.includes("완료")) {
+                                    await logout(); // AuthContext logout 함수 사용
+                                }
                             }}
                         >
                             확인
