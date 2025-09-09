@@ -7,7 +7,7 @@ on:
 
 jobs:
   create-feature-issue:
-    if: contains(github.event.issue.body, 'feature_issue_template.yml')
+    if: contains(join(github.event.issue.labels.*.name, ','), 'feature')
     runs-on: ubuntu-latest
     steps:
       - name: Login
