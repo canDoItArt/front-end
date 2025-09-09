@@ -7,7 +7,7 @@ on:
 
 jobs:
   create-feature-issue:
-    if: contains(join(github.event.issue.labels.*.name, ','), 'feature')
+    if: contains(github.event.issue.body, 'feature_issue_template.yml')
     runs-on: ubuntu-latest
     steps:
       - name: Login
@@ -42,3 +42,10 @@ jobs:
           issuetype: Subtask
           summary: "[Feature] ${{ github.event.issue.title }}"
           description: "${{ steps.md2jira.outputs.output-text }}"
+
+      - name: Debug Issue Labels
+        run: |
+          echo "Issue labels: ${{ toJSON(github.event.issue.labels) }}"
+          echo "Label names: ${{ join(github.event.issue.labels.*.name, ',') }}"
+          echo "Contains 'feat'? ${{ contains(join(github.event.issue.labels.*.name, ','), 'feat') }}"
+
