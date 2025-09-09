@@ -1,5 +1,5 @@
 # .github/workflows/create-jira-feature.yml
-name: Create Jira Feature Issue
+name: Create Jira Issue
 
 on:
   issues:
@@ -7,7 +7,6 @@ on:
 
 jobs:
   create-feature-issue:
-    if: contains(github.event.issue.body, 'feature_issue_template.yml')
     runs-on: ubuntu-latest
     steps:
       - name: Login
@@ -21,7 +20,7 @@ jobs:
         uses: stefanbuck/github-issue-parser@v3
         id: issue-parser
         with:
-          template-path: .github/ISSUE_TEMPLATE/feature_issue_template.yml
+          template-path: .github/ISSUE_TEMPLATE/create_issue_template.yml
 
       - name: Convert markdown to Jira Syntax
         uses: peter-evans/jira2md@v1
@@ -42,10 +41,4 @@ jobs:
           issuetype: Subtask
           summary: "[Feature] ${{ github.event.issue.title }}"
           description: "${{ steps.md2jira.outputs.output-text }}"
-
-      - name: Debug Issue Labels
-        run: |
-          echo "Issue labels: ${{ toJSON(github.event.issue.labels) }}"
-          echo "Label names: ${{ join(github.event.issue.labels.*.name, ',') }}"
-          echo "Contains 'feat'? ${{ contains(join(github.event.issue.labels.*.name, ','), 'feat') }}"
 
