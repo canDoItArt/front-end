@@ -7,7 +7,7 @@ on:
 
 jobs:
   create-fix-issue:
-    if: contains(github.event.issue.body, 'fix_issue_template.yml')
+    if: contains(join(github.event.issue.labels.*.name, ','), 'fix')
     runs-on: ubuntu-latest
     steps:
       - name: Login
