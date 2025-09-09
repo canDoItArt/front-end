@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ModalLayout from "../components/ModalLayout";
 import Input from "./Input";
 import { useAuth } from "../contexts/AuthContext";
+import api from "../api/axiosInstance";
 
 export default function SettingsList() {
     const navigate = useNavigate();
@@ -16,7 +17,16 @@ export default function SettingsList() {
     const [newPasswordError, setNewPasswordError] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
-    const handlePasswordSave = () => {
+    const [isPasswordCheckModalOpen, setIsPasswordCheckModalOpen] = useState(false); // 현재 비밀번호 확인 모달 오픈 상태
+    const [passwordCheckModalMessage, setPasswordCheckModalMessage] = useState("");  // 현재 비밀번호 확인 모달에 띄울 메시지
+
+    const [isPasswordChangeModalOpen, setIsPasswordChangeModalOpen] = useState(false); // 현재 비밀번호 확인 모달 오픈 상태
+    const [passwordChangeModalMessage, setPasswordChangeModalMessage] = useState("");  // 현재 비밀번호 확인 모달에 띄울 메시지
+
+    // 현재 비밀번호 체크여부
+    const [passwordChecked, setPasswordChecked] = useState(false);
+
+    const handlePasswordSave = async () => {
         let isValid = true;
 
         // 현재 비밀번호 유효성 검사
@@ -51,7 +61,26 @@ export default function SettingsList() {
         // 비밀번호 저장 처리 로직 (API 등)
         console.log("비밀번호 변경 완료");
 
-        closeModal();
+        try {
+            // ✅ 비밀번호 변경 API 호출
+            const response = await api.patch("/api/members/change-password", {
+                newPassword: newPassword,
+            });
+
+            if (response.data.code === "200") {
+                //alert("비밀번호가 성공적으로 변경되었습니다.");
+                setIsPasswordChangeModalOpen(true);
+                setPasswordChangeModalMessage("비밀번호가 성공적으로 변경되었습니다.");
+                closeModal();
+            } else {
+                alert(response.data.message || "비밀번호 변경 실패");
+            }
+        } catch (error) {
+            console.error(error);
+            //alert("비밀번호 변경 중 오류가 발생했습니다.");
+            setIsPasswordChangeModalOpen(true);
+            setPasswordChangeModalMessage("비밀번호 변경 중 오류가 발생했습니다.");
+        }
     };
 
     const options = [
@@ -85,10 +114,33 @@ export default function SettingsList() {
         setCurrentPasswordError("");
         setNewPasswordError("");
         setConfirmPasswordError("");
+        setPasswordChecked(false);
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
     };
 
-    const passwordCheck = () => {
-        alert("비밀번호 확인");
+    // 현재 비밀번호 확인 API
+    const passwordCheck = async () => {
+        try {
+            const response = await api.post("/api/members/password-check", {
+                type: "new-password",
+                password: currentPassword,
+            });
+
+            if (response.data.code === "200") {
+                setPasswordChecked(true);
+                setIsPasswordCheckModalOpen(true);
+                setPasswordCheckModalMessage("비밀번호가 확인되었습니다.");
+                // TODO: 비밀번호 변경 input 활성화 로직 추가 가능
+            } else {
+                alert(response.data.message || "비밀번호 확인 실패");
+            }
+        } catch (error) {
+            console.error(error);
+            setIsPasswordCheckModalOpen(true);
+            setPasswordCheckModalMessage("비밀번호가 일치하지 않습니다.");
+        }
     };
 
     return (
@@ -107,10 +159,6 @@ export default function SettingsList() {
             {modalType === "password" && (
                 <ModalLayout onClose={closeModal}>
                     <h2 className="text-base font-bold mb-5 text-center">비밀번호 변경</h2>
-                    {/* <p className="text-gray-500 text-sm text-center leading-relaxed">
-                        변경을 원하신다면 현재 비밀번호와<br />
-                        변경하실 비밀번호를 입력해주세요.
-                    </p> */}
 
                     <Input
                         id="password"
@@ -118,13 +166,23 @@ export default function SettingsList() {
                         type="password"
                         placeholder="현재 비밀번호를 입력해주세요"
                         value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        onChange={
+                            passwordChecked
+                                ? undefined // ✅ 확인 완료되면 입력 막기
+                                : (e) => setCurrentPassword(e.target.value)
+                        }
                         required={false}
                         error={currentPasswordError}
+                        successMessage={passwordChecked ? "비밀번호가 확인되었습니다." : ""}
+                        disabled={passwordChecked}
                     >
                         <button
-                            className="flex items-center justify-center whitespace-nowrap bg-white border border-customMain text-customMain py-2 px-4 text-xs rounded-md font-bold cursor-pointer"
+                            className={`flex items-center justify-center whitespace-nowrap py-2 px-4 text-xs rounded-md font-bold cursor-pointer
+                                        ${passwordChecked
+                                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                    : "bg-white border border-customMain text-customMain"}`}
                             onClick={passwordCheck}
+                            disabled={passwordChecked}
                         >
                             확인
                         </button>
@@ -188,7 +246,7 @@ export default function SettingsList() {
                             className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
                             onClick={async () => {
                                 console.log("로그아웃 실행");
-                                await  logout();
+                                await logout();
                                 closeModal();
                             }}
                         >
@@ -230,6 +288,52 @@ export default function SettingsList() {
                             }}
                         >
                             삭제
+                        </button>
+                    </div>
+                </ModalLayout>
+            )}
+
+            {/* 비밀번호 확인 성공 및 실패 메시지 모달 */}
+            {isPasswordCheckModalOpen && (
+                <ModalLayout>
+                    <h2 className="text-base font-bold mb-5 text-center">
+                        현재 비밀번호 확인
+                    </h2>
+                    <p className="text-gray-500 text-sm text-center leading-relaxed">
+                        {passwordCheckModalMessage}
+                    </p>
+
+                    <div className="mt-6 flex items-center justify-center space-x-4">
+                        <button
+                            className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
+                            onClick={() => {
+                                setIsPasswordCheckModalOpen(false);
+                            }}
+                        >
+                            확인
+                        </button>
+                    </div>
+                </ModalLayout>
+            )}
+
+            {/* 비밀번호 변경 성공 및 실패 메시지 모달 */}
+            {isPasswordChangeModalOpen && (
+                <ModalLayout>
+                    <h2 className="text-base font-bold mb-5 text-center">
+                        비밀번호 변경
+                    </h2>
+                    <p className="text-gray-500 text-sm text-center leading-relaxed">
+                        {passwordChangeModalMessage}
+                    </p>
+
+                    <div className="mt-6 flex items-center justify-center space-x-4">
+                        <button
+                            className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
+                            onClick={() => {
+                                setIsPasswordChangeModalOpen(false);
+                            }}
+                        >
+                            확인
                         </button>
                     </div>
                 </ModalLayout>
