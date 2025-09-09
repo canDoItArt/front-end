@@ -38,8 +38,21 @@ jobs:
         uses: atlassian/gajira-create@v3
         with:
           project: HD
-          issuetype: 작업
+          issuetype: 하위 작업
           summary: "[HD] ${{ github.event.issue.title }}"
           description: "${{ steps.md2jira.outputs.output-text }}"
+          fields: |
+            {
+              "parent": {
+                "key": "${{ steps.issue-parser.outputs.issueparser_parentKey }}"
+              }
+            }
+
+      - name: Update issue title
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: "update-issue"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "${{ steps.create.outputs.issue }} ${{ github.event.issue.title }}"
           
 
