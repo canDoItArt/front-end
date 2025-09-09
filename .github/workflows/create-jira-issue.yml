@@ -9,6 +9,11 @@ jobs:
   create-feature-issue:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          
       - name: Login
         uses: atlassian/gajira-login@v3
         env:
