@@ -44,12 +44,3 @@ body:
         - 콘솔 에러 로그: ...
     validations:
       required: false
-
-  - type: input
-    id: parentKey
-    attributes:
-      label: 🔗 Jira Parent Key
-      description: 연결할 Jira 부모 이슈 키를 입력해주세요. (HD-100)
-      placeholder: "HD-100"
-    validations:
-      required: true
