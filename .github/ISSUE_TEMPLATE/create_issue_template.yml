@@ -1,5 +1,5 @@
 name: "✨ 이슈 템플릿"
-description: 새로운 기능을 추가하거 기존 기능을 수정할 때 사용하는 템플릿입니다.
+description: 새로운 기능을 추가하거나 기존 기능을 수정할 때 사용하는 템플릿입니다.
 
 body:
   - type: input
@@ -44,3 +44,12 @@ body:
         - 콘솔 에러 로그: ...
     validations:
       required: false
+
+  - type: input
+    id: parentKey
+    attributes:
+      label: 🔗 Jira Parent Key
+      description: 연결할 Jira 부모 이슈 키를 입력해주세요. (HD-100)
+      placeholder: "HD-100"
+    validations:
+      required: true
