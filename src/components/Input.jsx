@@ -10,6 +10,7 @@ export default function Input({
     readOnly = false,
     error = "", // error prop 추가
     successMessage = "", // ✅ 성공 메시지 추가
+    disabled = false,
 }) {
     return (
         <div className="mb-10 mt-4">
@@ -26,6 +27,7 @@ export default function Input({
                     onChange={onChange}
                     placeholder={placeholder}
                     readOnly={readOnly}
+                    disabled={disabled}
                     className={`p-3 w-full rounded-xl bg-gray-70 text-gray-900 placeholder-customTextGray text-sm transition-colors duration-300 ease-in-out focus:outline-none
                     ${error ? "border border-red-500" : "focus:border-customMain"}`}
                 />
