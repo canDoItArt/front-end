@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Input from "../components/Input";
 import hexToColorClass from "../constants/colorMappings";
+import api from "../api/axiosInstance";
+import ModalLayout from "../components/ModalLayout";
 
 export default function CreateMyArtPage() {
     const navigate = useNavigate();
@@ -12,6 +14,9 @@ export default function CreateMyArtPage() {
     const [mainGoal, setMainGoal] = useState("");
     const [subGoalInput, setSubGoalInput] = useState("");
     const [subGoals, setSubGoals] = useState([]);
+
+    const [isMyartCreateModalOpen, setIsMyartCreateModalOpen] = useState(false); // 현재 비밀번호 확인 모달 오픈 상태
+    const [myartCreateModalMessage, setMyartCreateModalMessage] = useState("");  // 현재 비밀번호 확인 모달에 띄울 메시지
 
     const colorClasses = Object.values(hexToColorClass);
 
@@ -38,9 +43,32 @@ export default function CreateMyArtPage() {
         navigate('/importclone', { state: { type: 'maingoal' } });
     };
 
-    const createButtonClick = () => {
-        // 실제 저장 로직이 있다면 여기에 작성
-        navigate("/myartlist");
+    // 메인골 생성하기 API 연동
+    const createButtonClick = async () => {
+        try {
+            const response = await api.post("/api/main-goals", {
+                name: mainGoal,
+                subGoals: subGoals.map((goal) => ({
+                    name: goal,
+                    dailyActions: []
+                })) // 서버 요구사항에 맞게 객체 배열로 변환
+            });
+
+            if (response.data.code === "200") {
+                console.log("메인골 생성 성공:", response.data.data);
+                setIsMyartCreateModalOpen(true);
+                setMyartCreateModalMessage("메인골이 성공적으로 생성되었습니다.");
+            } else {
+                //alert("메인골 생성에 실패했습니다.");
+                setIsMyartCreateModalOpen(true);
+                setMyartCreateModalMessage("메인골 생성에 실패했습니다.");
+            }
+        } catch (error) {
+            console.error("메인골 생성 에러:", error);
+            setIsMyartCreateModalOpen(true);
+            setMyartCreateModalMessage("메인골 생성 중 오류가 발생했습니다.");
+            //alert("메인골 생성 중 오류가 발생했습니다.");
+        }
     };
 
     return (
@@ -129,6 +157,31 @@ export default function CreateMyArtPage() {
                         마이라트 생성하기
                     </button>
                 </div>
+
+
+                {/* 마이라트 생성 결과 모달 */}
+                {isMyartCreateModalOpen && (
+                    <ModalLayout>
+                        <h2 className="text-base font-bold mb-5 text-center">마이라트 생성</h2>
+                        <p className="text-gray-500 text-sm text-center leading-relaxed">
+                            {myartCreateModalMessage}
+                        </p>
+
+                        <div className="mt-6 flex items-center justify-center space-x-4">
+                            <button
+                                className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
+                                onClick={() => {
+                                    setIsMyartCreateModalOpen(false);
+                                    if (myartCreateModalMessage.includes("성공")) {
+                                        navigate("/myartlist"); // 성공 후 이동
+                                    }
+                                }}
+                            >
+                                확인
+                            </button>
+                        </div>
+                    </ModalLayout>
+                )}
             </div>
         </div>
     );
