@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LogoHeader from "../components/LogoHeader";
 import Navbar from "../components/Navbar";
@@ -7,12 +7,36 @@ import mainGoalListMockData from "../mocks/mainGoalList";
 import GoalTile from "../components/GoalTile";
 import MainGoalList from "../components/MainGoalList";
 import CustomDropdown from "../components/CustomDropdown";
+import api from "../api/axiosInstance"
+import { useAuth } from "../contexts/AuthContext";
 
 export default function MyArtListPage() {
-    const [currentData] = useState(mainGoalListMockData[0]); // 첫 번째 사용자 데이터
-    const [mainGoals, setMainGoals] = useState(currentData.mainGoals); // state 관리
+    //const [currentData] = useState(mainGoalListMockData[0]); // 첫 번째 사용자 데이터
+    const [mainGoals, setMainGoals] = useState([]); // state 관리
     const [selectedState, setSelectedState] = useState("all");
+    const { user, loading } = useAuth(); // ✅ Context에서 불러오기
     const navigate = useNavigate();
+
+    // 메인골 리스트 조회 API 호출
+    useEffect(() => {
+        const fetchMainGoals = async () => {
+            try {
+                const res = await api.get(`/api/main-goals?state=${selectedState}`);
+                if (res.data.code === "200") {
+                    const goals = res.data.data.mainGoals.map(goal => ({
+                        id: goal.id,
+                        name: goal.name,
+                        state: goal.isRep ? "rep" : "active",
+                    }));
+                    setMainGoals(goals);
+                }
+            } catch (err) {
+                console.error("메인골 리스트 조회 실패:", err);
+            }
+        };
+
+        fetchMainGoals();
+    }, [selectedState]); // ✅ selectedState 변경될 때마다 재호출
 
     // 대표 마이라트 설정 함수
     const handleSetRep = (goalIdOrNull) => {
@@ -33,21 +57,21 @@ export default function MyArtListPage() {
     };
 
 
-    // 필터링
-    const filteredGoals = selectedState === "all"
-        ? mainGoals
-        : selectedState === "active"
-            ? mainGoals.filter(goal => goal.state === "active" || goal.state === "rep")
-            : mainGoals.filter(goal => goal.state === selectedState);
+    // // 필터링
+    // const filteredGoals = selectedState === "all"
+    //     ? mainGoals
+    //     : selectedState === "active"
+    //         ? mainGoals.filter(goal => goal.state === "active" || goal.state === "rep")
+    //         : mainGoals.filter(goal => goal.state === selectedState);
 
     return (
         <div className="flex flex-col items-center justify-start min-h-screen bg-white px-6">
             <LogoHeader />
 
             <div className="mt-20 w-full">
-                <MottoCard motto={currentData.comment} />
+                <MottoCard motto={user?.comment} />
 
-                {filteredGoals.length > 0 ? (
+                {mainGoals.length > 0 ? (
                     <>
                         <div className="mt-4 w-full flex justify-end">
                             <CustomDropdown
@@ -58,7 +82,7 @@ export default function MyArtListPage() {
 
                         <div className="mt-3 p-3 overflow-y-auto max-h-[calc(100vh-320px)]">
                             <ul className="space-y-3">
-                                {filteredGoals.map((goal) => (
+                                {mainGoals.map((goal) => (
                                     <li key={goal.id}>
                                         <MainGoalList
                                             key={goal.id}
