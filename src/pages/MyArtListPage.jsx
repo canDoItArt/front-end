@@ -14,7 +14,7 @@ export default function MyArtListPage() {
     //const [currentData] = useState(mainGoalListMockData[0]); // 첫 번째 사용자 데이터
     const [mainGoals, setMainGoals] = useState([]); // state 관리
     const [selectedState, setSelectedState] = useState("all");
-    const { user, loading } = useAuth(); // ✅ Context에서 불러오기
+    const { user } = useAuth(); // ✅ Context에서 불러오기
     const navigate = useNavigate();
 
     // 메인골 리스트 조회 API 호출
@@ -36,7 +36,7 @@ export default function MyArtListPage() {
         };
 
         fetchMainGoals();
-    }, [selectedState]); // ✅ selectedState 변경될 때마다 재호출
+    }, [selectedState]); // selectedState 변경될 때마다 재호출
 
     // 대표 마이라트 설정 함수
     const handleSetRep = (goalIdOrNull) => {
@@ -71,6 +71,7 @@ export default function MyArtListPage() {
             <div className="mt-20 w-full">
                 <MottoCard motto={user?.comment} />
 
+                {/* ✅ 로딩 중일 때 */}
                 {mainGoals.length > 0 ? (
                     <>
                         <div className="mt-4 w-full flex justify-end">
@@ -104,39 +105,55 @@ export default function MyArtListPage() {
                             </button>
                         </div>
                     </>
+
                 ) : (
-                    <div className="flex flex-col items-center">
-                        {/* 빈 타일 + 생성 버튼 */}
-                        <div className="w-5/6 h-auto grid grid-cols-3 gap-3 justify-items-center items-center p-2 my-3">
-                            <GoalTile type="empty" />
-                            <GoalTile type="empty" />
-                            <GoalTile type="empty" />
-                            <GoalTile type="empty" />
-                            <button className="w-full" onClick={() => navigate('/createmyart')}>
-                                <div
-                                    className={`w-full aspect-[1/1] bg-customMain rounded-xl flex items-center justify-center text-white font-semibold text-sm p-2 
+                    selectedState === "all" ? (
+                        <div className="flex flex-col items-center">
+                            {/* 빈 타일 + 생성 버튼 */}
+                            <div className="w-5/6 h-auto grid grid-cols-3 gap-3 justify-items-center items-center p-2 my-3">
+                                <GoalTile type="empty" />
+                                <GoalTile type="empty" />
+                                <GoalTile type="empty" />
+                                <GoalTile type="empty" />
+                                <button className="w-full" onClick={() => navigate('/createmyart')}>
+                                    <div
+                                        className={`w-full aspect-[1/1] bg-customMain rounded-xl flex items-center justify-center text-white font-semibold text-sm p-2 
                                     shadow-[0_4px_6px_rgba(0,0,0,0.05),0_-4px_6px_rgba(0,0,0,0.05)]`}
-                                >
-                                    <span
-                                        className="line-clamp-3 text-center overflow-hidden text-ellipsis whitespace-normal leading-tight break-words"
                                     >
-                                        마이라트 <br /> 생성
-                                    </span>
-                                </div>
-                            </button>
-                            <GoalTile type="empty" />
-                            <GoalTile type="empty" />
-                            <GoalTile type="empty" />
-                            <GoalTile type="empty" />
+                                        <span
+                                            className="line-clamp-3 text-center overflow-hidden text-ellipsis whitespace-normal leading-tight break-words"
+                                        >
+                                            마이라트 <br /> 생성
+                                        </span>
+                                    </div>
+                                </button>
+                                <GoalTile type="empty" />
+                                <GoalTile type="empty" />
+                                <GoalTile type="empty" />
+                                <GoalTile type="empty" />
+                            </div>
+                            <div className="text-center mt-6">
+                                <p className="text-customTextBlack font-semibold text-xs mb-1">현재 진행중인 마이라트가 없어요</p>
+                                <p className="text-customTextBlack font-semibold text-xs mb-1">
+                                    <span className="text-customMain font-bold text-xs">마이라트 생성 버튼</span>을 클릭하여
+                                </p>
+                                <p className="text-customTextBlack font-semibold text-xs">나만의 만다라트를 만들어보세요!</p>
+                            </div>
                         </div>
-                        <div className="text-center mt-6">
-                            <p className="text-customTextBlack font-semibold text-xs mb-1">현재 진행중인 마이라트가 없어요</p>
-                            <p className="text-customTextBlack font-semibold text-xs mb-1">
-                                <span className="text-customMain font-bold text-xs">마이라트 생성 버튼</span>을 클릭하여
-                            </p>
-                            <p className="text-customTextBlack font-semibold text-xs">나만의 만다라트를 만들어보세요!</p>
-                        </div>
-                    </div>
+                    ) : (
+                        <>
+                            <div className="mt-4 w-full flex justify-end">
+                                <CustomDropdown
+                                    selectedState={selectedState}
+                                    setSelectedState={setSelectedState}
+                                />
+                            </div>
+
+                            <div className="flex flex-col items-center justify-center  h-[calc(100vh-320px)]">
+                                <p className="text-base text-gray-400">선택한 상태의 마이라트가 없습니다.</p>
+                            </div>
+                        </>
+                    )
                 )}
             </div>
 
