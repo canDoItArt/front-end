@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react"; // 아이콘 import
 
 export default function CustomDropdown({ selectedState, setSelectedState }) {
     const [isOpen, setIsOpen] = useState(false);
     const options = [
         { value: "all", label: "전체보기" },
-        { value: "active", label: "활성화" },
-        { value: "inactive", label: "사용중지" },
+        { value: "activity", label: "활성화" },
+        { value: "pause", label: "사용중지" },
         { value: "attainment", label: "달성" },
     ];
 
