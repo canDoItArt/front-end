@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import hexToColorClass from "../constants/colorMappings";
 import GoalTile from "./GoalTile";
 import BottomModalLayout from "./BottomModalLayout";
 import Input from "./Input";
 
-export default function SubGoalTiles({ title, subGoals, importedGoal }) {
+export default function SubGoalTiles({ title, subGoals, importedGoal, mainGoalId }) {
     const navigate = useNavigate();
     const [showAddModal, setShowAddModal] = useState(false);
     const [inputValue, setInputValue] = useState("");
@@ -34,8 +34,9 @@ export default function SubGoalTiles({ title, subGoals, importedGoal }) {
         setInputValue(e.target.value);
     };
 
-    const subGoalTileClick = () => {
-        navigate('/subgoal');
+    // ✅ goalId를 받아서 navigate 실행
+    const subGoalTileClick = (subGoalId) => {
+        navigate(`/myart/${mainGoalId}/subgoal/${subGoalId}`);
     };
 
     const addTileClick = () => {
@@ -77,7 +78,7 @@ export default function SubGoalTiles({ title, subGoals, importedGoal }) {
                                 <button
                                     key={`goal-${goal.id}`}
                                     className="w-full"
-                                    onClick={subGoalTileClick}
+                                    onClick={() => subGoalTileClick(goal.id)}
                                 >
                                     <GoalTile
                                         text={goal.name}
@@ -92,7 +93,7 @@ export default function SubGoalTiles({ title, subGoals, importedGoal }) {
                             <button
                                 key={`goal-${goal.id}`}
                                 className="w-full"
-                                onClick={subGoalTileClick}
+                                onClick={() => subGoalTileClick(goal.id)}
                             >
                                 <GoalTile
                                     text={goal.name}

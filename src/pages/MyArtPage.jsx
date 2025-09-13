@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import MottoCard from "../components/MottoCard";
 import myArtMockData from "../mocks/myArt";
@@ -11,6 +11,7 @@ export default function MyArtPage() {
     const location = useLocation();
     const importedGoal = location.state?.importedGoal; // 가져온 subgoal
     const [currentData] = useState(myArtMockData[0]); // 첫 번째 데이터 사용
+    const { mainGoalId } = useParams();
 
     const [currentWeekStart, setCurrentWeekStart] = useState(() => {
         const today = new Date();
@@ -31,7 +32,7 @@ export default function MyArtPage() {
             <div className="mt-20 mb-6 w-full">
                 <MottoCard motto={currentData.comment} />
 
-                <SubGoalTiles title={currentData.main_goal_name} subGoals={currentData.sub_goals} importedGoal={importedGoal} />
+                <SubGoalTiles title={currentData.main_goal_name} subGoals={currentData.sub_goals} importedGoal={importedGoal} mainGoalId={mainGoalId} />
 
                 <SubGoalCalendar
                     subGoals={currentData.sub_goals}

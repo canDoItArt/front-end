@@ -9,7 +9,7 @@ import MainGoalEditSubmodal from "./MainGoalEditSubmodal";
 import SubGoalRenameSubmodal from "./SubGoalRenameSubmodal";
 
 
-export default function Header({ title, page, state }) {
+export default function Header({ title, page, state, mainGoalId }) {
   let navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [subModalOpen, setSubModalOpen] = useState(null);
@@ -18,7 +18,7 @@ export default function Header({ title, page, state }) {
     if (page === "MyArtPage" || page === "CreateMyArtPage") {
       navigate("/myartlist");
     } else if (page === "SubGoalPage") {
-      navigate("/myart");
+      navigate(`/myart/${mainGoalId}`);
     } else {
       navigate(-1); // 이전 페이지로 이동
     }

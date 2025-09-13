@@ -87,6 +87,7 @@ export default function MyArtListPage() {
                                     <li key={goal.id}>
                                         <MainGoalList
                                             key={goal.id}
+                                            mainGoalId={goal.id}
                                             name={goal.name}
                                             state={goal.state}
                                             onSetRep={(isRemove) => handleSetRep(isRemove ? null : goal.id)}

@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, Ban, Trophy } from "lucide-react";
 import ModalLayout from "./ModalLayout";
 
-export default function MainGoalList({ name, state, onSetRep }) {
+export default function MainGoalList({ mainGoalId, name, state, onSetRep }) {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRemovingRep, setIsRemovingRep] = useState(false);
 
   const handleClick = () => {
-    navigate("/myart");
+    navigate(`/myart/${mainGoalId}`);
   };
 
   const handleIconClick = (e) => {
