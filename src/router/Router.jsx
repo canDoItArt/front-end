@@ -37,7 +37,7 @@ const router = createBrowserRouter(
             ),
         },
         {
-            path: "/myart",
+            path: "/myart/:mainGoalId",
             element: (
                 <PrivateRoute>
                     <MyArtPage />
@@ -53,7 +53,7 @@ const router = createBrowserRouter(
             ),
         },
         {
-            path: "/subgoal",
+            path: "/myart/:mainGoalId/subgoal/:subGoalId",
             element: (
                 <PrivateRoute>
                     <SubGoalPage />
