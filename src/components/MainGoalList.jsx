@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, Ban, Trophy } from "lucide-react";
 import ModalLayout from "./ModalLayout";
+import api from "../api/axiosInstance";
 
 export default function MainGoalList({ mainGoalId, name, state, onSetRep }) {
   const navigate = useNavigate();
@@ -23,9 +24,29 @@ export default function MainGoalList({ mainGoalId, name, state, onSetRep }) {
     }
   };
 
-  const confirmAction = () => {
-    onSetRep(isRemovingRep); // true → 해제 요청, false → 설정 요청
-    setIsModalOpen(false);
+  const confirmAction = async () => {
+    try {
+      if (isRemovingRep) {
+        // ✅ 대표 메인골 해제 (API 명세에 따라 다를 수 있음. 우선 PATCH로 예시 처리)
+        // await api.patch(`/api/main-goals/${mainGoalId}/rep/cancel`);
+        // alert("대표 메인골이 해제되었습니다.");
+      } else {
+        // ✅ 대표 메인골 설정
+        const res = await api.post(`/api/main-goals/${mainGoalId}/rep`);
+        if (res.data.code === "200" && res.data.data === true) {
+          alert("대표 메인골로 설정되었습니다.");
+        }
+      }
+
+      // 부모 상태 갱신
+      onSetRep(isRemovingRep);
+
+    } catch (error) {
+      console.error("대표 메인골 설정/해제 실패:", error);
+      alert("처리 중 오류가 발생했습니다.");
+    } finally {
+      setIsModalOpen(false);
+    }
   };
 
   const stateIcons = {
