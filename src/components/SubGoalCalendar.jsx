@@ -3,9 +3,11 @@ import { format, parseISO, isValid, addDays, subDays } from "date-fns";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { MdVerified } from "react-icons/md";
 import hexToColorClass from "../constants/colorMappings";
+import slotColors from "../constants/soltNumMappings";
 
 export default function SubGoalCalendar({
   subGoals = [],
+  progress = [],
   start_date,
   end_date,
   week_of_month,
@@ -59,13 +61,13 @@ export default function SubGoalCalendar({
     onChangeWeekStart(formatted);
   };
 
-  // 달성되지 않은 목표만 모아서 진행률 순으로 정렬
-  const pendingGoals = subGoals
-    .filter((g) => !g.is_attained)
-    .sort((a, b) => b.progress_rate - a.progress_rate);
+  // 진행 중인 서브골
+  const pendingGoals = Array.isArray(progress)
+    ? [...progress].sort((a, b) => (b.rate ?? 0) - (a.rate ?? 0))
+    : [];
 
   // 달성된 목표만 따로
-  const achievedGoals = subGoals.filter((g) => g.is_attained);
+  const achievedGoals = subGoals.filter((g) => g.attainment);
 
   return (
     <div className="w-full mt-6 bg-white p-6 rounded-lg shadow-customShadow">
@@ -91,26 +93,26 @@ export default function SubGoalCalendar({
       <ul className="space-y-4">
         {pendingGoals.map((goal, index) => (
           <li
-            key={goal.id}
+            key={goal.subGoalName}
             className="bg-gray-50 px-4 py-3 rounded-md shadow-sm"
           >
             <div className="flex justify-between items-center mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-bold text-blue-600">#{index + 1}</span>
                 <span className="font-medium flex items-center gap-1">
-                  {goal.name}
+                  {goal.subGoalName}
                 </span>
               </div>
               <span className="text-sm font-medium text-gray-600">
-                {goal.progress_rate}%
+                {goal.rate}%
               </span>
             </div>
             <div className="w-full bg-gray-200 h-3 rounded-full overflow-hidden">
               <div
-                className={`h-3 rounded-full transition-all duration-300 ${hexToColorClass[goal.color] || "bg-gray-400"
+                className={`h-3 rounded-full transition-all duration-300 ${slotColors[goal.slotNum] || "bg-gray-400"
                   }`}
                 style={{
-                  width: `${goal.progress_rate}%`,
+                  width: `${goal.rate}%`,
                 }}
               />
             </div>
@@ -129,13 +131,13 @@ export default function SubGoalCalendar({
             {achievedGoals.map((goal) => (
               <span
                 key={goal.id}
-                className={`inline-flex items-center gap-1 text-sm font-medium px-3 py-1 rounded-full transition ${hexToColorClass[goal.color]} bg-opacity-20`}
+                className={`inline-flex items-center gap-1 text-sm font-medium px-3 py-1 rounded-full transition ${slotColors[goal.slotNum]} bg-opacity-20`}
                 style={{
-                  color: goal.color,
+                  color: slotColors[goal.slotNum],
                 }}
               >
                 <MdVerified />
-                {goal.name}
+                {goal.subGoalName}
               </span>
             ))}
           </div>

@@ -61,7 +61,10 @@ export default function SubGoalTiles({ title, subGoals, importedGoal, mainGoalId
         ["#EB4335", "#F09752", "#F7D04D"], // Red, Orange, Yellow
         ["#8B80DD", "t", "#B1D854"],       // Purple, title, Green
         ["#4091EE", "#7BBFF9", "#70CCB1"]  // Blue, Sky, Mint
+
     ];
+
+    const slotNumMap = [1, 2, 3, 8, 0, 4, 7, 6, 5];
 
     return (
         <div className="flex justify-center">
@@ -71,7 +74,10 @@ export default function SubGoalTiles({ title, subGoals, importedGoal, mainGoalId
                         return <GoalTile key={`title-${index}`} text={title} type="title" />;
                     }
 
-                    const goal = subGoals.find((goal) => goal.color === id);
+                    // slotNum은 1부터 시작한다고 가정
+                    const slotNum = slotNumMap[index];
+                    const goal = subGoals.find((goal) => goal.slotNum === slotNum);
+
                     if (goal) {
                         if (goal.is_attained === true) {
                             return (
@@ -82,7 +88,7 @@ export default function SubGoalTiles({ title, subGoals, importedGoal, mainGoalId
                                 >
                                     <GoalTile
                                         text={goal.name}
-                                        color={hexToColorClass[goal.color]}
+                                        color={hexToColorClass[id]}
                                         type="achievement"
                                         goal="subGoal"
                                     />
@@ -97,7 +103,7 @@ export default function SubGoalTiles({ title, subGoals, importedGoal, mainGoalId
                             >
                                 <GoalTile
                                     text={goal.name}
-                                    color={hexToColorClass[goal.color]}
+                                    color={hexToColorClass[id]}
                                 />
                             </button>
                         );
