@@ -48,6 +48,26 @@ export default function MyArtPage() {
             fetchMainGoal();
         }
     }, [mainGoalId]);
+    
+    // ✅ SubGoalCalendar에서 호출할 핸들러
+    const handleChangeWeekStart = (formatted, newProgressData) => {
+        setCurrentWeekStart(formatted);
+
+        // currentData 갱신
+        setCurrentData((prev) => {
+            if (!prev) return prev;
+            return {
+                ...prev,
+                progress: {
+                    ...prev.progress,
+                    startDate: newProgressData.start_date,
+                    endDate: newProgressData.end_date,
+                    weekOfMonth: newProgressData.week_of_month,
+                    subProgress: newProgressData.progress,
+                },
+            };
+        });
+    };
 
     if (loading) {
         return <div className="flex justify-center items-center h-screen">로딩 중...</div>;
@@ -78,13 +98,14 @@ export default function MyArtPage() {
                 />
 
                 <SubGoalCalendar
+                    mainGoalId={mainGoalId}
                     subGoals={currentData.subGoals}
                     progress={currentData.progress.subProgress}
                     start_date={currentData.progress.startDate}
                     end_date={currentData.progress.endDate}
                     week_of_month={currentData.progress.weekOfMonth}
                     currentWeekStart={currentWeekStart}
-                    onChangeWeekStart={setCurrentWeekStart}
+                    onChangeWeekStart={handleChangeWeekStart}
                 />
             </div>
         </div>

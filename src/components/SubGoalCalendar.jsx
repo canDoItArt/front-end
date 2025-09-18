@@ -2,10 +2,11 @@ import { useMemo } from "react";
 import { format, parseISO, isValid, addDays, subDays } from "date-fns";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { MdVerified } from "react-icons/md";
-import hexToColorClass from "../constants/colorMappings";
 import slotColors from "../constants/soltNumMappings";
+import api from "../api/axiosInstance";
 
 export default function SubGoalCalendar({
+  mainGoalId,
   subGoals = [],
   progress = [],
   start_date,
@@ -45,20 +46,63 @@ export default function SubGoalCalendar({
   const { range: formattedDateRange, year: parsedYear, month: parsedMonth } = formattedRange;
 
   // 날짜 이동 핸들러
-  const handlePrevDate = () => {
+  const handlePrevDate = async () => {
     const current = parseISO(currentWeekStart);
     if (!isValid(current)) return;
+
     const prev = subDays(current, 7);
     const formatted = format(prev, "yyyy-MM-dd");
-    onChangeWeekStart(formatted);
+
+    try {
+      const res = await api.get(`/api/main-goals/${mainGoalId}/sub-progress`, {
+        params: {
+          date: formatted,
+          direction: "PREV",
+        },
+      });
+
+      // 응답 데이터 구조에 맞게 상태 갱신
+      const { startDate, endDate, weekOfMonth, subProgress } = res.data.data;
+
+      onChangeWeekStart(formatted, {
+        start_date: startDate,
+        end_date: endDate,
+        week_of_month: weekOfMonth,
+        progress: subProgress,
+      });
+    } catch (err) {
+      console.error("서브골 진행도 조회 실패:", err);
+      alert("데이터를 불러오는 데 실패했습니다.");
+    }
   };
 
-  const handleNextDate = () => {
+  const handleNextDate = async () => {
     const current = parseISO(currentWeekStart);
     if (!isValid(current)) return;
+
     const next = addDays(current, 7);
     const formatted = format(next, "yyyy-MM-dd");
-    onChangeWeekStart(formatted);
+
+    try {
+      const res = await api.get(`/api/main-goals/${mainGoalId}/sub-progress`, {
+        params: {
+          date: formatted,
+          direction: "NEXT",
+        },
+      });
+
+      const { startDate, endDate, weekOfMonth, subProgress } = res.data.data;
+
+      onChangeWeekStart(formatted, {
+        start_date: startDate,
+        end_date: endDate,
+        week_of_month: weekOfMonth,
+        progress: subProgress,
+      });
+    } catch (err) {
+      console.error("서브골 진행도 조회 실패:", err);
+      alert("데이터를 불러오는 데 실패했습니다.");
+    }
   };
 
   // 진행 중인 서브골
@@ -93,7 +137,7 @@ export default function SubGoalCalendar({
       <ul className="space-y-4">
         {pendingGoals.map((goal, index) => (
           <li
-            key={goal.subGoalName}
+            key={`${goal.subGoalName}-${index}`}
             className="bg-gray-50 px-4 py-3 rounded-md shadow-sm"
           >
             <div className="flex justify-between items-center mb-1">
