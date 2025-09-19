@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { format, parseISO, isValid, addDays, subDays } from "date-fns";
+import { format, parseISO, isValid, isAfter } from "date-fns";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { MdVerified } from "react-icons/md";
 import slotColors from "../constants/soltNumMappings";
@@ -45,18 +45,23 @@ export default function SubGoalCalendar({
   // 구조 분해
   const { range: formattedDateRange, year: parsedYear, month: parsedMonth } = formattedRange;
 
+  // 오늘 날짜와 비교해서 NEXT 버튼 비활성화 여부 판단
+  const isNextDisabled = useMemo(() => {
+    if (!end_date) return false;
+    const today = new Date();
+    const endParsed = parseISO(end_date);
+    return isAfter(endParsed, today); // end_date가 오늘보다 미래라면 NEXT 막기
+  }, [end_date]);
+
   // 날짜 이동 핸들러
   const handlePrevDate = async () => {
     const current = parseISO(currentWeekStart);
     if (!isValid(current)) return;
 
-    const prev = subDays(current, 7);
-    const formatted = format(prev, "yyyy-MM-dd");
-
     try {
       const res = await api.get(`/api/main-goals/${mainGoalId}/sub-progress`, {
         params: {
-          date: formatted,
+          date: format(current, "yyyy-MM-dd"), // 현재 날짜만 보냄
           direction: "PREV",
         },
       });
@@ -64,7 +69,7 @@ export default function SubGoalCalendar({
       // 응답 데이터 구조에 맞게 상태 갱신
       const { startDate, endDate, weekOfMonth, subProgress } = res.data.data;
 
-      onChangeWeekStart(formatted, {
+      onChangeWeekStart(startDate, {
         start_date: startDate,
         end_date: endDate,
         week_of_month: weekOfMonth,
@@ -80,20 +85,17 @@ export default function SubGoalCalendar({
     const current = parseISO(currentWeekStart);
     if (!isValid(current)) return;
 
-    const next = addDays(current, 7);
-    const formatted = format(next, "yyyy-MM-dd");
-
     try {
       const res = await api.get(`/api/main-goals/${mainGoalId}/sub-progress`, {
         params: {
-          date: formatted,
+          date: format(current, "yyyy-MM-dd"), // 현재 날짜만 보냄
           direction: "NEXT",
         },
       });
 
       const { startDate, endDate, weekOfMonth, subProgress } = res.data.data;
 
-      onChangeWeekStart(formatted, {
+      onChangeWeekStart(startDate, {
         start_date: startDate,
         end_date: endDate,
         week_of_month: weekOfMonth,
@@ -127,7 +129,11 @@ export default function SubGoalCalendar({
           <button onClick={handlePrevDate} className="text-lg font-bold">
             <BsChevronLeft />
           </button>
-          <button onClick={handleNextDate} className="text-lg font-bold">
+          <button
+            onClick={handleNextDate}
+            className={`text-lg font-bold ${isNextDisabled ? "text-gray-300 cursor-not-allowed" : ""}`}
+            disabled={isNextDisabled} // ✅ 버튼 자체도 비활성화
+          >
             <BsChevronRight />
           </button>
         </div>
