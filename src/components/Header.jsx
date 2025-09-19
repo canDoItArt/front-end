@@ -85,7 +85,15 @@ export default function Header({ title, page, state, mainGoalId }) {
 
       {/* MainGoal 삭제 서브모달 */}
       {subModalOpen === "mainGoalDelete" && (
-        <DeleteSubmodal type="mainGoal" closeSubModal={closeSubModal} >
+        <DeleteSubmodal
+          type="mainGoal"
+          mainGoalId={mainGoalId}
+          closeSubModal={closeSubModal}
+          onDeleteSuccess={() => {
+            alert("정상적으로 메인골이 삭제되었습니다.");
+            goBack();
+          }}
+        >
           Main Goal 삭제 시 <br />
           모든 Sub Goal의 내용이 삭제됩니다.
         </DeleteSubmodal>

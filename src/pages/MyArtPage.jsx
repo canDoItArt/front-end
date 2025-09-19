@@ -84,7 +84,7 @@ export default function MyArtPage() {
     return (
         <div className="flex flex-col items-center justify-start min-h-screen bg-white px-6">
 
-            <Header title={currentData.mainGoal.name} page="MyArtPage" state={currentData.mainGoal.status} />
+            <Header title={currentData.mainGoal.name} page="MyArtPage" state={currentData.mainGoal.status} mainGoalId={mainGoalId} />
 
             {/* 메인 콘텐츠 영역 */}
             <div className="mt-20 mb-6 w-full">
