@@ -9,10 +9,14 @@ import MainGoalEditSubmodal from "./MainGoalEditSubmodal";
 import SubGoalRenameSubmodal from "./SubGoalRenameSubmodal";
 
 
-export default function Header({ title, page, state, mainGoalId }) {
+export default function Header({ title: initialTitle, page, state: initialState, mainGoalId }) {
   let navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [subModalOpen, setSubModalOpen] = useState(null);
+
+  // 메인골 수정 후 갱신할 state
+  const [currentTitle, setCurrentTitle] = useState(initialTitle);
+  const [currentState, setCurrentState] = useState(initialState);
 
   let goBack = () => {
     if (page === "MyArtPage" || page === "CreateMyArtPage") {
@@ -57,7 +61,7 @@ export default function Header({ title, page, state, mainGoalId }) {
       </button>
 
       {/* 제목 */}
-      <h2 className="text-center text-base font-bold text-customTextBlack">{title}</h2>
+      <h2 className="text-center text-base font-bold text-customTextBlack">{currentTitle}</h2>
 
       {/* 메뉴 버튼 */}
       <button onClick={toggleModal}>
@@ -79,7 +83,17 @@ export default function Header({ title, page, state, mainGoalId }) {
       {/* MainGoal 수정 서브모달 */}
       {subModalOpen === "mainGoalEdit" && (
         <BottomModalLayout isOpen={subModalOpen === "mainGoalEdit"} onClose={closeSubModal}>
-          <MainGoalEditSubmodal closeSubModal={closeSubModal} state={state} />
+          <MainGoalEditSubmodal
+            closeSubModal={closeSubModal}
+            mainGoalId={mainGoalId}
+            title={currentTitle}
+            state={currentState}
+            // 👇 수정 성공 시 부모 state 갱신
+            onEditSuccess={(updatedData) => {
+              setCurrentTitle(updatedData.name);
+              setCurrentState(updatedData.status);
+            }}
+          />
         </BottomModalLayout>
       )}
 
@@ -102,7 +116,7 @@ export default function Header({ title, page, state, mainGoalId }) {
       {/* SubGoal 수정 서브모달 */}
       {subModalOpen === "subGoalRename" && (
         <BottomModalLayout isOpen={subModalOpen === "subGoalRename"} onClose={closeSubModal}>
-          <SubGoalRenameSubmodal closeSubModal={closeSubModal} state={state} />
+          <SubGoalRenameSubmodal closeSubModal={closeSubModal} title={title} state={state} />
         </BottomModalLayout>
       )}
 
