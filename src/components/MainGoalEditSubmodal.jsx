@@ -1,14 +1,14 @@
 import { Star, Ban, Trophy } from "lucide-react"; // 아이콘 라이브러리 사용
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Input from "./Input";
 import StatusButton from "./StatusButton";
-import myArtMockData from "../mocks/myArt";
+import api from "../api/axiosInstance";
 
-export default function MainGoalEditSubmodal({ closeSubModal, state }) {
-    const [currentData] = useState(myArtMockData[0]); // 첫 번째 데이터 사용
-    const [title, setTitle] = useState(currentData.main_goal_name);
-    const [selectedStatus, setSelectedStatus] = useState(null);
+export default function MainGoalEditSubmodal({ closeSubModal, mainGoalId, title: initialTitle, state, onEditSuccess }) {
+    const [title, setTitle] = useState(initialTitle || "");
+    const [selectedStatus, setSelectedStatus] = useState(state || "ACTIVITY");
     const [titleError, setTitleError] = useState(""); // 에러 상태 추가
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (state === "ACTIVITY") {
@@ -20,7 +20,7 @@ export default function MainGoalEditSubmodal({ closeSubModal, state }) {
         }
     }, [state]);
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (title.trim() === "") {
             setTitleError("이름 값은 필수 값입니다.");
             return; // 저장 로직 실행 안함
@@ -28,7 +28,27 @@ export default function MainGoalEditSubmodal({ closeSubModal, state }) {
 
         setTitleError(""); // 에러 초기화
         // 저장 로직 실행 가능
-        closeSubModal(); // 저장 성공 시 모달 닫기
+        try {
+            setLoading(true);
+            const res = await api.patch(`/api/main-goals/${mainGoalId}`, {
+                name: title,
+                status: selectedStatus,
+            });
+
+            console.log("수정 성공:", res.data);
+            const updatedData = res.data.data;
+            alert("메인골이 수정되었습니다.");
+            // 부모에 수정된 데이터 전달
+            if (onEditSuccess) {
+                onEditSuccess(updatedData);
+            }
+            closeSubModal();
+        } catch (err) {
+            console.error("수정 실패:", err);
+            alert("메인골 수정에 실패했습니다. 다시 시도해주세요.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -85,7 +105,7 @@ export default function MainGoalEditSubmodal({ closeSubModal, state }) {
                     className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
                     onClick={handleSave}
                 >
-                    저장
+                    {loading ? "저장중..." : "저장"}
                 </button>
             </div>
         </div>
