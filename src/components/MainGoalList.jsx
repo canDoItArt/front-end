@@ -4,7 +4,7 @@ import { Star, Ban, Trophy } from "lucide-react";
 import ModalLayout from "./ModalLayout";
 import api from "../api/axiosInstance";
 
-export default function MainGoalList({ mainGoalId, name, state, onSetRep }) {
+export default function MainGoalList({ mainGoalId, name, isRep, status, onSetRep }) {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRemovingRep, setIsRemovingRep] = useState(false);
@@ -15,10 +15,10 @@ export default function MainGoalList({ mainGoalId, name, state, onSetRep }) {
 
   const handleIconClick = (e) => {
     e.stopPropagation();
-    if (state === "active") {
+    if (!isRep) {
       setIsRemovingRep(false);
       setIsModalOpen(true);
-    } else if (state === "rep") {
+    } else {
       setIsRemovingRep(true);
       setIsModalOpen(true);
     }
@@ -26,21 +26,9 @@ export default function MainGoalList({ mainGoalId, name, state, onSetRep }) {
 
   const confirmAction = async () => {
     try {
-      if (isRemovingRep) {
-        // ✅ 대표 메인골 해제 (API 명세에 따라 다를 수 있음. 우선 PATCH로 예시 처리)
-        // await api.patch(`/api/main-goals/${mainGoalId}/rep/cancel`);
-        // alert("대표 메인골이 해제되었습니다.");
-      } else {
-        // ✅ 대표 메인골 설정
-        const res = await api.post(`/api/main-goals/${mainGoalId}/rep`);
-        if (res.data.code === "200" && res.data.data === true) {
-          alert("대표 메인골로 설정되었습니다.");
-        }
-      }
-
+      const res = await api.post(`/api/main-goals/${mainGoalId}/rep`);
       // 부모 상태 갱신
-      onSetRep(isRemovingRep);
-
+      onSetRep(isRemovingRep ? null : mainGoalId);
     } catch (error) {
       console.error("대표 메인골 설정/해제 실패:", error);
       alert("처리 중 오류가 발생했습니다.");
@@ -49,19 +37,33 @@ export default function MainGoalList({ mainGoalId, name, state, onSetRep }) {
     }
   };
 
-  const stateIcons = {
-    active: (
-      <div onClick={handleIconClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && handleIconClick(e)}>
-        <Star className="w-5 h-5 text-gray-500 stroke-2 cursor-pointer" />
-      </div>
-    ),
-    rep: (
-      <div onClick={handleIconClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && handleIconClick(e)}>
-        <Star className="w-5 h-5 text-yellow-500 fill-yellow-500 stroke-2 cursor-pointer" />
-      </div>
-    ),
-    inactive: <Ban className="w-5 h-5 text-red-500" />,
-    attainment: <Trophy className="w-5 h-5 text-yellow-500" />,
+  const renderIcon = () => {
+    if (status === "ACTIVITY") {
+      if (isRep) {
+        return (
+          <Star
+            className="w-5 h-5 text-yellow-500 fill-yellow-500 stroke-2 cursor-pointer"
+            onClick={handleIconClick}
+          />
+        );
+      }
+      return (
+        <Star
+          className="w-5 h-5 text-gray-500 stroke-2 cursor-pointer"
+          onClick={handleIconClick}
+        />
+      );
+    }
+
+    if (status === "PAUSE") {
+      return <Ban className="w-5 h-5 text-red-500" />;
+    }
+
+    if (status === "ATTAINMENT") {
+      return <Trophy className="w-5 h-5 text-yellow-500" />;
+    }
+
+    return null;
   };
 
   return (
@@ -72,7 +74,7 @@ export default function MainGoalList({ mainGoalId, name, state, onSetRep }) {
         className="flex justify-between items-center p-6 bg-white rounded-lg shadow-customShadow w-full"
       >
         <span className="font-semibold text-sm">{name}</span>
-        <div>{stateIcons[state]}</div>
+        <div>{renderIcon()}</div>
       </button>
 
       {isModalOpen && (
