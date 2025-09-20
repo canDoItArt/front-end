@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import LogoHeader from "../components/LogoHeader";
 import Navbar from "../components/Navbar";
 import MottoCard from "../components/MottoCard";
-import mainGoalListMockData from "../mocks/mainGoalList";
 import GoalTile from "../components/GoalTile";
 import MainGoalList from "../components/MainGoalList";
 import CustomDropdown from "../components/CustomDropdown";
@@ -11,11 +10,11 @@ import api from "../api/axiosInstance"
 import { useAuth } from "../contexts/AuthContext";
 
 export default function MyArtListPage() {
-    //const [currentData] = useState(mainGoalListMockData[0]); // 첫 번째 사용자 데이터
     const [mainGoals, setMainGoals] = useState([]); // state 관리
     const [selectedState, setSelectedState] = useState("all");
     const { user } = useAuth(); // ✅ Context에서 불러오기
     const navigate = useNavigate();
+    const [repId, setRepId] = useState(null);
 
     // 메인골 리스트 조회 API 호출
     useEffect(() => {
@@ -25,8 +24,9 @@ export default function MyArtListPage() {
                 if (res.data.code === "200") {
                     const goals = res.data.data.mainGoals.map(goal => ({
                         id: goal.id,
+                        isRep: goal.isRep ? true : false,
                         name: goal.name,
-                        state: goal.isRep ? "rep" : "active",
+                        status: goal.status
                     }));
                     setMainGoals(goals);
                 }
@@ -42,27 +42,23 @@ export default function MyArtListPage() {
     const handleSetRep = (goalIdOrNull) => {
         setMainGoals(prevGoals =>
             prevGoals.map(goal => {
-                // 해제 요청인 경우
                 if (goalIdOrNull === null) {
-                    if (goal.state === "rep") return { ...goal, state: "active" };
+                    // 대표 해제
+                    if (goal.isRep) return { ...goal, isRep: false };
                     return goal;
                 }
-
-                // 대표 마이라트 설정
-                if (goal.id === goalIdOrNull) return { ...goal, state: "rep" };
-                if (goal.state === "rep") return { ...goal, state: "active" }; // 기존 rep는 해제
+                if (goal.id === goalIdOrNull) {
+                    return { ...goal, isRep: true };
+                }
+                if (goal.isRep) {
+                    return { ...goal, isRep: false }; // 기존 대표 해제
+                }
                 return goal;
             })
         );
     };
 
 
-    // // 필터링
-    // const filteredGoals = selectedState === "all"
-    //     ? mainGoals
-    //     : selectedState === "active"
-    //         ? mainGoals.filter(goal => goal.state === "active" || goal.state === "rep")
-    //         : mainGoals.filter(goal => goal.state === selectedState);
 
     return (
         <div className="flex flex-col items-center justify-start min-h-screen bg-white px-6">
@@ -89,8 +85,9 @@ export default function MyArtListPage() {
                                             key={goal.id}
                                             mainGoalId={goal.id}
                                             name={goal.name}
-                                            state={goal.state}
-                                            onSetRep={(isRemove) => handleSetRep(isRemove ? null : goal.id)}
+                                            isRep={goal.isRep}
+                                            status={goal.status}
+                                            onSetRep={handleSetRep}
                                         />
                                     </li>
                                 ))}
