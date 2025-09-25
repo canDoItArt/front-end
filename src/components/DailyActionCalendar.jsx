@@ -2,20 +2,20 @@ import React, { useState, useEffect } from "react";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import hexToColorClass from "../constants/colorMappings";
 
-export default function DailyActionCalendar({ subGoals }) {
+export default function DailyActionCalendar({ subGoalProgress }) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [viewMode, setViewMode] = useState("week"); // 'week' 또는 'month' 모드
     const [dateColorMap, setDateColorMap] = useState({});
 
     useEffect(() => {
-        if (subGoals) {
-            const mappedColors = subGoals.strict.reduce((acc, { checkedDate }) => {
-                acc[checkedDate] = hexToColorClass[subGoals.color] || "bg-gray-200";
+        if (subGoalProgress) {
+            const mappedColors = subGoalProgress.strict.reduce((acc, { checkedDate }) => {
+                acc[checkedDate] = hexToColorClass[subGoalProgress.color] || "bg-gray-200";
                 return acc;
             }, {});
             setDateColorMap(mappedColors);
         }
-    }, [subGoals]);
+    }, [subGoalProgress]);
 
     const handlePrevDate = () => {
         const newDate = new Date(currentDate);

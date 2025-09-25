@@ -9,7 +9,7 @@ import MainGoalEditSubmodal from "./MainGoalEditSubmodal";
 import SubGoalRenameSubmodal from "./SubGoalRenameSubmodal";
 
 
-export default function Header({ title: initialTitle, page, state: initialState, mainGoalId }) {
+export default function Header({ title: initialTitle, page, state: initialState, mainGoalId, attainment }) {
   let navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [subModalOpen, setSubModalOpen] = useState(null);

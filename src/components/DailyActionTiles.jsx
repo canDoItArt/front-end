@@ -82,7 +82,7 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
             <div className="w-4/5 h-auto grid grid-cols-3 gap-3 justify-items-center items-center my-5">
                 {idLayout.flat().map((id, index) => {
                     if (id === "t") {
-                        return <GoalTile key={`title-${index}`} text={title} color={hexToColorClass[color]} />;
+                        return <GoalTile key={`title-${index}`} text={title} color={color} />;
                     }
 
                     const action = dailyActions.find((action) => action.target_num === id);
