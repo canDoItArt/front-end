@@ -4,12 +4,17 @@ import hexToColorClass from "../constants/colorMappings";
 import GoalTile from "./GoalTile";
 import BottomModalLayout from "./BottomModalLayout";
 import Input from "./Input";
+import api from "../api/axiosInstance";
 
-export default function SubGoalTiles({ title, subGoals, importedGoal, mainGoalId }) {
+export default function SubGoalTiles({ title, subGoals, importedGoal, mainGoalId, onSubGoalCreated }) {
     const navigate = useNavigate();
     const [showAddModal, setShowAddModal] = useState(false);
     const [inputValue, setInputValue] = useState("");
     const [titleError, setTitleError] = useState(""); // 에러 상태 추가
+    const [loading, setLoading] = useState(false);
+
+    // ✅ 새로 추가된 상태
+    const [selectedSlotNum, setSelectedSlotNum] = useState(null);
 
     useEffect(() => {
         if (importedGoal) {
@@ -18,15 +23,43 @@ export default function SubGoalTiles({ title, subGoals, importedGoal, mainGoalId
         }
     }, [importedGoal]);
 
-    const handleSave = () => {
+    // ✅ SubGoal 생성 API 연동
+    const handleSave = async () => {
         if (inputValue.trim() === "") {
             setTitleError("Sub Goal 제목 값은 필수 값입니다.");
             return;
         }
 
-        setTitleError(""); // 에러 초기화
-        // 저장 로직 실행 가능
-        closeAddModal(); // 저장 성공 시 모달 닫기
+        if (selectedSlotNum === null) {
+            setTitleError("slotNum이 선택되지 않았습니다.");
+            return;
+        }
+
+        setTitleError("");
+        setLoading(true);
+
+        try {
+            const response = await api.post(`/api/main-goals/${mainGoalId}/sub-goals`, {
+                name: inputValue,
+                slotNum: selectedSlotNum,
+                dailyActions: []
+            });
+
+            // 보통 응답 구조: { code: "200", data: { id, name, slotNum, ... } }
+            const newSubGoal = response.data.data ?? response.data;
+
+            // 부모 컴포넌트에서 subGoals를 다시 불러오거나 업데이트하도록 콜백 실행
+            if (onSubGoalCreated) {
+                onSubGoalCreated(newSubGoal);
+            }
+
+            closeAddModal();
+        } catch (error) {
+            console.error("서브골 생성 실패:", error);
+            setTitleError("서브골 생성 중 오류가 발생했습니다.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     // 입력값 변경 핸들러
@@ -39,7 +72,8 @@ export default function SubGoalTiles({ title, subGoals, importedGoal, mainGoalId
         navigate(`/myart/${mainGoalId}/subgoal/${subGoalId}`);
     };
 
-    const addTileClick = () => {
+    const addTileClick = (slotNum) => {
+        setSelectedSlotNum(slotNum);
         setShowAddModal(true);
     };
 
@@ -48,6 +82,7 @@ export default function SubGoalTiles({ title, subGoals, importedGoal, mainGoalId
         setShowAddModal(false);
         setInputValue(""); // 입력값 초기화
         setTitleError(""); // 에러 초기화
+        setSelectedSlotNum(null); // 초기화
     };
 
     const cloneButtonClick = () => {
@@ -113,7 +148,7 @@ export default function SubGoalTiles({ title, subGoals, importedGoal, mainGoalId
                         <button
                             key={`add-${index}`}
                             className="w-full"
-                            onClick={addTileClick}
+                            onClick={() => addTileClick(slotNum)}
                         >
                             <GoalTile type="add" />
                         </button>

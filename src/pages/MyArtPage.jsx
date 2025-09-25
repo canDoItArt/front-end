@@ -48,7 +48,7 @@ export default function MyArtPage() {
             fetchMainGoal();
         }
     }, [mainGoalId]);
-    
+
     // ✅ SubGoalCalendar에서 호출할 핸들러
     const handleChangeWeekStart = (formatted, newProgressData) => {
         setCurrentWeekStart(formatted);
@@ -68,6 +68,45 @@ export default function MyArtPage() {
             };
         });
     };
+
+    // ✅ SubGoal 생성 시 상태 업데이트 콜백
+    // ✅ SubGoal 생성 시 상태 업데이트 콜백
+    const handleSubGoalCreated = async (newSubGoal) => {
+        try {
+            // subGoals 갱신
+            setCurrentData((prev) => {
+                if (!prev) return prev;
+                return {
+                    ...prev,
+                    subGoals: [...prev.subGoals, newSubGoal],
+                };
+            });
+
+            // 진행도 최신화 API 호출
+            const res = await api.get(`/api/main-goals/${mainGoalId}/sub-progress`, {
+                params: { date: currentWeekStart, direction: "CURRENT" },
+            });
+
+            const { startDate, endDate, weekOfMonth, subProgress } = res.data.data;
+
+            setCurrentData((prev) => {
+                if (!prev) return prev;
+                return {
+                    ...prev,
+                    progress: {
+                        ...prev.progress,
+                        startDate,
+                        endDate,
+                        weekOfMonth,
+                        subProgress,
+                    },
+                };
+            });
+        } catch (err) {
+            console.error("SubGoal 추가 후 진행도 갱신 실패:", err);
+        }
+    };
+
 
     if (loading) {
         return <div className="flex justify-center items-center h-screen">로딩 중...</div>;
@@ -95,6 +134,7 @@ export default function MyArtPage() {
                     subGoals={currentData.subGoals}
                     importedGoal={importedGoal}
                     mainGoalId={mainGoalId}
+                    onSubGoalCreated={handleSubGoalCreated}
                 />
 
                 <SubGoalCalendar
