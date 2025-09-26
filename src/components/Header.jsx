@@ -9,7 +9,14 @@ import MainGoalEditSubmodal from "./MainGoalEditSubmodal";
 import SubGoalRenameSubmodal from "./SubGoalRenameSubmodal";
 
 
-export default function Header({ title: initialTitle, page, state: initialState, mainGoalId, attainment }) {
+export default function Header({
+  title: initialTitle,
+  page,
+  state: initialState,
+  mainGoalId,
+  subGoalId,
+  onUpdateSubGoal
+}) {
   let navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [subModalOpen, setSubModalOpen] = useState(null);
@@ -116,7 +123,21 @@ export default function Header({ title: initialTitle, page, state: initialState,
       {/* SubGoal 수정 서브모달 */}
       {subModalOpen === "subGoalRename" && (
         <BottomModalLayout isOpen={subModalOpen === "subGoalRename"} onClose={closeSubModal}>
-          <SubGoalRenameSubmodal closeSubModal={closeSubModal} title={title} state={state} />
+          <SubGoalRenameSubmodal
+            closeSubModal={closeSubModal}
+            title={currentTitle}
+            state={currentState}
+            subGoalId={subGoalId}
+            onUpdateSubGoal={(updatedData) => {
+              setCurrentTitle(updatedData.name);
+              setCurrentState(updatedData.attainment);
+
+              // 👇 상위 SubGoalPage에도 반영
+              if (onUpdateSubGoal) {
+                onUpdateSubGoal(updatedData);
+              }
+            }}
+          />
         </BottomModalLayout>
       )}
 
