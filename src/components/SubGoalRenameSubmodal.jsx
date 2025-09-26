@@ -1,26 +1,43 @@
 import subGoalMockData from "../mocks/subGoal";
-import React, { useState } from "react";
+import { useState } from "react";
 import Input from "./Input";
+import api from "../api/axiosInstance";
 
-export default function SubGoalRenameSubmodal({ closeSubModal }) {
-    const [currentData] = useState(subGoalMockData[0]); // 첫 번째 데이터 사용
-    const [title, setTitle] = useState(currentData.subGoalName);
+export default function SubGoalRenameSubmodal({ closeSubModal, title: initialTitle, state, subGoalId, onUpdateSubGoal }) {
+    const [title, setTitle] = useState(initialTitle || "");
     const [titleError, setTitleError] = useState(""); // 에러 상태 추가
-    const [achieved, setAchieved] = useState(currentData.is_achieved); // ✅ 달성여부 상태
+    const [attainment, setAttainment] = useState(state); // ✅ 달성여부 상태
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (title.trim() === "") {
             setTitleError("이름 값은 필수 값입니다.");
-            return; // 저장 로직 실행 안함
+            return;
         }
 
-        setTitleError(""); // 에러 초기화
-        // 저장 로직 실행 가능
-        closeSubModal(); // 저장 성공 시 모달 닫기
+        setTitleError("");
+
+        try {
+            const response = await api.patch(`/api/sub-goals/${subGoalId}`, {
+                name: title,
+                attainment: attainment,
+            });
+
+            console.log("서브골 수정 성공:", response.data);
+            
+            // ✅ 부모 상태 갱신
+            if (onUpdateSubGoal) {
+                onUpdateSubGoal(response.data.data);
+            }
+
+            closeSubModal(); // 성공 시 모달 닫기
+        } catch (error) {
+            console.error("서브골 수정 실패:", error);
+            alert("서브골 수정에 실패했습니다. 다시 시도해주세요.");
+        }
     };
 
-    const toggleAchieved = () => {
-        setAchieved((prev) => !prev);
+    const toggleAttainment = () => {
+        setAttainment((prev) => !prev);
     };
 
     return (
@@ -51,17 +68,17 @@ export default function SubGoalRenameSubmodal({ closeSubModal }) {
                 <div className="flex items-center gap-2">
                     <button
                         type="button"
-                        onClick={toggleAchieved}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${achieved ? "bg-customMain" : "bg-gray-300"
+                        onClick={toggleAttainment}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${attainment ? "bg-customMain" : "bg-gray-300"
                             }`}
                     >
                         <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${achieved ? "translate-x-6" : "translate-x-1"
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${attainment ? "translate-x-6" : "translate-x-1"
                                 }`}
                         />
                     </button>
                     <p className="text-center mt-1 w-10 text-sm text-gray-600">
-                        {achieved ? "달성" : "미달성"}
+                        {attainment ? "달성" : "미달성"}
                     </p>
                 </div>
 

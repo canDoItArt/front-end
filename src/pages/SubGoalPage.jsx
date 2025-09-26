@@ -56,7 +56,23 @@ export default function SubGoalPage() {
     return (
         <div className="flex flex-col items-center justify-start min-h-screen bg-white px-6">
 
-            <Header title={currentData.subGoal.name} page="SubGoalPage" attainment={currentData.subGoal.attainment} mainGoalId={mainGoalId} />
+            <Header
+                title={currentData.subGoal.name}
+                page="SubGoalPage"
+                state={currentData.subGoal.attainment}
+                mainGoalId={mainGoalId}
+                subGoalId={subGoalId}
+                onUpdateSubGoal={(updatedData) => {
+                    setCurrentData((prev) => ({
+                        ...prev,
+                        subGoal: {
+                            ...prev.subGoal,
+                            name: updatedData.name,
+                            attainment: updatedData.attainment,
+                        },
+                    }));
+                }}
+            />
 
             {/* 메인 콘텐츠 영역 */}
             <div className="mt-20 mb-6 w-full">
