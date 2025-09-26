@@ -143,7 +143,15 @@ export default function Header({
 
       {/* SubGoal 삭제 서브모달 */}
       {subModalOpen === "subGoalDelete" && (
-        <DeleteSubmodal type="subGoal" closeSubModal={closeSubModal} >
+        <DeleteSubmodal
+          type="subGoal"
+          closeSubModal={closeSubModal}
+          subGoalId={subGoalId}
+          onDeleteSuccess={() => {
+            alert("정상적으로 서브골이 삭제되었습니다.");
+            goBack();
+          }}
+        >
           Sub Goal 삭제 시 <br />
           모든 Daily Action이 삭제됩니다.
         </DeleteSubmodal>
