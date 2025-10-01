@@ -82,7 +82,17 @@ export default function DailyActionList({ id, title, targetNum, content, attainm
 
             {/* DailyAction 삭제 서브모달 */}
             {subModalOpen === "dailyActionDelete" && (
-                <DeleteSubmodal type="subGoal" closeSubModal={closeSubModal} >
+                <DeleteSubmodal
+                    type="dailyAction"
+                    closeSubModal={closeSubModal}
+                    dailyActionId={id}
+                    onDeleteSuccess={() => {
+                        if (onUpdate) {
+                            // 삭제 성공 시 상위(SubGoalPage)에서 상태 갱신하도록 콜백 호출
+                            onUpdate({ id, deleted: true });
+                        }
+                    }}
+                >
                     Daily Action 삭제 시 <br />
                     설정되어 있던 내용이 사라집니다.
                 </DeleteSubmodal>

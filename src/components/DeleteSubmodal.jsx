@@ -1,7 +1,7 @@
 import ModalLayout from "./ModalLayout";
 import api from "../api/axiosInstance";
 
-export default function DeleteSubmodal({ type, mainGoalId, subGoalId, children, closeSubModal, onDeleteSuccess }) {
+export default function DeleteSubmodal({ type, mainGoalId, subGoalId, dailyActionId, children, closeSubModal, onDeleteSuccess }) {
 
     const handleDelete = async () => {
         try {
@@ -9,6 +9,8 @@ export default function DeleteSubmodal({ type, mainGoalId, subGoalId, children, 
                 await api.delete(`/api/main-goals/${mainGoalId}`);
             } else if (type === "subGoal") {
                 await api.delete(`/api/sub-goals/${subGoalId}`);
+            } else if (type === "dailyAction") {
+                await api.delete(`/api/daily-actions/${dailyActionId}`);
             }
 
             // 성공 시 UI 반영
