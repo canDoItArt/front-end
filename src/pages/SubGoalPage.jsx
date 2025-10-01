@@ -11,7 +11,6 @@ export default function SubGoalPage() {
     const location = useLocation();
     const { mainGoalId, subGoalId } = useParams();
     const importedGoal = location.state?.importedGoal; // 전달받은 daily action
-
     const [currentData, setCurrentData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -117,12 +116,23 @@ export default function SubGoalPage() {
                                 targetNum={action.targetNum}
                                 attainment={action.attainment}
                                 onUpdate={(updatedAction) => {
-                                    setCurrentData((prev) => ({
-                                        ...prev,
-                                        dailyActions: prev.dailyActions.map((a) =>
-                                            a.id === updatedAction.id ? updatedAction : a
-                                        ),
-                                    }));
+                                    setCurrentData((prev) => {
+                                        if (updatedAction.deleted) {
+                                            // 삭제 처리 → dailyActions에서 제거
+                                            return {
+                                                ...prev,
+                                                dailyActions: prev.dailyActions.filter((a) => a.id !== updatedAction.id),
+                                            };
+                                        } else {
+                                            // 수정 처리
+                                            return {
+                                                ...prev,
+                                                dailyActions: prev.dailyActions.map((a) =>
+                                                    a.id === updatedAction.id ? updatedAction : a
+                                                ),
+                                            };
+                                        }
+                                    });
                                 }}
                             />
                         ))}
