@@ -7,9 +7,18 @@ import DeleteSubmodal from "./DeleteSubmodal";
 import DailyActionEditSubmodal from "./DailyActionEditSubmodal";
 import { MdVerified } from "react-icons/md";
 
-export default function DailyActionList({ title, routine, content, achievement }) {
+export default function DailyActionList({ id, title, targetNum, content, attainment, onUpdate }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [subModalOpen, setSubModalOpen] = useState(null);
+
+    const handleUpdate = (updatedAction) => {
+        // ✅ 자기 자신의 UI 갱신
+        // 여기서는 단순히 상위 SubGoalPage의 state를 신뢰해도 되지만,
+        // 만약 로컬 상태 유지하려면 setState로 반영 가능
+        if (onUpdate) {
+            onUpdate(updatedAction);
+        }
+    };
 
     let toggleModal = () => {
         setIsModalOpen(!isModalOpen);
@@ -34,11 +43,11 @@ export default function DailyActionList({ title, routine, content, achievement }
             <div className="flex justify-between items-center">
                 <div className="flex items-center gap-1">
                     <span className="font-bold text-sm py-1 text-gray-800">{title}</span>
-                    {achievement && <MdVerified className="text-yellow-500 text-lg" />}
+                    {attainment && <MdVerified className="text-yellow-500 text-lg" />}
                 </div>
                 <div className="flex gap-1">
                     <div className="bg-customMain text-xs font-semibold py-1 px-2 rounded-md text-white">
-                        {routine}회
+                        {targetNum}회
                     </div>
                     <button onClick={toggleModal}>
                         <BsThreeDotsVertical />
@@ -59,7 +68,15 @@ export default function DailyActionList({ title, routine, content, achievement }
             {/* DailyAction 수정 서브모달 */}
             {subModalOpen === "dailyActionEdit" && (
                 <BottomModalLayout isOpen={subModalOpen === "dailyActionEdit"} onClose={closeSubModal}>
-                    <DailyActionEditSubmodal closeSubModal={closeSubModal} achievement={achievement} />
+                    <DailyActionEditSubmodal
+                        id={id}
+                        title={title}
+                        content={content}
+                        targetNum={targetNum}
+                        attainment={attainment}
+                        closeSubModal={closeSubModal}
+                        onUpdate={handleUpdate}
+                    />
                 </BottomModalLayout>
             )}
 

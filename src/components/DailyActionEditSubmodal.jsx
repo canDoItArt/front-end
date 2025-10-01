@@ -1,18 +1,26 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Input from "./Input";
-import dailyActionMockData from "../mocks/dailyAction";
 import { BsFillPlusCircleFill, BsDashCircleFill } from "react-icons/bs";
+import api from "../api/axiosInstance";
 
-export default function DailyActionEditSubmodal({ closeSubModal, achievement }) {
-    const [currentData] = useState(dailyActionMockData[0]); // 첫 번째 데이터 사용
-    const [title, setTitle] = useState(currentData.daily_action_title);
-    const [content, setContent] = useState(currentData.daily_action_content);
-    const [routine, setRoutine] = useState(currentData.routine);
+export default function DailyActionEditSubmodal({
+    id,
+    title: initialTitle,
+    targetNum: initialTargetNum,
+    content: initialContent,
+    attainment: initialAttainment,
+    closeSubModal,
+    onUpdate
+}) {
+    //const [currentData] = useState(dailyActionMockData[0]); // 첫 번째 데이터 사용
+    const [title, setTitle] = useState(initialTitle);
+    const [content, setContent] = useState(initialContent);
+    const [targetNum, setTargetNum] = useState(initialTargetNum);
     const [titleError, setTitleError] = useState("");
     const [contentError, setContentError] = useState("");
-    const [achieved, setAchieved] = useState(achievement); // ✅ 달성여부 상태
+    const [attainment, setAttainment] = useState(initialAttainment); // ✅ 달성여부 상태
 
-    const handleSave = () => {
+    const handleSave = async () => {
         let hasError = false;
 
         if (title.trim() === "") {
@@ -31,12 +39,30 @@ export default function DailyActionEditSubmodal({ closeSubModal, achievement }) 
 
         if (hasError) return;
 
-        // 저장 로직 추가 가능
-        closeSubModal();
+        try {
+            // ✅ PATCH API 호출
+            const response = await api.patch(`/api/daily-actions/${id}`, {
+                title,
+                content,
+                targetNum,
+                attainment,
+            });
+
+            console.log("데일리 액션 수정 성공:", response.data);
+
+            if (onUpdate) {
+                onUpdate(response.data.data);
+            }
+
+            closeSubModal(); // 성공 시 모달 닫기
+        } catch (error) {
+            console.error("데일리 액션 수정 실패:", error);
+            alert("데일리 액션 수정에 실패했습니다. 다시 시도해주세요.");
+        }
     };
 
-    const toggleAchieved = () => {
-        setAchieved((prev) => !prev);
+    const toggleAttainment = () => {
+        setAttainment((prev) => !prev);
     };
 
     return (
@@ -80,26 +106,26 @@ export default function DailyActionEditSubmodal({ closeSubModal, achievement }) 
                     {/* 마이너스 버튼 */}
                     <button
                         type="button"
-                        onClick={() => setRoutine(prev => Math.max(prev - 1, 1))}
-                        disabled={routine === 1}
+                        onClick={() => setTargetNum(prev => Math.max(prev - 1, 1))}
+                        disabled={targetNum === 1}
                     >
                         <BsDashCircleFill
-                            className={`text-2xl ${routine === 1 ? "text-gray-300" : "text-customMain"
+                            className={`text-2xl ${targetNum === 1 ? "text-gray-300" : "text-customMain"
                                 }`}
                         />
                     </button>
 
                     {/* 현재 routine 값 표시 */}
-                    <span className="text-base font-medium">{routine}</span>
+                    <span className="text-base font-medium">{targetNum}</span>
 
                     {/* 플러스 버튼 */}
                     <button
                         type="button"
-                        onClick={() => setRoutine(prev => Math.min(prev + 1, 7))}
-                        disabled={routine === 7}
+                        onClick={() => setTargetNum(prev => Math.min(prev + 1, 7))}
+                        disabled={targetNum === 7}
                     >
                         <BsFillPlusCircleFill
-                            className={`text-2xl ${routine === 7 ? "text-gray-300" : "text-customMain"
+                            className={`text-2xl ${targetNum === 7 ? "text-gray-300" : "text-customMain"
                                 }`}
                         />
                     </button>
@@ -116,17 +142,17 @@ export default function DailyActionEditSubmodal({ closeSubModal, achievement }) 
                 <div className="flex items-center gap-2">
                     <button
                         type="button"
-                        onClick={toggleAchieved}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${achieved ? "bg-customMain" : "bg-gray-300"
+                        onClick={toggleAttainment}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${attainment ? "bg-customMain" : "bg-gray-300"
                             }`}
                     >
                         <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${achieved ? "translate-x-6" : "translate-x-1"
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${attainment ? "translate-x-6" : "translate-x-1"
                                 }`}
                         />
                     </button>
                     <p className="text-center mt-1 w-10 text-sm text-gray-600">
-                        {achieved ? "달성" : "미달성"}
+                        {attainment ? "달성" : "미달성"}
                     </p>
                 </div>
 
