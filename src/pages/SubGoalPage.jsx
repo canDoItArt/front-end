@@ -82,6 +82,14 @@ export default function SubGoalPage() {
                     dailyActions={currentData.dailyActions}
                     color={slotColors[currentData.subGoal.slotNum]}
                     importedGoal={importedGoal}
+                    subGoalId={subGoalId}
+                    onDailyActionCreated={(newDailyAction) => {
+                        // 새로 추가된 액션을 state에 반영
+                        setCurrentData((prev) => ({
+                            ...prev,
+                            dailyActions: [...prev.dailyActions, newDailyAction],
+                        }));
+                    }}
                 />
 
                 <div className="mt-6 p-2 ">
