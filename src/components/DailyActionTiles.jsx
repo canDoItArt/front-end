@@ -5,8 +5,9 @@ import GoalTile from "./GoalTile";
 import BottomModalLayout from "./BottomModalLayout";
 import Input from "./Input";
 import { BsFillPlusCircleFill, BsDashCircleFill } from "react-icons/bs";
+import api from "../api/axiosInstance";
 
-export default function DailyActionTiles({ title, dailyActions, color, importedGoal }) {
+export default function DailyActionTiles({ title, dailyActions, color, importedGoal, subGoalId, onDailyActionCreated }) {
     const navigate = useNavigate();
     const [showAddModal, setShowAddModal] = useState(false);
     const [titleError, setTitleError] = useState("");
@@ -28,7 +29,7 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
         }
     }, [importedGoal]);
 
-    const handleSave = () => {
+    const handleSave = async () => {
         let hasError = false;
 
         if (titleInput.trim() === "") {
@@ -47,8 +48,35 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
 
         if (hasError) return;
 
-        // 저장 로직 추가 가능
-        closeAddModal();
+        try {
+            // ✅ API 요청 보내기
+            const response = await api.post(`/api/sub-goals/${subGoalId}/daily-actions`, {
+                title: titleInput,
+                content: contentInput,
+                targetNum: routine
+            });
+
+            if (response.data.code === "200") {
+                const newDailyAction = response.data.data;
+
+                // ✅ 부모 컴포넌트 상태 갱신 (콜백)
+                if (onDailyActionCreated) {
+                    onDailyActionCreated(newDailyAction);
+                }
+
+                // 입력값 초기화
+                setTitle("");
+                setContent("");
+                setRoutine(1);
+
+                closeAddModal();
+            } else {
+                alert("데일리 액션 생성에 실패했습니다.");
+            }
+        } catch (error) {
+            console.error("데일리 액션 생성 오류:", error);
+            alert("데일리 액션 생성 중 오류가 발생했습니다.");
+        }
     };
 
 
@@ -72,22 +100,27 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
     };
 
     const idLayout = [
-        ["1", "2", "3"],
-        ["8", "t", "4"],
-        ["7", "6", "5"]
+        ["0", "1", "2"], // index 0,1,2
+        ["7", "t", "3"], // index 7,3
+        ["6", "5", "4"], // index 6,5,4
     ];
 
+    // id 기준으로 정렬된 dailyActions
+    const sortedActions = [...dailyActions].sort((a, b) => a.id - b.id);
+
     return (
-        <div className="flex justify-center">
+        <div className="flex flex-col items-center justify-center">
             <div className="w-4/5 h-auto grid grid-cols-3 gap-3 justify-items-center items-center my-5">
-                {idLayout.flat().map((id, index) => {
-                    if (id === "t") {
+                {idLayout.flat().map((cell, index) => {
+                    if (cell === "t") {
                         return <GoalTile key={`title-${index}`} text={title} color={color} />;
                     }
 
-                    const action = dailyActions.find((action) => action.target_num === id);
+                    const actionIndex = parseInt(cell, 10); // cell에 적힌 숫자를 actionIndex로 사용
+                    const action = sortedActions[actionIndex];
+
                     if (action) {
-                        if (action.is_achieved === true) {
+                        if (action.attainment === true) {
                             return (
                                 <button
                                     key={`goal-${action.id}`}
@@ -95,7 +128,7 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
                                 >
                                     <GoalTile
                                         text={action.title}
-                                        color={hexToColorClass[color]}
+                                        color={color}
                                         type="achievement"
                                         goal="dailyAction"
                                     />
@@ -104,18 +137,29 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
                         };
                         return (
                             <button key={`goal-${action.id}`} className="w-full">
-                                <GoalTile text={action.title} color={hexToColorClass[color]} type="dailyaction" />
+                                <GoalTile text={action.title} color={color} type="dailyaction" />
                             </button>
                         );
                     }
 
                     return (
-                        <button key={`add-${index}`} className="w-full" onClick={addTileClick}>
+                        <button key={`add-${index}`} className="w-full">
                             <GoalTile type="add" />
                         </button>
                     );
                 })}
             </div>
+
+            <button
+                className={`p-3 m-1 text-xs font-semibold rounded-md 
+                    ${dailyActions.length >= 8
+                        ? "bg-gray-100 text-customTextGray cursor-not-allowed"
+                        : "bg-customMain text-white"}`}
+                onClick={addTileClick}
+                disabled={dailyActions.length >= 8} // ✅ 8개 이상이면 비활성화
+            >
+                데일리 액션 추가 생성하기
+            </button>
 
             <BottomModalLayout isOpen={showAddModal} onClose={closeAddModal}>
                 <div className="p-6 text-center">
