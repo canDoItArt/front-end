@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import DailyActionTiles from "../components/DailyActionTiles";
-import subGoalMockData from "../mocks/subGoal";
 import DailyActionList from "../components/DailyActionList";
 import DailyActionCalendar from "../components/DailyActionCalendar";
 import api from "../api/axiosInstance";
@@ -112,10 +111,19 @@ export default function SubGoalPage() {
                         {currentData.dailyActions.map((action) => (
                             <DailyActionList
                                 key={action.id} // <- resetKey를 key에 포함하여 상태 초기화
+                                id={action.id}
                                 title={action.title}
                                 content={action.content}
-                                routine={action.targetNum}
+                                targetNum={action.targetNum}
                                 attainment={action.attainment}
+                                onUpdate={(updatedAction) => {
+                                    setCurrentData((prev) => ({
+                                        ...prev,
+                                        dailyActions: prev.dailyActions.map((a) =>
+                                            a.id === updatedAction.id ? updatedAction : a
+                                        ),
+                                    }));
+                                }}
                             />
                         ))}
                     </div>
