@@ -114,7 +114,7 @@ export default function SubGoalTiles({ title, subGoals, importedGoal, mainGoalId
                     const goal = subGoals.find((goal) => goal.slotNum === slotNum);
 
                     if (goal) {
-                        if (goal.is_attained === true) {
+                        if (goal.attainment === true) {
                             return (
                                 <button
                                     key={`goal-${goal.id}`}

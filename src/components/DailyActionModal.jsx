@@ -8,7 +8,7 @@ export default function DailyActionModal({ isOpen, onClose, goal }) {
     // Find the matching sub_goal_name in the mock data
     const goalData = dailyActionListMockData.find(item => item.sub_goal_name === goal.name);
 
-    const isAttained = goal?.is_attained === true;
+    const isAttained = goal?.achievement === true;
 
     return (
         <ModalLayout onClose={onClose}> {/* ✅ ModalLayout 적용 */}

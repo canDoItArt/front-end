@@ -27,6 +27,8 @@ export default function CheckList({ title, subGoals }) {
         setIsModalOpen(true);
     };
 
+    const slotNumMap = [1, 2, 3, 8, 0, 4, 7, 6, 5];
+
     return (
         <div className="mt-6 w-full bg-white p-4 rounded-lg shadow-[0_4px_6px_rgba(0,0,0,0.05),0_-4px_6px_rgba(0,0,0,0.05)]">
             <h3 className="text-base font-bold text-customTextBlack mb-4">이번주 한다! Check List</h3>
@@ -37,9 +39,13 @@ export default function CheckList({ title, subGoals }) {
                             return <GoalTile key={`title-${index}`} text={title} type="title" />;
                         }
 
-                        const goal = subGoals.find((goal) => goal.color === id);
+                        // slotNum은 1부터 시작한다고 가정
+                        const slotNum = slotNumMap[index];
+                        const goal = subGoals.find((goal) => goal.slotNum === slotNum);
+
+                        //const goal = subGoals.find((goal) => goal.color === id);
                         if (goal) {
-                            if (goal.is_attained === true) {
+                            if (goal.achievement === true) {
                                 return (
                                     <button
                                         key={`goal-${goal.id}`}
@@ -48,7 +54,7 @@ export default function CheckList({ title, subGoals }) {
                                     >
                                         <GoalTile
                                             text={goal.name}
-                                            color={hexToColorClass[goal.color]}
+                                            color={hexToColorClass[id]}
                                             type="achievement"
                                             goal="subGoal"
                                         />
@@ -63,7 +69,7 @@ export default function CheckList({ title, subGoals }) {
                                 >
                                     <GoalTile
                                         text={goal.name}
-                                        color={hexToColorClass[goal.color]}
+                                        color={hexToColorClass[id]}
                                     />
                                 </button>
                             );
