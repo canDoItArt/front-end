@@ -6,15 +6,31 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function CompletionRate({ lastWeek, thisWeek }) {
     // 원형 그래프 데이터
-    const data = (percentage) => ({
-        datasets: [
-            {
-                data: [percentage, 100 - percentage],
-                backgroundColor: ["#8C52FF", "#C2CAF2"],
-                borderWidth: 0,
-            },
-        ],
-    });
+    const data = (percentage) => {
+        // 0%일 때는 아예 회색 원만 보여주기
+        if (percentage === 0 || percentage == null) {
+            return {
+                datasets: [
+                    {
+                        data: [100],
+                        backgroundColor: ["#C2CAF2"],
+                        borderWidth: 0,
+                    },
+                ],
+            };
+        }
+
+        // 그 외 (1% 이상일 때)
+        return {
+            datasets: [
+                {
+                    data: [percentage, 100 - percentage],
+                    backgroundColor: ["#8C52FF", "#C2CAF2"],
+                    borderWidth: 0,
+                },
+            ],
+        };
+    };
 
     const options = {
         cutout: "70%", // 그래프 중앙을 비워둠
@@ -34,7 +50,7 @@ export default function CompletionRate({ lastWeek, thisWeek }) {
                     <div className="relative w-32 h-32">
                         <Doughnut data={data(lastWeek)} options={options} />
                         <p className="absolute inset-0 flex items-center justify-center text-xl font-bold text-customTextPercent">
-                            {lastWeek}%
+                            {lastWeek != null ? `${lastWeek}%` : "0%"}
                         </p>
                     </div>
                 </div>
@@ -48,7 +64,7 @@ export default function CompletionRate({ lastWeek, thisWeek }) {
                     <div className="relative w-32 h-32">
                         <Doughnut data={data(thisWeek)} options={options} />
                         <p className="absolute inset-0 flex items-center justify-center text-xl font-bold text-customTextPercent">
-                            {thisWeek}%
+                            {thisWeek != null ? `${thisWeek}%` : "0%"}
                         </p>
                     </div>
                 </div>

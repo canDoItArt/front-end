@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LogoHeader from "../components/LogoHeader";
 import GoalSelectionDropdown from "../components/GoalSelectionDropdown";
@@ -7,19 +7,121 @@ import TowerCalendar from "../components/TowerCalendar";
 import CheckList from "../components/CheckList";
 import Navbar from "../components/Navbar";
 import MottoCard from "../components/MottoCard";
-import mainPageMockData from "../mocks/mainPage";
+import { useAuth } from "../contexts/AuthContext";
+import api from "../api/axiosInstance";
 
 export default function HomePage() {
     const navigate = useNavigate();
-    const [currentGoalId, setCurrentGoalId] = useState(
-        mainPageMockData.length > 0 ? mainPageMockData[0].mainGoal.id : null
-    );
+    const { user } = useAuth();
 
-    const currentData = mainPageMockData.find(goal => goal.mainGoal.id === currentGoalId);
+    // API 데이터 상태
+    const [goals, setGoals] = useState([]); // mainGoal 리스트 저장
+    const [mainGoals, setMainGoals] = useState([]);
+    const [currentGoalId, setCurrentGoalId] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // 메인골 목록 불러오기
+    const fetchMainGoals = async () => {
+        try {
+            const response = await api.get("/api/main-goals", {
+                params: { state: "activity" }
+            });
+            const data = response.data.data.mainGoals;
+            setMainGoals(data);
+
+            // 첫 번째 메인골을 기본값으로 선택
+            if (data.length > 0 && !currentGoalId) {
+                setCurrentGoalId(data[0].id);
+            }
+        } catch (err) {
+            console.error("메인골 목록 불러오기 실패:", err);
+            setError("메인골 목록을 불러오는 중 문제가 발생했습니다.");
+        }
+    };
+
+    // 홈 데이터 불러오기
+    const fetchHomeData = async (goalId) => {
+        try {
+            setLoading(true);
+
+            // goalId가 있으면 params 포함, 없으면 params 없이 호출
+            const response = goalId
+                ? await api.get("/api/home", { params: { mainGoalId: goalId } })
+                : await api.get("/api/home");
+
+            const data = response.data.data;
+
+            // API 구조에 맞게 데이터 가공
+            const newGoal = {
+                mainGoal: {
+                    id: data.mainGoal.id,
+                    name: data.mainGoal.name,
+                    lastWeek: data.mainGoal.lastAchievement,
+                    thisWeek: data.mainGoal.thisAchievement,
+                },
+                subGoals: data.subGoals,
+                strict: data.progress
+            };
+
+            setGoals((prev) => {
+                // 이미 있는 goalId면 교체, 없으면 추가
+                const exists = prev.find((g) => g.mainGoal.id === newGoal.mainGoal.id);
+                if (exists) {
+                    return prev.map((g) => g.mainGoal.id === newGoal.mainGoal.id ? newGoal : g);
+                }
+                return [...prev, newGoal];
+            });
+
+            if (!goalId) {
+                setCurrentGoalId(data.mainGoal.id);
+            }
+
+        } catch (err) {
+            console.error("홈 데이터 불러오기 실패:", err);
+            setError("홈 데이터를 불러오는 중 문제가 발생했습니다.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        // 첫 진입 시에는 params 없이 호출 → isRep=true 메인골 가져오기
+        (async () => {
+            try {
+                await fetchMainGoals(); // 메인골 목록도 불러오기
+            } catch (err) {
+                console.error(err);
+            }
+        })();
+    }, []);
+
+    // currentGoalId가 바뀔 때마다 홈데이터 새로 불러오기
+    useEffect(() => {
+        fetchHomeData();
+    }, []);
+
+    const currentData = goals.find(goal => goal.mainGoal.id === currentGoalId);
 
     const handleCreateMainGoal = () => {
         navigate("/createmyart"); // 목적지 경로는 실제 라우터에 맞게 조정하세요.
     };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <p>로딩 중...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <p className="text-red-500">{error}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col items-center justify-start min-h-screen bg-white px-6">
@@ -54,26 +156,29 @@ export default function HomePage() {
                 ) : (
                     <>
                         {/* MottoCard 컴포넌트 */}
-                        < MottoCard motto={currentData.comment} />
+                        < MottoCard motto={user?.comment} />
 
                         {/* 목표 선택 드롭다운 */}
                         <GoalSelectionDropdown
-                            currentGoal={currentData.mainGoal}
-                            onSelectGoal={(goal) => setCurrentGoalId(goal.id)}
-                            goals={mainPageMockData.map(data => data.mainGoal)}
+                            goalName={currentData.mainGoal.name}
+                            onSelectGoal={(goal) => {
+                                setCurrentGoalId(goal.id);     // 상태 업데이트
+                                fetchHomeData(goal.id);        // ✅ 직접 API 다시 호출
+                            }}
+                            goals={mainGoals}
                         />
 
                         {/* 달성률 섹션 */}
                         <CompletionRate
-                            lastWeek={currentData.mainGoal.lastWeek}
-                            thisWeek={currentData.mainGoal.thisWeek}
+                            lastWeek={currentData.mainGoal.lastAchievement}
+                            thisWeek={currentData.mainGoal.thisAchievement}
                         />
 
                         {/* 한다!탑섹션 */}
                         <div className="mt-6 w-full bg-white p-4 rounded-lg shadow-[0_4px_6px_rgba(0,0,0,0.05),0_-4px_6px_rgba(0,0,0,0.05)]">
                             <h3 className="text-base font-bold text-customTextBlack mb-2">한다! 공든 탑이 무너지랴</h3>
                             {/* strict 데이터를 ActivityCalendar로 전달 */}
-                            <TowerCalendar strict={currentData.strict} />
+                            <TowerCalendar strict={currentData.progress} />
                         </div>
 
                         {/* 체크리스트 섹션 */}

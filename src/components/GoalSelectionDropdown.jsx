@@ -1,8 +1,6 @@
-import React, { useState } from "react";
-import { BsChevronDown } from "react-icons/bs";
-import { IoClose } from "react-icons/io5";
+import { useState } from "react";
 
-export default function GoalSelectionDropdown({ currentGoal, onSelectGoal, goals }) {
+export default function GoalSelectionDropdown({ goalName, onSelectGoal, goals }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const toggleModal = () => {
@@ -20,7 +18,7 @@ export default function GoalSelectionDropdown({ currentGoal, onSelectGoal, goals
                 onClick={toggleModal}
                 className="flex items-center justify-center w-full p-3 text-sm font-bold bg-gray-100 rounded-lg text-customTextBlack"
             >
-                {currentGoal.name}
+                {goalName}
             </button>
 
             {isModalOpen && (
