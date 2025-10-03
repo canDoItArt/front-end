@@ -1,14 +1,44 @@
-import dailyActionListMockData from "../mocks/dailyActionList";
+import { useState, useEffect } from "react";
 import DailyActionCheck from "./DailyActionCheck";
-import ModalLayout from "./ModalLayout"; // ✅ ModalLayout 추가
+import ModalLayout from "./ModalLayout";
+import api from "../api/axiosInstance";
 
-export default function DailyActionModal({ isOpen, onClose, goal }) {
-    if (!isOpen) return null;
-
-    // Find the matching sub_goal_name in the mock data
-    const goalData = dailyActionListMockData.find(item => item.sub_goal_name === goal.name);
+export default function DailyActionModal({ isOpen, onClose, goal, color }) {
+    const [dailyActions, setDailyActions] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const isAttained = goal?.achievement === true;
+
+    // ✅ API 호출
+    useEffect(() => {
+        if (!isOpen || !goal?.id) return;
+
+        const fetchDailyActions = async () => {
+            setLoading(true);
+            setError(null);
+
+            try {
+                const res = await api.get(`/api/sub-goals/${goal.id}/daily-progress`);
+                if (res.data?.code === "200") {
+                    setDailyActions(res.data.data);
+                } else {
+                    setError("데일리 액션 정보를 불러오지 못했습니다.");
+                }
+            } catch (err) {
+                setError("API 요청 중 오류가 발생했습니다.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDailyActions();
+    }, [isOpen, goal?.id]);
+
+    // ✅ 렌더링은 항상 하지만 isOpen일 때만 Modal 보이기
+    if (!isOpen) {
+        return <></>; // Hook 순서는 그대로 유지됨
+    }
 
     return (
         <ModalLayout onClose={onClose}> {/* ✅ ModalLayout 적용 */}
@@ -16,19 +46,23 @@ export default function DailyActionModal({ isOpen, onClose, goal }) {
 
             {/* 스크롤 가능한 영역 (내용이 많을 때만 스크롤) */}
             <div className="flex-1 overflow-y-auto max-h-[60vh]">
-                {isAttained ? (
+                {loading ? (
+                    <div className="text-center text-gray-500 py-6">불러오는 중...</div>
+                ) : error ? (
+                    <div className="text-center text-red-500 py-6">{error}</div>
+                ) : isAttained ? (
                     <div className="text-base text-center text-gray-600 py-6">
                         해당 서브골은 달성 처리 되었습니다.<br />
                     </div>
-                ) : goalData?.daily_actions && goalData.daily_actions.length > 0 ? (
-                    goalData.daily_actions.map((action) => (
+                ) : dailyActions.length > 0 ? (
+                    dailyActions.map((action) => (
                         <DailyActionCheck
-                            key={action.daily_action_id}
-                            daily_action_id={action.daily_action_id}
-                            daily_action_title={action.daily_action_title}
-                            daily_action_content={action.daily_action_content}
-                            checked_dates={action.checked_dates}
-                            sub_goal_color={goalData.sub_goal_color}
+                            key={action.dailyActionId}
+                            dailyActionId={action.dailyActionId}
+                            dailyActionTitle={action.title}
+                            dailyActionContent={action.content}
+                            checkedDate={action.checkedDate}
+                            color={color}
                         />
                     ))
                 ) : (
@@ -45,9 +79,7 @@ export default function DailyActionModal({ isOpen, onClose, goal }) {
                     className="w-auto bg-customMain text-white py-3 px-5 rounded-md shadow-lg text-xs font-semibold"
                     onClick={onClose}
                 >
-                    {(goalData?.daily_actions && goalData.daily_actions.length > 0 && !isAttained)
-                        ? "저장"
-                        : "닫기"}
+                    {(dailyActions.length > 0 && !isAttained) ? "저장" : "닫기"}
                 </button>
             </div>
         </ModalLayout>
