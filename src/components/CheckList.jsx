@@ -1,5 +1,5 @@
 import { useState } from "react";
-import hexToColorClass from "../constants/colorMappings";
+import slotColors from "../constants/soltNumMappings";
 import GoalTile from "./GoalTile";
 import DailyActionModal from "./DailyActionModal"; // 모달 컴포넌트 이름 수정
 import { useNavigate } from "react-router-dom";
@@ -54,7 +54,7 @@ export default function CheckList({ title, subGoals }) {
                                     >
                                         <GoalTile
                                             text={goal.name}
-                                            color={hexToColorClass[id]}
+                                            color={slotColors[goal.slotNum]}
                                             type="achievement"
                                             goal="subGoal"
                                         />
@@ -69,7 +69,7 @@ export default function CheckList({ title, subGoals }) {
                                 >
                                     <GoalTile
                                         text={goal.name}
-                                        color={hexToColorClass[id]}
+                                        color={slotColors[goal.slotNum]}
                                     />
                                 </button>
                             );
@@ -81,7 +81,12 @@ export default function CheckList({ title, subGoals }) {
             </div>
 
             {/* DailyActionModal 컴포넌트 */}
-            <DailyActionModal isOpen={isModalOpen} onClose={closeModal} goal={selectedGoal} />
+            <DailyActionModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                goal={selectedGoal}
+                color={selectedGoal ? slotColors[selectedGoal.slotNum] : "bg-gray-200"}
+            />
 
             <div className="px-6 mt-1 flex justify-center">
                 <button
