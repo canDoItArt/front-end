@@ -5,7 +5,8 @@ export default function DailyActionCheck({
     dailyActionTitle,
     dailyActionContent,
     checkedDate,
-    color
+    color,
+    onUpdateCheckedDate
 }) {
     const days = ["월", "화", "수", "목", "금", "토", "일"];
 
@@ -18,13 +19,26 @@ export default function DailyActionCheck({
     // 상태로 관리하여 클릭 시 토글 가능하도록 설정
     const [checkedDays, setCheckedDays] = useState(initialCheckedDays);
 
-    // 버튼 클릭 시 색상 토글
+    // 버튼 클릭 시 토글
     const toggleDay = (index) => {
-        setCheckedDays(prevCheckedDays =>
-            prevCheckedDays.includes(index)
-                ? prevCheckedDays.filter(day => day !== index) // 이미 선택된 경우 제거
-                : [...prevCheckedDays, index] // 선택되지 않은 경우 추가
-        );
+        setCheckedDays(prev => {
+            const updated =
+                prev.includes(index)
+                    ? prev.filter(day => day !== index)
+                    : [...prev, index];
+
+            // ✅ 부모에게 변경 사항 반영
+            const updatedDates = updated.map(dayIdx => {
+                const today = new Date();
+                const diff = dayIdx - ((today.getDay() === 0 ? 6 : today.getDay() - 1));
+                const newDate = new Date(today);
+                newDate.setDate(today.getDate() + diff);
+                return newDate.toISOString().split("T")[0]; // yyyy-MM-dd 형식
+            });
+
+            onUpdateCheckedDate(dailyActionId, updatedDates);
+            return updated;
+        });
     };
 
     return (
@@ -36,9 +50,8 @@ export default function DailyActionCheck({
                     <div key={index} className="flex flex-col items-center">
                         <span className="text-xs mb-1">{day}</span>
                         <button
-                            className={`w-6 h-6 rounded-md ${
-                                checkedDays.includes(index) ? `${color}` : "bg-gray-200"
-                            }`}
+                            className={`w-6 h-6 rounded-md ${checkedDays.includes(index) ? `${color}` : "bg-gray-200"
+                                }`}
                             onClick={() => toggleDay(index)}
                         ></button>
                     </div>
