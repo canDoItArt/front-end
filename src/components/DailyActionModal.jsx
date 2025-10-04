@@ -35,6 +35,37 @@ export default function DailyActionModal({ isOpen, onClose, goal, color }) {
         fetchDailyActions();
     }, [isOpen, goal?.id]);
 
+    // ✅ 자식으로부터 checkedDate 업데이트 받기
+    const handleUpdateCheckedDate = (dailyActionId, updatedDates) => {
+        setDailyActions(prev =>
+            prev.map(action =>
+                action.dailyActionId === dailyActionId
+                    ? { ...action, checkedDate: updatedDates }
+                    : action
+            )
+        );
+    };
+
+    // ✅ 저장 이벤트 핸들러
+    const handleSave = async () => {
+        try {
+            const payload = dailyActions.map((action) => ({
+                dailyActionId: action.dailyActionId,
+                dates: action.checkedDate, // 실제 체크 상태 관리하는 값에 맞게 수정
+            }));
+
+            const res = await api.put(`/api/sub-goals/${goal.id}/daily-progress`, payload);
+            if (res.data?.code === "200") {
+                alert("저장이 완료되었습니다!");
+                onClose(); // 저장 성공 후 모달 닫기
+            } else {
+                alert("저장에 실패했습니다.");
+            }
+        } catch (err) {
+            alert("API 요청 중 오류가 발생했습니다.");
+        }
+    };
+
     // ✅ 렌더링은 항상 하지만 isOpen일 때만 Modal 보이기
     if (!isOpen) {
         return <></>; // Hook 순서는 그대로 유지됨
@@ -63,6 +94,7 @@ export default function DailyActionModal({ isOpen, onClose, goal, color }) {
                             dailyActionContent={action.content}
                             checkedDate={action.checkedDate}
                             color={color}
+                            onUpdateCheckedDate={handleUpdateCheckedDate}
                         />
                     ))
                 ) : (
@@ -74,13 +106,23 @@ export default function DailyActionModal({ isOpen, onClose, goal, color }) {
 
             {/* 저장 버튼 */}
             <div className="mt-4 flex justify-center">
-                <button
-                    type="button"
-                    className="w-auto bg-customMain text-white py-3 px-5 rounded-md shadow-lg text-xs font-semibold"
-                    onClick={onClose}
-                >
-                    {(dailyActions.length > 0 && !isAttained) ? "저장" : "닫기"}
-                </button>
+                {(dailyActions.length > 0 && !isAttained) ? (
+                    <button
+                        type="button"
+                        className="w-auto bg-customMain text-white py-3 px-5 rounded-md shadow-lg text-xs font-semibold"
+                        onClick={handleSave}
+                    >
+                        저장
+                    </button>
+                ) : (
+                    <button
+                        type="button"
+                        className="w-auto bg-customMain text-white py-3 px-5 rounded-md shadow-lg text-xs font-semibold"
+                        onClick={onClose}
+                    >
+                        닫기
+                    </button>
+                )}
             </div>
         </ModalLayout>
     );
