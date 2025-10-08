@@ -1,25 +1,23 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Tower from "./Tower";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
+import dayjs from "dayjs";
 
-export default function TowerCalendar({ strict }) {
+export default function TowerCalendar({ progress }) {
   const [currentDate, setCurrentDate] = useState(new Date()); // 현재 날짜 상태를 관리
   const [viewMode, setViewMode] = useState("week"); // 'week' 또는 'month' 뷰 모드를 관리
   const [dateColorMap, setDateColorMap] = useState({}); // 날짜별 컬러 리스트 상태
 
   useEffect(() => {
-    if (strict && Array.isArray(strict)) {
-      // 날짜별로 컬러 정보를 정리
-      const mappedColors = strict.reduce((acc, { checkedDates, color }) => {
-        checkedDates.forEach((date) => {
-          if (!acc[date]) acc[date] = [];
-          acc[date].push(color); // 같은 날짜에 여러 색상 추가
-        });
+    if (progress && Array.isArray(progress)) {
+      const mappedColors = progress.reduce((acc, { checkedDate, slotNum }) => {
+        if (!acc[checkedDate]) acc[checkedDate] = [];
+        acc[checkedDate].push(...slotNum);
         return acc;
       }, {});
-      setDateColorMap(mappedColors); // 상태에 저장
+      setDateColorMap(mappedColors);
     }
-  }, [strict]);
+  }, [progress]);
 
   const getStartOfWeek = (date) => {
     const day = date.getDay(); // 요일 (0: 일요일, 6: 토요일)
@@ -36,7 +34,7 @@ export default function TowerCalendar({ strict }) {
     const days = Array.from({ length: 7 }, (_, i) => {
       const day = new Date(startOfWeek);
       day.setDate(startOfWeek.getDate() + i);
-      const formattedDate = day.toISOString().split("T")[0]; // YYYY-MM-DD 형식
+      const formattedDate = dayjs(day).format("YYYY-MM-DD");
 
       // 해당 날짜의 컬러 리스트를 가져오기
       const dayColors = dateColorMap[formattedDate] || [];
@@ -89,8 +87,7 @@ export default function TowerCalendar({ strict }) {
             <div key={`empty-${cellIndex}`} className="w-12 h-12"></div>
           );
         } else {
-          const formattedDate = `${year}-${month + 1
-            }-${String(day).padStart(2, "0")}`; // YYYY-MM-DD 형식
+          const formattedDate = dayjs(new Date(year, month, day)).format("YYYY-MM-DD");
           const dayColors = dateColorMap[formattedDate] || [];
 
           days.push(

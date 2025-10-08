@@ -1,11 +1,12 @@
 import hexToColorClass from "../constants/colorMappings";
+import slotColors from "../constants/soltNumMappings"
 
 export default function Tower({ colorList }) {
   const baseOffset = 10; // 바닥 높이 보정
 
   // 최대 4개의 블록만 렌더링
   const limitedColors = colorList.slice(0, 4).map(
-    (hex) => hexToColorClass[hex] || "bg-gray-400" // 헥사코드가 없을 경우 기본 회색 적용
+    (slotNum) => slotColors[slotNum] || "bg-gray-400" // 헥사코드가 없을 경우 기본 회색 적용
   );
 
   return (
