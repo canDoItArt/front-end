@@ -1,4 +1,5 @@
 import { useState } from "react";
+import dayjs from "dayjs";
 
 export default function DailyActionCheck({
     dailyActionId,
@@ -19,21 +20,22 @@ export default function DailyActionCheck({
     // 상태로 관리하여 클릭 시 토글 가능하도록 설정
     const [checkedDays, setCheckedDays] = useState(initialCheckedDays);
 
-    // 버튼 클릭 시 토글
     const toggleDay = (index) => {
-        setCheckedDays(prev => {
-            const updated =
-                prev.includes(index)
-                    ? prev.filter(day => day !== index)
-                    : [...prev, index];
+        setCheckedDays((prev) => {
+            const updated = prev.includes(index)
+                ? prev.filter((day) => day !== index)
+                : [...prev, index];
 
-            // ✅ 부모에게 변경 사항 반영
-            const updatedDates = updated.map(dayIdx => {
+            // ✅ dayjs로 날짜 계산
+            const updatedDates = updated.map((dayIdx) => {
                 const today = new Date();
-                const diff = dayIdx - ((today.getDay() === 0 ? 6 : today.getDay() - 1));
+                const todayIdx = today.getDay() === 0 ? 6 : today.getDay() - 1;
+                const diff = dayIdx - todayIdx;
                 const newDate = new Date(today);
                 newDate.setDate(today.getDate() + diff);
-                return newDate.toISOString().split("T")[0]; // yyyy-MM-dd 형식
+
+                // ✅ 로컬 기준으로 YYYY-MM-DD 포맷
+                return dayjs(newDate).format("YYYY-MM-DD");
             });
 
             onUpdateCheckedDate(dailyActionId, updatedDates);
