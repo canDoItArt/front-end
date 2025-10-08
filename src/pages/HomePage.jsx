@@ -21,6 +21,7 @@ export default function HomePage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+
     // 메인골 목록 불러오기
     const fetchMainGoals = async () => {
         try {
@@ -57,12 +58,14 @@ export default function HomePage() {
                 mainGoal: {
                     id: data.mainGoal.id,
                     name: data.mainGoal.name,
-                    lastWeek: data.mainGoal.lastAchievement,
-                    thisWeek: data.mainGoal.thisAchievement,
+                    lastAchievement: data.mainGoal.lastAchievement,
+                    thisAchievement: data.mainGoal.thisAchievement,
                 },
                 subGoals: data.subGoals,
                 progress: data.progress
             };
+            console.log("📦 data.mainGoal:", data.mainGoal);
+
 
             setGoals((prev) => {
                 // 이미 있는 goalId면 교체, 없으면 추가
@@ -122,6 +125,7 @@ export default function HomePage() {
             </div>
         );
     }
+
 
     return (
         <div className="flex flex-col items-center justify-start min-h-screen bg-white px-6">
