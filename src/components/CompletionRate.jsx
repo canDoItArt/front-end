@@ -5,6 +5,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function CompletionRate({ lastWeek, thisWeek }) {
+
     // 원형 그래프 데이터
     const data = (percentage) => {
         // 0%일 때는 아예 회색 원만 보여주기
@@ -39,6 +40,9 @@ export default function CompletionRate({ lastWeek, thisWeek }) {
             legend: { display: false },
         },
     };
+
+    console.log("📈 lastWeek:", lastWeek, "thisWeek:", thisWeek);
+
 
     return (
         <div className="mt-6 w-full bg-white p-4 rounded-lg shadow-[0_4px_6px_rgba(0,0,0,0.05),0_-4px_6px_rgba(0,0,0,0.05)]">
