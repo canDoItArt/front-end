@@ -1,21 +1,22 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
-import hexToColorClass from "../constants/colorMappings";
+import dayjs from "dayjs";
 
-export default function DailyActionCalendar({ subGoalProgress }) {
+export default function DailyActionCalendar({ subGoalProgress, color }) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [viewMode, setViewMode] = useState("week"); // 'week' 또는 'month' 모드
     const [dateColorMap, setDateColorMap] = useState({});
 
     useEffect(() => {
-        if (subGoalProgress) {
-            const mappedColors = subGoalProgress.strict.reduce((acc, { checkedDate }) => {
-                acc[checkedDate] = hexToColorClass[subGoalProgress.color] || "bg-gray-200";
+        if (subGoalProgress && Array.isArray(subGoalProgress.dailyProgress)) {
+            const mappedColors = subGoalProgress.dailyProgress.reduce((acc, date) => {
+                acc[date] = color || "bg-gray-200";
                 return acc;
             }, {});
             setDateColorMap(mappedColors);
         }
-    }, [subGoalProgress]);
+    }, [subGoalProgress, color]);
+
 
     const handlePrevDate = () => {
         const newDate = new Date(currentDate);
@@ -54,7 +55,7 @@ export default function DailyActionCalendar({ subGoalProgress }) {
                 {Array.from({ length: 7 }, (_, i) => {
                     const day = new Date(startOfWeek);
                     day.setDate(startOfWeek.getDate() + i);
-                    const formattedDate = day.toISOString().split("T")[0];
+                    const formattedDate = dayjs(day).format("YYYY-MM-DD");
 
                     return (
                         <div key={i} className="flex flex-col items-center w-12">
@@ -76,6 +77,7 @@ export default function DailyActionCalendar({ subGoalProgress }) {
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
         const daysInMonth = getDaysInMonth(year, month);
+        
         const firstDayOfMonth = new Date(year, month, 1).getDay();
         const adjustedFirstDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
         const totalCells = daysInMonth + adjustedFirstDay;
@@ -98,7 +100,8 @@ export default function DailyActionCalendar({ subGoalProgress }) {
                                 return <div key={`empty-${week}-${i}`} className="w-12 h-12"></div>;
                             }
 
-                            const formattedDate = `${year}-${(month + 1).toString().padStart(2, "0")}-${dayNumber.toString().padStart(2, "0")}`;
+                            const formattedDate = dayjs(new Date(year, month, dayNumber)).format("YYYY-MM-DD");
+
                             return (
                                 <div key={`day-${week}-${i}`} className="flex flex-col items-center w-12">
                                     <div
@@ -116,7 +119,6 @@ export default function DailyActionCalendar({ subGoalProgress }) {
 
     return (
         <div className="w-full bg-white p-6 rounded-lg shadow-customShadow">
-            {/* <h3 className="text-base font-bold text-customTextBlack mb-2">Daily Action 캘린더</h3> */}
             {/* 날짜 네비게이션 */}
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-medium">
