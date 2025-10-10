@@ -1,11 +1,16 @@
 import { useState, useEffect } from "react";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import dayjs from "dayjs";
+import api from "../api/axiosInstance";
 
-export default function DailyActionCalendar({ subGoalProgress, color }) {
-    const [currentDate, setCurrentDate] = useState(new Date());
+export default function DailyActionCalendar({ subGoalProgress, color, subGoalId }) {
+    const [currentDate, setCurrentDate] = useState(subGoalProgress?.startDate ? new Date(subGoalProgress.startDate) : new Date());
     const [viewMode, setViewMode] = useState("week"); // 'week' 또는 'month' 모드
     const [dateColorMap, setDateColorMap] = useState({});
+    const [dateRange, setDateRange] = useState({
+        startDate: subGoalProgress?.startDate,
+        endDate: subGoalProgress?.endDate,
+    });
 
     useEffect(() => {
         if (subGoalProgress && Array.isArray(subGoalProgress.dailyProgress)) {
@@ -17,25 +22,45 @@ export default function DailyActionCalendar({ subGoalProgress, color }) {
         }
     }, [subGoalProgress, color]);
 
+    const fetchProgress = async (direction, newUnit = viewMode.toUpperCase()) => {
+        try {
+            const res = await api.get(`/api/sub-goals/${subGoalId}/daily-progress/calendar`, {
+                params: {
+                    date: dayjs(currentDate).format("YYYY-MM-DD"),
+                    direction,
+                    unit: newUnit,
+                },
+            });
+
+            const { startDate, endDate, dailyProgress } = res.data.data;
+
+            // ✅ 상태 갱신
+            setCurrentDate(new Date(startDate));
+            setDateRange({ startDate, endDate });
+            setDateColorMap(
+                dailyProgress.reduce((acc, date) => {
+                    acc[date] = color || "bg-gray-200";
+                    return acc;
+                }, {})
+            );
+        } catch (err) {
+            console.error("❌ 데일리 프로그레스 조회 실패:", err);
+            alert("데이터를 불러오는 데 실패했습니다.");
+        }
+    };
 
     const handlePrevDate = () => {
-        const newDate = new Date(currentDate);
-        if (viewMode === "week") {
-            newDate.setDate(currentDate.getDate() - 7);
-        } else {
-            newDate.setMonth(currentDate.getMonth() - 1);
-        }
-        setCurrentDate(newDate);
+        fetchProgress("PREV");
     };
 
     const handleNextDate = () => {
-        const newDate = new Date(currentDate);
-        if (viewMode === "week") {
-            newDate.setDate(currentDate.getDate() + 7);
-        } else {
-            newDate.setMonth(currentDate.getMonth() + 1);
-        }
-        setCurrentDate(newDate);
+        fetchProgress("NEXT");
+    };
+
+    const handleToggleViewMode = async () => {
+        const newMode = viewMode === "week" ? "month" : "week";
+        setViewMode(newMode);
+        await fetchProgress("CURRENT", newMode.toUpperCase());
     };
 
     const getStartOfWeek = (date) => {
@@ -44,9 +69,9 @@ export default function DailyActionCalendar({ subGoalProgress, color }) {
         return new Date(date.getFullYear(), date.getMonth(), date.getDate() + diff);
     };
 
-    const getDaysInMonth = (year, month) => {
-        return new Date(year, month + 1, 0).getDate();
-    };
+    // const getDaysInMonth = (year, month) => {
+    //     return new Date(year, month + 1, 0).getDate();
+    // };
 
     const renderWeek = () => {
         const startOfWeek = getStartOfWeek(currentDate);
@@ -73,11 +98,13 @@ export default function DailyActionCalendar({ subGoalProgress, color }) {
         );
     };
 
+    const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+
     const renderMonth = () => {
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
         const daysInMonth = getDaysInMonth(year, month);
-        
+
         const firstDayOfMonth = new Date(year, month, 1).getDay();
         const adjustedFirstDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
         const totalCells = daysInMonth + adjustedFirstDay;
@@ -122,7 +149,9 @@ export default function DailyActionCalendar({ subGoalProgress, color }) {
             {/* 날짜 네비게이션 */}
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-medium">
-                    {currentDate.getFullYear()}년 {currentDate.getMonth() + 1}월
+                    {/* {currentDate.getFullYear()}년 {currentDate.getMonth() + 1}월 */}
+                    {dayjs(dateRange.startDate).format("YYYY.MM.DD")} ~{" "}
+                    {dayjs(dateRange.endDate).format("MM.DD")}
                 </h2>
                 <div className="flex items-center space-x-3">
                     <button onClick={handlePrevDate} className="text-lg font-bold">
@@ -132,7 +161,7 @@ export default function DailyActionCalendar({ subGoalProgress, color }) {
                         <BsChevronRight />
                     </button>
                     <button
-                        onClick={() => setViewMode(viewMode === "week" ? "month" : "week")}
+                        onClick={handleToggleViewMode}
                         className="bg-gray-100 text-customTextBlack text-sm font-semibold px-4 py-1 rounded-xl"
                     >
                         {viewMode === "week" ? "주" : "월"}
