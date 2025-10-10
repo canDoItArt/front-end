@@ -94,7 +94,11 @@ export default function SubGoalPage() {
                     {Array.isArray(currentData.dailyActions) && currentData.dailyActions.length > 0 ? (
                         <>
                             <h3 className="text-base font-bold text-customTextBlack mb-4">Daily Action 캘린더</h3>
-                            <DailyActionCalendar subGoalProgress={currentData.progress} color={slotColors[currentData.subGoal.slotNum]}/>
+                            <DailyActionCalendar
+                                subGoalProgress={currentData.progress}
+                                color={slotColors[currentData.subGoal.slotNum]}
+                                subGoalId={subGoalId}
+                            />
                         </>
                     ) : (
                         <div className="text-center text-base text-gray-400 py-10">
