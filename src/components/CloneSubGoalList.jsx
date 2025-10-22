@@ -2,27 +2,56 @@ import { BsFillCaretRightFill, BsFillCaretDownFill } from "react-icons/bs";
 import { motion } from "framer-motion";
 import CloneDailyActionList from "./CloneDailyActionList";
 import { useState, useEffect } from "react";
+import api from "../api/axiosInstance";
 
 export default function CloneSubGoalList({
-    name, id, type, dailyaction, activeId, setActiveId, onDailyActionSelect
+    name,
+    id,
+    type,
+    activeId,
+    setActiveId,
+    onSubGoalSelect,
+    onDailyActionSelect
 }) {
+    const [dailyActions, setDailyActions] = useState([]);
     const [selectedId, setSelectedId] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [fetched, setFetched] = useState(false);
+
     const isOpen = activeId === id;
 
     useEffect(() => {
         if (!isOpen) {
             setSelectedId(null);
+        } else if (isOpen && !fetched) {
+            fetchDailyActions(id); // ✅ 처음 열릴 때만 불러옴
         }
-    }, [activeId, isOpen]);
+    }, [isOpen]);
+
+    // ✅ API 요청 함수
+    const fetchDailyActions = async (subGoalId) => {
+        setLoading(true);
+        try {
+            const response = await api.get(`/api/mandalart/sub-goals/${subGoalId}`);
+            const dailyActionsData = response.data?.dailyActions || [];
+            setDailyActions(dailyActionsData);
+            setFetched(true);
+        } catch (error) {
+            console.error(`데일리 액션(${subGoalId}) 데이터를 불러오는 중 오류 발생:`, error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleClick = (e) => {
         if (e.target.closest(".dailyaction-list")) return;
         setActiveId(isOpen ? null : id);
+        onSubGoalSelect?.(isOpen ? null : { id, name });
     };
 
     const handleDailyActionClick = (clickedId) => {
         setSelectedId((prevId) => (prevId === clickedId ? null : clickedId));
-        const selected = dailyaction.find(action => action.id === clickedId);
+        const selected = dailyActions.find(action => action.id === clickedId);
         onDailyActionSelect?.(selected);
     };
 
@@ -48,21 +77,28 @@ export default function CloneSubGoalList({
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="overflow-hidden dailyaction-list w-full"
             >
-                <div>
-                    {dailyaction.map((goal, index) => (
-                        <CloneDailyActionList
-                            key={goal.id}
-                            id={goal.id}
-                            title={goal.daily_action_title}
-                            content={goal.daily_action_content}
-                            routine={goal.routine}
-                            type={type}
-                            firstItem={index === 0}
-                            checked={selectedId === goal.id}
-                            onClick={handleDailyActionClick}
-                        />
-                    ))}
-                </div>
+                {/* 로딩 / 데이터 / 빈 상태 처리 */}
+                {loading ? (
+                    <div className="text-gray-500 text-sm px-6 py-3">데이터를 불러오는 중...</div>
+                ) : dailyActions.length > 0 ? (
+                    <div>
+                        {dailyActions.map((goal, index) => (
+                            <CloneDailyActionList
+                                key={goal.id}
+                                id={goal.id}
+                                title={goal.title}
+                                content={goal.content}
+                                targetNum={goal.targetNum}
+                                type={type}
+                                firstItem={index === 0}
+                                checked={selectedId === goal.id}
+                                onClick={handleDailyActionClick}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-gray-400 text-xs px-6 py-2">등록된 데일리 액션이 없습니다.</div>
+                )}
             </motion.div>
         </div>
     );
