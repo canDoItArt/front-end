@@ -7,7 +7,7 @@ import Input from "./Input";
 import { BsFillPlusCircleFill, BsDashCircleFill } from "react-icons/bs";
 import api from "../api/axiosInstance";
 
-export default function DailyActionTiles({ title, dailyActions, color, importedGoal, subGoalId, onDailyActionCreated }) {
+export default function DailyActionTiles({ title, dailyActions, color, importedGoal, mainGoalId, subGoalId, onDailyActionCreated }) {
     const navigate = useNavigate();
     const [showAddModal, setShowAddModal] = useState(false);
     const [titleError, setTitleError] = useState("");
@@ -22,9 +22,9 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
     // importedGoal이 존재하면 초기값으로 설정
     useEffect(() => {
         if (importedGoal) {
-            setTitle(importedGoal.daily_action_title || "");
-            setContent(importedGoal.daily_action_content || "");
-            setRoutine(importedGoal.routine || 1);
+            setTitle(importedGoal.title || "");
+            setContent(importedGoal.content || "");
+            setRoutine(importedGoal.targetNum || 1);
             setShowAddModal(true); // 자동으로 모달도 열리게
         }
     }, [importedGoal]);
@@ -95,7 +95,7 @@ export default function DailyActionTiles({ title, dailyActions, color, importedG
     const cloneButtonClick = () => {
         setShowAddModal(false);
         setTimeout(() => {
-            navigate('/importclone', { state: { type: 'dailyaction' } });
+            navigate('/importclone', { state: { type: 'dailyaction', mainGoalId, subGoalId } });
         }, 300);
     };
 

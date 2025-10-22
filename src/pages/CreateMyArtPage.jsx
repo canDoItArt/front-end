@@ -15,22 +15,45 @@ export default function CreateMyArtPage() {
     const [subGoalInput, setSubGoalInput] = useState("");
     const [subGoals, setSubGoals] = useState([]);
 
-    const [isMyartCreateModalOpen, setIsMyartCreateModalOpen] = useState(false); // 현재 비밀번호 확인 모달 오픈 상태
-    const [myartCreateModalMessage, setMyartCreateModalMessage] = useState("");  // 현재 비밀번호 확인 모달에 띄울 메시지
+    const [isMyartCreateModalOpen, setIsMyartCreateModalOpen] = useState(false); 
+    const [myartCreateModalMessage, setMyartCreateModalMessage] = useState("");  
 
     const colorClasses = Object.values(hexToColorClass);
+
+    // useEffect(() => {
+    //     if (importedGoal) {
+    //         setMainGoal(importedGoal.name || "");
+    //         const importedSubGoals = importedGoal.subGoals?.map(sub => sub.name) || [];
+    //         setSubGoals(importedSubGoals);
+    //     }
+    // }, [importedGoal]);
 
     useEffect(() => {
         if (importedGoal) {
             setMainGoal(importedGoal.name || "");
-            const importedSubGoals = importedGoal.subGoals?.map(sub => sub.name) || [];
+            const importedSubGoals = importedGoal.subGoals?.map((sub) => ({
+                name: sub.name,
+                dailyActions:
+                    sub.dailyActions?.map((action) => ({
+                        title: action.title || "",
+                        content: action.content || "",
+                        targetNum: action.targetNum ?? 0,
+                    })) || [],
+            })) || [];
             setSubGoals(importedSubGoals);
         }
     }, [importedGoal]);
 
+    // const handleAddSubGoal = () => {
+    //     if (subGoalInput.trim() === "" || subGoals.length >= 8) return;
+    //     setSubGoals([...subGoals, subGoalInput.trim()]);
+    //     setSubGoalInput("");
+    // };
+
+    // ✅ SubGoal 추가 (dailyActions는 기본 빈 배열)
     const handleAddSubGoal = () => {
         if (subGoalInput.trim() === "" || subGoals.length >= 8) return;
-        setSubGoals([...subGoals, subGoalInput.trim()]);
+        setSubGoals([...subGoals, { name: subGoalInput.trim(), dailyActions: [] }]);
         setSubGoalInput("");
     };
 
@@ -48,10 +71,15 @@ export default function CreateMyArtPage() {
         try {
             const response = await api.post("/api/main-goals", {
                 name: mainGoal,
-                subGoals: subGoals.map((goal) => ({
-                    name: goal,
-                    dailyActions: []
-                })) // 서버 요구사항에 맞게 객체 배열로 변환
+                subGoals: subGoals.map((sub) => ({
+                    name: sub.name,
+                    dailyActions:
+                        sub.dailyActions?.map((action) => ({
+                            title: action.title,
+                            content: action.content,
+                            targetNum: action.targetNum,
+                        })) || [],
+                })),
             });
 
             if (response.data.code === "200") {
@@ -121,7 +149,7 @@ export default function CreateMyArtPage() {
                                 key={index}
                                 className={`flex justify-between items-center bg-opacity-15 px-4 py-3 rounded-md ${colorClasses[index % colorClasses.length]}`}
                             >
-                                <span className="text-sm text-gray-800">{goal}</span>
+                                <span className="text-sm text-gray-800">{goal.name}</span>
                                 <button
                                     onClick={() => handleDeleteSubGoal(index)}
                                     className="text-red-500 text-xl font-medium"

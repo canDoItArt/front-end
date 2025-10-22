@@ -12,6 +12,7 @@ import { useAuth } from "../contexts/AuthContext";
 export default function MyArtPage() {
     const location = useLocation();
     const importedGoal = location.state?.importedGoal; // 가져온 subgoal
+    const selectedSlotNum = location.state?.selectedSlotNum;
     const [currentData, setCurrentData] = useState(null); // 첫 번째 데이터 사용
     const { mainGoalId } = useParams();
     const { user } = useAuth();
@@ -133,6 +134,7 @@ export default function MyArtPage() {
                     title={currentData.mainGoal.name}
                     subGoals={currentData.subGoals}
                     importedGoal={importedGoal}
+                    importSlotNum={selectedSlotNum}
                     mainGoalId={mainGoalId}
                     onSubGoalCreated={handleSubGoalCreated}
                 />

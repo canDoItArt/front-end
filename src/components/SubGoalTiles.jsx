@@ -6,22 +6,23 @@ import BottomModalLayout from "./BottomModalLayout";
 import Input from "./Input";
 import api from "../api/axiosInstance";
 
-export default function SubGoalTiles({ title, subGoals, importedGoal, mainGoalId, onSubGoalCreated }) {
+export default function SubGoalTiles({ title, subGoals, importedGoal, importSlotNum, mainGoalId, onSubGoalCreated }) {
     const navigate = useNavigate();
     const [showAddModal, setShowAddModal] = useState(false);
     const [inputValue, setInputValue] = useState("");
     const [titleError, setTitleError] = useState(""); // 에러 상태 추가
     const [loading, setLoading] = useState(false);
-
-    // ✅ 새로 추가된 상태
     const [selectedSlotNum, setSelectedSlotNum] = useState(null);
+    const [importedDailyActions, setImportedDailyActions] = useState([]);
 
     useEffect(() => {
         if (importedGoal) {
             setInputValue(importedGoal.name); // 가져온 이름을 input 초기값으로 설정
+            setSelectedSlotNum(importSlotNum);
+            setImportedDailyActions(importedGoal.dailyActions || []);
             setShowAddModal(true); // 자동으로 모달 열기
         }
-    }, [importedGoal]);
+    }, [importedGoal, importSlotNum]);
 
     // ✅ SubGoal 생성 API 연동
     const handleSave = async () => {
@@ -42,7 +43,7 @@ export default function SubGoalTiles({ title, subGoals, importedGoal, mainGoalId
             const response = await api.post(`/api/main-goals/${mainGoalId}/sub-goals`, {
                 name: inputValue,
                 slotNum: selectedSlotNum,
-                dailyActions: []
+                dailyActions: importedDailyActions,
             });
 
             // 보통 응답 구조: { code: "200", data: { id, name, slotNum, ... } }
@@ -88,7 +89,7 @@ export default function SubGoalTiles({ title, subGoals, importedGoal, mainGoalId
     const cloneButtonClick = () => {
         setShowAddModal(false);
         setTimeout(() => {
-            navigate('/importclone', { state: { type: 'subgoal' } });
+            navigate('/importclone', { state: { type: 'subgoal', mainGoalId, selectedSlotNum} });
         }, 300);
     };
 

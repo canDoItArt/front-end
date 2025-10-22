@@ -2,28 +2,43 @@ import { useState, useEffect } from "react";
 import CloneSubGoalList from "./CloneSubGoalList";
 import { motion } from "framer-motion";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
+import api from "../api/axiosInstance";
 
 // props에 onSubGoalSelect 추가
-export default function CloneMainGoalList({ name, id, type, subgoal, activeId, setActiveId, onSubGoalSelect, onDailyActionSelect }) {
+export default function CloneMainGoalList({ name, id, type, activeId, setActiveId, onSubGoalSelect, onDailyActionSelect }) {
     const [activeSubId, setActiveSubId] = useState(null);
+    const [subGoals, setSubGoals] = useState([]); // ✅ 불러온 subGoals 저장
+    const [subLoading, setSubLoading] = useState(false); // ✅ 로딩 상태
+    const [fetched, setFetched] = useState(false); // ✅ 이미 불러온 적 있는지 체크
 
     const isOpen = activeId === id;
 
     useEffect(() => {
         if (!isOpen) {
             setActiveSubId(null);
-            onSubGoalSelect(null); // 열려 있지 않으면 선택 해제
+            onSubGoalSelect(null);
+        } else if (isOpen && !fetched) {
+            fetchSubGoals(id);
         }
-    }, [activeId, isOpen, onSubGoalSelect]);
+    }, [isOpen]);
+
+    const fetchSubGoals = async (mainGoalId) => {
+        setSubLoading(true);
+        try {
+            const response = await api.get(`/api/mandalart/main-goals/${mainGoalId}`);
+            const subGoalsData = response.data?.subGoals || [];
+            setSubGoals(subGoalsData);
+            setFetched(true);
+        } catch (error) {
+            console.error(`서브 목표(${mainGoalId}) 데이터를 불러오는 중 오류 발생:`, error);
+        } finally {
+            setSubLoading(false);
+        }
+    };
 
     const handleClick = (e) => {
         if (e.target.closest(".subgoal-list")) return;
         setActiveId(isOpen ? null : id);
-    };
-
-    const handleSubGoalClick = (subGoalId) => {
-        setActiveSubId(subGoalId);
-        onSubGoalSelect(subgoal.find(g => g.id === subGoalId));
     };
 
     const subGoalListContent = (
@@ -33,23 +48,26 @@ export default function CloneMainGoalList({ name, id, type, subgoal, activeId, s
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="overflow-hidden subgoal-list w-full"
         >
-            <div>
-                {subgoal.map((goal) => (
-                    <div key={goal.id} onClick={() => handleSubGoalClick(goal.id)}>
-                        <CloneSubGoalList
-                            id={goal.id}
-                            name={goal.name}
-                            type={type}
-                            dailyaction={goal.dailyActions}
-                            activeId={activeSubId}
-                            setActiveId={setActiveSubId}
-                            onDailyActionSelect={onDailyActionSelect}
-                        />
-                    </div>
-                ))}
-            </div>
+            {subLoading ? (
+                <div className="text-gray-500 text-sm px-6 py-3">데이터를 불러오는 중...</div>
+            ) : subGoals.length > 0 ? (
+                subGoals.map((goal) => (
+                    <CloneSubGoalList
+                        id={goal.id}
+                        name={goal.name}
+                        type={type}
+                        activeId={activeSubId}
+                        setActiveId={setActiveSubId}
+                        onSubGoalSelect={onSubGoalSelect}
+                        onDailyActionSelect={onDailyActionSelect}
+                    />
+                ))
+            ) : (
+                <div className="text-gray-400 text-xs px-6 py-2">등록된 서브골이 없습니다.</div>
+            )}
         </motion.div>
     );
+
 
     return (
         <div>

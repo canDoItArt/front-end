@@ -1,6 +1,6 @@
 import CheckIcon from "./CheckIcon";
 
-export default function CloneDailyActionList({ title, content, routine, type, id, firstItem, checked: parentChecked, onClick }) {
+export default function CloneDailyActionList({ title, content, targetNum, type, id, firstItem, checked: parentChecked, onClick }) {
 
     const handleClick = () => {
         onClick?.(id);
@@ -17,7 +17,7 @@ export default function CloneDailyActionList({ title, content, routine, type, id
                 <div className="flex items-center gap-2">
                     <span className="font-bold text-xs text-gray-800">{title}</span>
                     <div className="bg-customMain text-xs py-1 px-2 rounded-md text-white">
-                        {routine}회
+                        {targetNum}회
                     </div>
                 </div>
                 <span className="font-semibold text-xs text-gray-500">{content}</span>
