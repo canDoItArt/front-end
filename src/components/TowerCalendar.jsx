@@ -2,27 +2,59 @@ import { useState, useEffect } from "react";
 import Tower from "./Tower";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import dayjs from "dayjs";
+import api from "../api/axiosInstance";
 
-export default function TowerCalendar({ progress }) {
+export default function TowerCalendar({ progress, mainGoalId }) {
   const [currentDate, setCurrentDate] = useState(new Date()); // 현재 날짜 상태를 관리
   const [viewMode, setViewMode] = useState("week"); // 'week' 또는 'month' 뷰 모드를 관리
   const [dateColorMap, setDateColorMap] = useState({}); // 날짜별 컬러 리스트 상태
 
   useEffect(() => {
     if (progress && Array.isArray(progress)) {
-      const mappedColors = progress.reduce((acc, { checkedDate, slotNum }) => {
-        if (!acc[checkedDate]) acc[checkedDate] = [];
-        acc[checkedDate].push(...slotNum);
-        return acc;
-      }, {});
+      const mappedColors = mapProgressToColor(progress);
       setDateColorMap(mappedColors);
     }
   }, [progress]);
+
+  const mapProgressToColor = (progressData) =>
+    progressData.reduce((acc, { checkedDate, slotNum }) => {
+      if (!acc[checkedDate]) acc[checkedDate] = [];
+      acc[checkedDate].push(...slotNum);
+      return acc;
+    }, {});
+
+  const fetchProgress = async (direction, unit = viewMode.toUpperCase(), baseDate = currentDate) => {
+    try {
+      const res = await api.get(`/api/main-goals/${mainGoalId}/sub-progress/checked`, {
+        params: {
+          date: dayjs(baseDate).format("YYYY-MM-DD"),
+          direction,
+          unit,
+        },
+      });
+
+      const { data } = res.data;
+      if (!data || !Array.isArray(data)) {
+        console.warn("⚠️ API 응답 데이터 형식이 올바르지 않습니다:", res.data);
+        return;
+      }
+
+      // ✅ 상태 갱신
+      setDateColorMap(mapProgressToColor(data));
+    } catch (err) {
+      console.error("❌ 데일리 프로그레스 조회 실패:", err);
+      alert("데이터를 불러오는 데 실패했습니다.");
+    }
+  };
 
   const getStartOfWeek = (date) => {
     const day = date.getDay(); // 요일 (0: 일요일, 6: 토요일)
     const diff = day === 0 ? -6 : 1 - day; // 일요일이면 -6, 나머지는 월요일 기준 계산
     return new Date(date.getFullYear(), date.getMonth(), date.getDate() + diff);
+  };
+
+  const getStartOfMonth = (date) => {
+    return new Date(date.getFullYear(), date.getMonth(), 1);
   };
 
   const getDaysInMonth = (year, month) => {
@@ -115,25 +147,36 @@ export default function TowerCalendar({ progress }) {
     );
   };
 
-  const handlePrev = () => {
+  const handlePrevDate = async () => {
     const newDate = new Date(currentDate);
+    await fetchProgress("PREV", viewMode.toUpperCase(), newDate);
     if (viewMode === "week") {
       newDate.setDate(currentDate.getDate() - 7);
+      setCurrentDate(getStartOfWeek(newDate));
     } else {
       newDate.setMonth(currentDate.getMonth() - 1);
+      setCurrentDate(getStartOfMonth(newDate));
     }
-    setCurrentDate(newDate);
   };
 
-  const handleNext = () => {
+  const handleNextDate = async () => {
     const newDate = new Date(currentDate);
+    await fetchProgress("NEXT", viewMode.toUpperCase(), newDate);
     if (viewMode === "week") {
       newDate.setDate(currentDate.getDate() + 7);
+      setCurrentDate(getStartOfWeek(newDate));
     } else {
       newDate.setMonth(currentDate.getMonth() + 1);
+      setCurrentDate(getStartOfMonth(newDate));
     }
-    setCurrentDate(newDate);
   };
+
+  const handleToggleViewMode = async () => {
+    const newMode = viewMode === "week" ? "month" : "week";
+    setViewMode(newMode);
+    await fetchProgress("CURRENT", newMode.toUpperCase());
+  };
+
 
   return (
     <div>
@@ -142,15 +185,15 @@ export default function TowerCalendar({ progress }) {
           {currentDate.getFullYear()}년 {currentDate.getMonth() + 1}월
         </h2>
         <div className="flex items-center space-x-3">
-          <button onClick={handlePrev} className="text-lg font-bold">
+          <button onClick={handlePrevDate} className="text-lg font-bold">
             <BsChevronLeft />
           </button>
-          <button onClick={handleNext} className="text-lg font-bold">
+          <button onClick={handleNextDate} className="text-lg font-bold">
             <BsChevronRight />
           </button>
           <div className="flex justify-end">
             <button
-              onClick={() => setViewMode(viewMode === "week" ? "month" : "week")}
+              onClick={handleToggleViewMode}
               className="bg-gray-100 text-customTextBlack text-sm font-semibold px-4 py-1 rounded-xl"
             >
               {viewMode === "week" ? "주" : "월"}
