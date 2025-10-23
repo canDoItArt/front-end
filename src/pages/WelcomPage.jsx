@@ -3,11 +3,12 @@ import 'swiper/css'; // 기본 CSS 스타일
 import 'swiper/css/pagination'; // Pagination 스타일
 import { Pagination, Autoplay } from 'swiper/modules';
 import { Link } from 'react-router-dom';
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { isAccessTokenValid } from "../utils/auth";
 
 export default function WelcomePage() {
+    const [isMobile, setIsMobile] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -15,6 +16,18 @@ export default function WelcomePage() {
             navigate("/home");
         }
     }, [navigate]);
+
+    useEffect(() => {
+        const checkDevice = () => {
+            const isMobileDevice =
+                window.innerWidth <= 768 || /Mobi|Android/i.test(navigator.userAgent);
+            setIsMobile(isMobileDevice);
+        };
+
+        checkDevice();
+        window.addEventListener("resize", checkDevice);
+        return () => window.removeEventListener("resize", checkDevice);
+    }, []);
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-white px-6">
@@ -49,7 +62,9 @@ export default function WelcomePage() {
                         <div className="flex flex-col items-center justify-center h-full">
                             <img
                                 src="/ServicePage1.png"
-                                srcSet="/ServicePage1@2x.png 2x, /ServicePage1@3x.png 3x"
+                                {...(!isMobile && {
+                                    srcSet: "/ServicePage1@2x.png 2x, /ServicePage1@3x.png 3x",
+                                })}
                                 alt="Service_1"
                                 className="w-full max-w-[420px] h-auto mb-8 object-contain"
                                 style={{ imageRendering: "-webkit-optimize-contrast" }}
@@ -62,7 +77,9 @@ export default function WelcomePage() {
                         <div className="flex flex-col items-center justify-center h-full">
                             <img
                                 src="/ServicePage2.png"
-                                srcSet="/ServicePage2@2x.png 2x, /ServicePage2@3x.png 3x"
+                                {...(!isMobile && {
+                                    srcSet: "/ServicePage2@2x.png 2x, /ServicePage2@3x.png 3x",
+                                })}
                                 alt="Service_2"
                                 className="w-full max-w-[420px] h-auto mb-8 object-contain"
                                 style={{ imageRendering: "-webkit-optimize-contrast" }}
@@ -75,7 +92,9 @@ export default function WelcomePage() {
                         <div className="flex flex-col items-center justify-center h-full">
                             <img
                                 src="/ServicePage3.png"
-                                srcSet="/ServicePage3@2x.png 2x, /ServicePage3@3x.png 3x"
+                                {...(!isMobile && {
+                                    srcSet: "/ServicePage3@2x.png 2x, /ServicePage3@3x.png 3x",
+                                })}
                                 alt="Service_3"
                                 className="w-full max-w-[420px] h-auto mb-8 object-contain"
                                 style={{ imageRendering: "-webkit-optimize-contrast" }}
@@ -88,7 +107,9 @@ export default function WelcomePage() {
                         <div className="flex flex-col items-center justify-center h-full">
                             <img
                                 src="/ServicePage4.png"
-                                srcSet="/ServicePage4@2x.png 2x, /ServicePage4@3x.png 3x"
+                                {...(!isMobile && {
+                                    srcSet: "/ServicePage4@2x.png 2x, /ServicePage4@3x.png 3x",
+                                })}
                                 alt="Service_4"
                                 className="w-full max-w-[420px] h-auto mb-8 object-contain"
                                 style={{ imageRendering: "-webkit-optimize-contrast" }}
