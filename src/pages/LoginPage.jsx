@@ -63,7 +63,11 @@ export default function LoginPage() {
         }
 
         try {
-            //const response = await api.post("/api/auth/send-code", { email: findEmail });
+            const response = await api.post("/api/auth/send-code", 
+                { 
+                    email: findEmail,
+                    code: codeInput,
+                });
 
             if (response.status === 200) {
                 alert("인증코드가 확인되었습니다.");
@@ -157,10 +161,12 @@ export default function LoginPage() {
                         onChange={(e) => setCodeInput(e.target.value)}
                         placeholder="인증코드를 입력해주세요"
                         required={false}
+                        readOnly={isCodeVerified}
                     //successMessage={emailChecked ? "중복 확인이 완료되었습니다." : ""}
                     >
                         <div
-                            onClick={handleVerificationCode}
+                            //onClick={handleVerificationCode}
+                            onClick={!isCodeVerified ? handleVerificationCode : undefined}
                             className={`flex items-center justify-center whitespace-nowrap py-2 px-4 text-xs rounded-md font-bold cursor-pointer
                                                             ${isCodeVerified
                                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"
