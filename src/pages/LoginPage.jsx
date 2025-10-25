@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { AiOutlineClose } from "react-icons/ai";
 import Header from "../components/Header";
 import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
@@ -14,10 +15,14 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const [showFindPasswordModal, setShowFindPasswordModal] = useState(false);
+    const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
     const [isLoginErrorModalOpen, setIsLoginErrorModalOpen] = useState(false); // 로그인 에러 모달
 
     const [findEmail, setFindEmail] = useState("");
+    const [codeInput, setCodeInput] = useState("");
+
+    const [isCodeSent, setIsCodeSent] = useState(false);
+    const [isCodeVerified, setIsCodeVerified] = useState(false);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -42,12 +47,31 @@ export default function LoginPage() {
 
             if (response.status === 200) {
                 alert("인증코드가 이메일로 발송되었습니다.");
-                setShowFindPasswordModal(false); // 모달 닫기
-                setFindEmail(""); // 입력 초기화
+                setIsCodeSent(true);
+                //setFindEmail(""); // 입력 초기화
             }
         } catch (error) {
             console.error("인증코드 발송 실패:", error);
-            alert("인증코드 발송 중 오류가 발생했습니다. 이메일을 확인해주세요.");
+            alert("해당 이메일로 가입된 정보가 없습니다. 이메일을 확인해주세요.");
+        }
+    };
+
+    const handleVerificationCode = async () => {
+        if (!setCodeInput) {
+            alert("인증코드를 입력해주세요.");
+            return;
+        }
+
+        try {
+            //const response = await api.post("/api/auth/send-code", { email: findEmail });
+
+            if (response.status === 200) {
+                alert("인증코드가 확인되었습니다.");
+                setIsCodeVerified(true);
+            }
+        } catch (error) {
+            console.error("인증코드 발송 실패:", error);
+            alert("인증 코드가 일치하지 않습니다. 인증코드를 다시 확인해주세요.");
         }
     };
 
@@ -81,39 +105,82 @@ export default function LoginPage() {
             </form>
 
             <div className="flex justify-center gap-6 text-sm text-customTextGray">
-                <button onClick={() => setShowFindPasswordModal(true)}>비밀번호 재설정</button>
+                <button onClick={() => setShowResetPasswordModal(true)}>비밀번호 재설정</button>
             </div>
 
-            {/* 비밀번호 찾기 모달 */}
-            {showFindPasswordModal && (
-                <ModalLayout onClose={() => setShowFindPasswordModal(false)}>
-                    <h2 className="text-base font-bold mb-5 text-center">비밀번호 재설정</h2>
+            {/* 비밀번호 재설정 모달 */}
+            {showResetPasswordModal && (
+                <ModalLayout onClose={() => setShowResetPasswordModal(false)}>
+                    <div className="flex justify-end">
+                        <button
+                        onClick={() => setShowResetPasswordModal(false)}
+                        className=" text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                        <AiOutlineClose size={20}/>
+                    </button>
+                    </div>
+                    
+                    <h2 className="text-base font-bold mb-5 text-center">인증 코드 전송 및 확인</h2>
                     <p className="text-gray-500 text-sm text-center leading-relaxed">
                         가입한 이메일을 입력하시면<br />
                         해당 메일로 인증 코드가 발급됩니다.
                     </p>
+                    
                     <Input
                         id="find-password-email"
                         label="이메일"
                         type="email"
                         value={findEmail}
                         onChange={(e) => setFindEmail(e.target.value)}
-                        placeholder="이메일 입력"
+                        placeholder="이메일을 입력해주세요"
                         required={false}
-                    />
+                        showTimer={isCodeSent}
+                        readOnly={isCodeSent}
+                        onTimerExpire={() => setIsCodeSent(false)}
+                    >
+                        <div
+                            onClick={!isCodeSent ? handleSendCode : undefined}
+                            className={`flex items-center justify-center whitespace-nowrap py-2 px-4 text-xs rounded-md font-bold cursor-pointer
+                                        ${isCodeSent
+                                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                    : "bg-white border border-customMain text-customMain"}`}
+                        >
+                            코드 전송
+                        </div>
+                    </Input>
+
+                    <Input
+                        id="find-password-email"
+                        label="인증 코드"
+                        type="text"
+                        value={codeInput}
+                        onChange={(e) => setCodeInput(e.target.value)}
+                        placeholder="인증코드를 입력해주세요"
+                        required={false}
+                    //successMessage={emailChecked ? "중복 확인이 완료되었습니다." : ""}
+                    >
+                        <div
+                            onClick={handleVerificationCode}
+                            className={`flex items-center justify-center whitespace-nowrap py-2 px-4 text-xs rounded-md font-bold cursor-pointer
+                                                            ${isCodeVerified
+                                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                    : "bg-white border border-customMain text-customMain"}`}
+                        >
+                            인증
+                        </div>
+
+                    </Input>
 
                     <div className="mt-6 flex justify-center space-x-4">
                         <button
-                            className="p-2 text-xs font-normal w-24 bg-gray-100 text-gray-400 rounded-md"
-                            onClick={() => setShowFindPasswordModal(false)}
+                            className={`p-3 w-full text-xs font-normal  rounded-md
+                                ${isCodeVerified
+                                    ? "bg-customMain text-white"
+                                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                }`}
+                        //onClick={handleSendCode}
                         >
-                            취소
-                        </button>
-                        <button
-                            className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
-                            onClick={handleSendCode}
-                        >
-                            확인
+                            비밀번호 재설정
                         </button>
                     </div>
                 </ModalLayout>
