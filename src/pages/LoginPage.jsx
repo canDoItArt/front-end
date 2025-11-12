@@ -114,24 +114,20 @@ export default function LoginPage() {
 
         try {
             // ✅ 비밀번호 변경 API 호출
-            const response = await api.patch("/api/members/change-password", {
+            const response = await api.post("/api/members/new-password", {
+                email: findEmail,
                 newPassword: newPassword,
             });
 
             if (response.data.code === "200") {
-                //alert("비밀번호가 성공적으로 변경되었습니다.");
-                // setIsPasswordChangeModalOpen(true);
-                // setPasswordChangeModalMessage("비밀번호가 성공적으로 변경되었습니다.");
-                // closeModal();
-                alert(response.data.message || "비밀번호가 성공적으로 변경되었습니다.");
+                alert("비밀번호가 성공적으로 변경되었습니다.");
+                setShowResetPasswordModal(false);
             } else {
                 alert(response.data.message || "비밀번호 변경 실패");
             }
         } catch (error) {
             console.error(error);
-            //alert("비밀번호 변경 중 오류가 발생했습니다.");
-            //setIsPasswordChangeModalOpen(true);
-            //setPasswordChangeModalMessage("비밀번호 변경 중 오류가 발생했습니다.");
+            alert("비밀번호 변경 중 오류가 발생했습니다.");
         }
     };
 
@@ -293,20 +289,6 @@ export default function LoginPage() {
                         error={confirmPasswordError}
                     />
 
-                    {/* <div className="mt-6 flex justify-center space-x-4">
-                        <button
-                            className="p-2 text-xs font-normal w-24 bg-gray-100 text-gray-400 rounded-md"
-                            onClick={() => setShowResetPasswordModal(false)}
-                        >
-                            취소
-                        </button>
-                        <button
-                            className="p-3 w-24 text-xs font-normal bg-customMain text-white rounded-md"
-                            onClick={handlePasswordSave}
-                        >
-                            저장
-                        </button>
-                    </div> */}
                     <div className="mt-6 flex justify-center space-x-4">
                         <button
                             className="p-3 w-full text-xs font-normal rounded-md bg-customMain text-white"
