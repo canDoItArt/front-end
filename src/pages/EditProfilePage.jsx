@@ -1,5 +1,4 @@
-import React, { useState, useRef } from "react";
-import myPageMockData from "../mocks/myPage";
+import { useState, useRef } from "react";
 import { BsPersonFill } from "react-icons/bs";
 import Header from "../components/Header";
 import Input from "../components/Input";
@@ -12,15 +11,15 @@ import ModalLayout from "../components/ModalLayout";
 
 export default function EditProfilePage() {
     const navigate = useNavigate();
-    const { user, loading, fetchUser } = useAuth(); // Context에서 불러오기
-    // const [currentData] = useState(myPageMockData[0]); // 첫 번째 데이터 사용
+    const { user, fetchUser } = useAuth(); // Context에서 불러오기
+
     const [previewImage, setPreviewImage] = useState(user.profileImage || null);
     const [nickname, setNickname] = useState(user?.nickname);
     const [comment, setComment] = useState(user?.comment);
+    const [uploadedFileName, setUploadedFileName] = useState(null);
 
     // 닉네임 중복 체크
     const [nicknameChecked, setNicknameChecked] = useState(false);
-
     // 원래 닉네임 저장
     const originalNickname = user?.nickname;
 
@@ -30,10 +29,66 @@ export default function EditProfilePage() {
     const [isEditResultModalOpen, setIsEditResultModalOpen] = useState(false); // 수정 완료 시 모달 오픈 상태
     const [editResultModalMessage, setEditResultModalMessage] = useState("");  // 수정 완료 시 모달에 띄울 메시지
 
+    const fileInputRef = useRef(null);
+    const presignedDataRef = useRef(null); // presigned url 임시 저장용
+
+    //presigned URL 요청
+    const handleProfileClick = async () => {
+        try {
+            // presigned URL 발급 요청
+            const response = await api.post("/api/file/presigned");
+            const { url, fileName } = response.data.data;
+
+            console.log("✅ presigned URL 발급:", url, fileName);
+            presignedDataRef.current = { url, fileName };
+
+            // 파일 선택 input 열기
+            fileInputRef.current?.click();
+        } catch (error) {
+            console.error("❌ presigned URL 요청 실패:", error);
+            alert("이미지 업로드 URL을 가져오는 데 실패했습니다.");
+        }
+    };
+
+    // 2. 파일 선택 후 presigned URL로 업로드
+    const handleFileChange = async (event) => {
+        const file = event.target.files[0];
+        if (!file || !file.type.startsWith("image/")) {
+            alert("이미지 파일만 업로드할 수 있습니다.");
+            return;
+        }
+
+        const { url, fileName } = presignedDataRef.current || {};
+        if (!url) {
+            alert("업로드 URL이 유효하지 않습니다. 다시 시도해주세요.");
+            return;
+        }
+
+        try {
+            // 2-1. 미리보기 표시
+            const reader = new FileReader();
+            reader.onloadend = () => setPreviewImage(reader.result);
+            reader.readAsDataURL(file);
+
+            // 2-2. presigned URL로 업로드
+            await fetch(url, {
+                method: "PUT",
+                headers: { "Content-Type": file.type },
+                body: file,
+            });
+
+            console.log("✅ 이미지 업로드 성공:", fileName);
+            setUploadedFileName(fileName); // ✅ 나중에 PATCH 요청 시 사용
+        } catch (err) {
+            console.error("❌ 이미지 업로드 실패:", err);
+            alert("이미지 업로드 중 오류가 발생했습니다.");
+        }
+    };
+
     const handleSave = async () => {
         try {
             const response = await api.patch("/api/members", {
-                profileImage: previewImage ?? null,
+                profileImage: uploadedFileName ?? null,
                 nickname,
                 comment,
                 email: user?.email,
@@ -81,26 +136,6 @@ export default function EditProfilePage() {
             console.error("닉네임 중복 확인 오류", error);
             setDuplicateCheckModalMessage(`닉네임 중복 확인 중 오류가 발생했습니다.`);
             setIsDuplicateCheckModalOpen(true);
-        }
-    };
-
-
-    const fileInputRef = useRef(null);
-
-    const handleProfileClick = () => {
-        fileInputRef.current?.click();
-    };
-
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file && file.type.startsWith("image/")) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreviewImage(reader.result);
-            };
-            reader.readAsDataURL(file);
-        } else {
-            alert("이미지 파일만 업로드할 수 있습니다.");
         }
     };
 
