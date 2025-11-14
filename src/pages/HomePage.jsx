@@ -53,6 +53,14 @@ export default function HomePage() {
 
             const data = response.data.data;
 
+            // ⭐ 메인골이 없는 경우 처리
+            if (!data.mainGoal) {
+                // 기존 goals 상태 초기화
+                setGoals([]);
+                setCurrentGoalId(null);
+                return;    // 에러로 가지 않도록 종료
+            }
+
             // API 구조에 맞게 데이터 가공
             const newGoal = {
                 mainGoal: {
